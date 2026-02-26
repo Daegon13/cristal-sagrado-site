@@ -131,8 +131,12 @@
         <form id="formulario" action="https://formspree.io/f/mdklwnlg" method="POST">
             <label for="nombre">Nombre:</label>
             <input type="text" id="nombre" name="nombre" required>
-             <label for="email">Email o telefono:</label>
-            <input type="email" id="email" name="email" required>
+             <!-- BLOQUE FORM: se usa type="text" + pattern para aceptar email o teléfono en un único campo. -->
+             <label for="contacto">Email o teléfono:</label>
+            <input type="text" id="contacto" name="contacto" required
+                   inputmode="email"
+                   pattern="(^[^\s@]+@[^\s@]+\.[^\s@]+$)|(^\+?[0-9\s\-()]{7,}$)"
+                   title="Ingresá un email válido o un teléfono válido.">
             <label for="mensaje">Mensaje:</label>
             <textarea id="mensaje" name="mensaje" required></textarea>
     <!-- Campo oculto para evitar spam (opcional) -->
@@ -182,15 +186,7 @@ document.body.addEventListener('click', (e) => {
   }
 });
 </script>
-<!-- Lectura de contenido dinámico desde Firestore (público) -->
-<script type="module" src="/assets/js/data.js"></script>
-<script type="module">
-  import { renderServices } from '/assets/js/data.js';
-  // Renderiza servicios si la página tiene una lista destino
-  if (document.querySelector('#lista-servicios')) {
-    renderServices('#lista-servicios');
-  }
-</script>
+<!-- BLOQUE PERF: en home no se carga lógica de Firestore porque no se renderiza listado dinámico aquí. -->
 
 </body>
 

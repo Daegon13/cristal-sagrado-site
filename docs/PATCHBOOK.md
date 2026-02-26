@@ -109,7 +109,7 @@ Entregá git diff.
 Dejá comentarios por bloque explicando función/motivo.
 ```
 
-Estado: PENDIENTE
+Estado: COMPLETADO ✅
 
 ---
 

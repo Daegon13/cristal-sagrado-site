@@ -60,14 +60,6 @@
   <input id="buscador-servicios" type="search" placeholder="Buscar servicios…">
 
   <ul id="lista-servicios" class="serv-list"></ul>
-
-    
-    <section class="container">
-        <h2>Servicios</h2>
-        <section data-section="services">
-          <ul id="lista-servicios"></ul>
-        </section>
-    </section>
 </main>
 <footer>
     <div class="container">
@@ -107,25 +99,12 @@ document.body.addEventListener('click', (e) => {
      aria-label="Reservar por WhatsApp">💬</a>
 
 <!-- Lectura de contenido dinámico desde Firestore (público) -->
-<script type="module" src="/assets/js/data.js"></script>
-  <script type="module">
-    import { renderServices } from '/assets/js/data.js';
-    // Renderiza SOLO servicios de magia roja
-    renderServices('#lista-servicios', 'verde');
-  </script>
-  
-  
-
-<!-- Carga de módulos JS específicos de la página de servicios -->
-<script type="module" src="/assets/js/services/index.js"></script>
-
-  <script type="module" src="/assets/js/data.js"></script>
-  <script type="module">
-    import { renderServices, attachSearch } from "/assets/js/data.js";
-    // Opcional si no usas auto-init:
-    renderServices("#lista-servicios", "verde");
-    attachSearch("#buscador-servicios", "#lista-servicios");
-  </script>
+<script type="module">
+  // BLOQUE SERVICIOS: una sola inicialización para evitar render duplicado y eventos duplicados.
+  import { renderServices, attachSearch } from '/assets/js/data.js';
+  renderServices('#lista-servicios', 'verde');
+  attachSearch('#buscador-servicios', '#lista-servicios');
+</script>
 
 
 </body>
