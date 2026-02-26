@@ -1,0 +1,122 @@
+name: Pages - Preview (PR & patch branches)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - "patch/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: pages-preview-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    # Avoid running on PRs from forks (token can't push to gh-pages)
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute preview path
+        run: |
+          set -euxo pipefail
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PREVIEW_DIR="previews/pr-${{ github.event.pull_request.number }}"
+          else
+            # For branch previews: sanitize branch name for folder usage
+            SAFE_BRANCH="${GITHUB_REF_NAME//\//--}"
+            PREVIEW_DIR="previews/branch-${SAFE_BRANCH}"
+          fi
+
+          echo "PREVIEW_DIR=$PREVIEW_DIR" >> "$GITHUB_ENV"
+          echo "BASE_PATH=/$PREVIEW_DIR" >> "$GITHUB_ENV"
+
+      - name: Prepare preview folder
+        run: |
+          set -euxo pipefail
+          rm -rf __preview
+          mkdir __preview
+
+          rsync -av --delete \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "__site" \
+            --exclude "__preview" \
+            --exclude "node_modules" \
+            ./ __preview/
+
+          touch __preview/.nojekyll
+
+          # Rewrite absolute-root paths (href="/...", src="/...", url(/...))
+          # so the preview works under /previews/... without changing your prod code.
+          python3 scripts/rewrite_basepath.py "__preview" "$BASE_PATH"
+
+      - name: Deploy preview to gh-pages subfolder
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: __preview
+          target-folder: ${{ env.PREVIEW_DIR }}
+          clean: true
+
+      - name: Publish preview URL (PR comment)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const path = `previews/pr-${prNumber}/`;
+            const marker = '<!-- CS_PREVIEW_LINK -->';
+            const url1 = `https://${owner}.github.io/${repo}/${path}`;
+
+            const body = [
+              marker,
+              `✅ **Preview listo**`,
+              ``,
+              `- ${url1}`,
+              ``,
+              `Si tenés dominio propio (CNAME), también probá:`,
+              `- https://TU-DOMINIO/${path}`,
+              ``,
+              `_Se actualiza automáticamente con cada push al PR._`
+            ].join("\n");
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number: prNumber, per_page: 100,
+            });
+
+            const existing = comments.find(c => (c.body || '').includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: existing.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number: prNumber, body,
+              });
+            }
+
+      - name: Publish preview URL (Job Summary)
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euxo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY##*/}"
+          echo "## Preview listo" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- https://${OWNER}.github.io/${REPO}/${PREVIEW_DIR}/" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Si tenés dominio propio (CNAME), también probá:" >> "$GITHUB_STEP_SUMMARY"
+          echo "- https://TU-DOMINIO/${PREVIEW_DIR}/" >> "$GITHUB_STEP_SUMMARY"

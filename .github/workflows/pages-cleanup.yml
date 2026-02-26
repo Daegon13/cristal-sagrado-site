@@ -1,0 +1,84 @@
+name: Pages - Cleanup previews
+
+on:
+  pull_request:
+    types: [closed]
+  delete:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-cleanup
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout default branch (fetch history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine target preview dir
+        run: |
+          set -euxo pipefail
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Skip forks
+            if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+              echo "fork PR -> skip cleanup"
+              echo "SKIP=true" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            TARGET_DIR="previews/pr-${{ github.event.pull_request.number }}"
+          else
+            # Branch delete event
+            if [ "${{ github.event.ref_type }}" != "branch" ]; then
+              echo "Not a branch delete -> nothing to do"
+              echo "SKIP=true" >> "$GITHUB_ENV"
+              exit 0
+            fi
+
+            REF="${{ github.event.ref }}"
+            case "$REF" in
+              patch/*)
+                SAFE_BRANCH="${REF//\//--}"
+                TARGET_DIR="previews/branch-${SAFE_BRANCH}"
+                ;;
+              *)
+                echo "Deleted branch is not patch/* -> skip"
+                echo "SKIP=true" >> "$GITHUB_ENV"
+                exit 0
+                ;;
+            esac
+          fi
+
+          echo "TARGET_DIR=$TARGET_DIR" >> "$GITHUB_ENV"
+
+      - name: Checkout gh-pages (if exists)
+        if: env.SKIP != 'true'
+        run: |
+          set -euxo pipefail
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git checkout gh-pages
+          else
+            echo "gh-pages doesn't exist yet -> nothing to cleanup"
+            echo "SKIP=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Remove preview directory and push
+        if: env.SKIP != 'true'
+        run: |
+          set -euxo pipefail
+          if [ -d "$TARGET_DIR" ]; then
+            rm -rf "$TARGET_DIR"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "chore(pages): cleanup $TARGET_DIR" || exit 0
+            git push origin gh-pages
+          else
+            echo "Directory $TARGET_DIR not found, nothing to remove."
+          fi

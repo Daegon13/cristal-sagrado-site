@@ -1,0 +1,48 @@
+name: Pages - Deploy (prod)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pages-prod
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare site folder
+        run: |
+          set -euxo pipefail
+          rm -rf __site
+          mkdir __site
+
+          # Copy repo contents to __site (exclude workflow files and temp dirs)
+          rsync -av --delete \
+            --exclude ".git" \
+            --exclude ".github" \
+            --exclude "__site" \
+            --exclude "__preview" \
+            --exclude "node_modules" \
+            ./ __site/
+
+          # Avoid Jekyll processing on Pages
+          touch __site/.nojekyll
+
+      - name: Deploy to gh-pages (keep PR/branch previews)
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: __site
+          clean: true
+          # Preserve preview folders so open PR previews don't disappear on prod deploy
+          clean-exclude: |
+            previews
