@@ -32,6 +32,18 @@
   z-index: -1;
 }
 
+
+/* BLOQUE PERF VIDEO: fallback estático cuando el usuario prefiere menos movimiento/datos. */
+.background-video--disabled {
+  display: none;
+}
+
+.landing {
+  background-image: url('../images/video-poster.svg');
+  background-size: cover;
+  background-position: center;
+}
+
 /* Estilos generales del body: fuente, color de texto y fondo */
 body {
     font-family: var(--font-main);
