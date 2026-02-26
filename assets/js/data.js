@@ -1,5 +1,5 @@
 // Archivo: /assets/js/data.js
-// RESPONSABILIDAD: Cargar y renderizar servicios por categoría (roja/blanca)
+// RESPONSABILIDAD: Cargar y renderizar servicios por categoría (roja/blanca/negra/verde)
 // + buscador en vivo + ver más/menos, todo desde Firestore.
 // Usa firebaseConfig desde /admin/config.js.
 // Nota: sin orderBy en Firestore para evitar índices; se ordena en cliente por `order`.
@@ -19,7 +19,9 @@ const db  = getFirestore(app);
 // -------------------------
 const cache = {
   roja:   { items: [], lastFetch: 0 },
-  blanca: { items: [], lastFetch: 0 }
+  blanca: { items: [], lastFetch: 0 },
+  negra:  { items: [], lastFetch: 0 },
+  verde:  { items: [], lastFetch: 0 }
 };
 
 // -------------------------
@@ -32,24 +34,32 @@ function detectCategory(explicitCategory) {
   const p = location.pathname.toLowerCase();
   if (p.includes("magia-blanca")) return "blanca";
   if (p.includes("magia-roja"))   return "roja";
-  if (p.includes("magia-negra"))   return "negra";
-  if (p.includes("magia-verde"))   return "verde";
+  if (p.includes("magia-negra"))  return "negra";
+  if (p.includes("magia-verde"))  return "verde";
   return "roja";
 }
 
 function normalizeItems(snap) {
   const arr = [];
   snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-  // Orden en cliente por `order` asc (fallback a 0)
   arr.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   return arr;
+}
+
+// BLOQUE SEGURIDAD: helper para crear nodos de texto y evitar inyección HTML desde datos remotos.
+function createTextElement(tag, className, text) {
+  const el = document.createElement(tag);
+  if (className) el.className = className;
+  el.textContent = text;
+  return el;
 }
 
 // Trunca/expande descripción
 function wireViewMore(ul) {
   ul.querySelectorAll(".serv-toggle").forEach(btn => {
     btn.addEventListener("click", () => {
-      const p = btn.closest("li").querySelector(".serv-desc");
+      const p = btn.closest("li")?.querySelector(".serv-desc");
+      if (!p) return;
       p.classList.toggle("clamp-3");
       btn.textContent = p.classList.contains("clamp-3") ? "Ver más" : "Ver menos";
     });
@@ -80,29 +90,26 @@ export function attachSearch(inputSelector = "#buscador-servicios", listSelector
 // -------------------------
 // BLOQUE: Render de servicios por categoría
 // -------------------------
-// - containerSelector: UL/OL contenedor (por defecto #lista-servicios)
-// - category: 'roja' | 'blanca' (opcional; se auto-detecta)
-// - options: { searchSelector?: string } para enganchar buscador al vuelo
 export async function renderServices(containerSelector = "#lista-servicios", category, options = {}) {
   const ul = document.querySelector(containerSelector);
   if (!ul) return;
 
   const cat = detectCategory(category);
-  ul.innerHTML = `<li class="muted">Cargando…</li>`;
+  ul.innerHTML = "";
+  ul.appendChild(createTextElement("li", "muted", "Cargando…"));
 
   try {
-    // Si hay cache fresco (5 min), úsalo
     const now = Date.now();
     const freshMs = 5 * 60 * 1000;
     let items = [];
+
     if (cache[cat] && (now - cache[cat].lastFetch) < freshMs && cache[cat].items.length) {
       items = cache[cat].items;
     } else {
-      // Query mínima: filtramos por categoría (y active si existe)
       const q = query(
         collection(db, "services"),
         where("category", "==", cat),
-        where("active", "==", true) // quita esta línea si no usas 'active'
+        where("active", "==", true)
       );
       const snap = await getDocs(q);
       items = normalizeItems(snap);
@@ -110,42 +117,58 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
     }
 
     if (!items.length) {
-      ul.innerHTML = `<li class="muted">Pronto habrá servicios disponibles aquí.</li>`;
+      ul.innerHTML = "";
+      ul.appendChild(createTextElement("li", "muted", "Pronto habrá servicios disponibles aquí."));
       return;
     }
 
-    ul.innerHTML = items.map(s => `
-      <li class="serv-card" data-id="${s.id}">
-        <h3 class="serv-title">${s.title ?? s.name ?? ""}</h3>
-        <p class="serv-desc clamp-3">${s.description ?? ""}</p>
-        <div class="serv-meta">
-          ${s.price ? `<span class="serv-price">$${s.price}</span>` : ""}
-          ${s.duration ? `<span class="serv-duration">${s.duration} días</span>` : ""}
-        </div>
-        <button class="serv-toggle" type="button">Ver más</button>
-      </li>
-    `).join("");
+    // BLOQUE SEGURIDAD: render por nodos DOM con textContent para evitar XSS (sin innerHTML con datos remotos).
+    ul.innerHTML = "";
+    items.forEach((s) => {
+      const li = document.createElement("li");
+      li.className = "serv-card";
+      li.dataset.id = s.id;
+
+      li.appendChild(createTextElement("h3", "serv-title", s.title ?? s.name ?? ""));
+
+      const desc = createTextElement("p", "serv-desc clamp-3", s.description ?? "");
+      li.appendChild(desc);
+
+      const meta = document.createElement("div");
+      meta.className = "serv-meta";
+      if (s.price) {
+        meta.appendChild(createTextElement("span", "serv-price", `$${s.price}`));
+      }
+      if (s.duration) {
+        meta.appendChild(createTextElement("span", "serv-duration", `${s.duration} días`));
+      }
+      li.appendChild(meta);
+
+      const btn = createTextElement("button", "serv-toggle", "Ver más");
+      btn.type = "button";
+      li.appendChild(btn);
+
+      ul.appendChild(li);
+    });
 
     wireViewMore(ul);
 
-    // Si pasaste un input de búsqueda, lo enganchamos ahora
     if (options.searchSelector) {
       attachSearch(options.searchSelector, containerSelector);
     }
   } catch (err) {
     console.error("Error cargando servicios:", err);
-    ul.innerHTML = `<li class="error">No se pudieron cargar los servicios. Intenta más tarde.</li>`;
+    ul.innerHTML = "";
+    ul.appendChild(createTextElement("li", "error", "No se pudieron cargar los servicios. Intenta más tarde."));
   }
 }
 
 // -------------------------
 // BLOQUE: Auto-inicialización “convención sobre configuración”
 // -------------------------
-// Si la página trae #lista-servicios, renderiza automáticamente con categoría detectada.
-// Si existe #buscador-servicios, lo engancha automáticamente.
 document.addEventListener("DOMContentLoaded", () => {
   const listEl = document.querySelector("#lista-servicios");
   if (listEl) {
-    renderServices("#lista-servicios", /* category */ undefined, { searchSelector: "#buscador-servicios" });
+    renderServices("#lista-servicios", undefined, { searchSelector: "#buscador-servicios" });
   }
 });
