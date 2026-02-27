@@ -114,3 +114,13 @@ body{margin:0; background:var(--bg); color:var(--fg); font:var(--font);}
 
 .muted{color:var(--muted)}
 .promo{background: var(--accent); color:#0d0b1e; text-align:center; padding:.6rem 1rem}
+
+
+/* BLOQUE PERF LISTADOS: difiere el render de cards fuera de viewport (lazy rendering CSS). */
+.card,
+.servicio,
+.serv-list li,
+details.card {
+  content-visibility: auto;
+  contain-intrinsic-size: 280px;
+}

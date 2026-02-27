@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="/css/base.css">
     <link rel="stylesheet" href="/css/components.css">
+    <!-- BLOQUE PERF FUENTES: acelera handshake de Google Fonts sin cambiar estética. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400&display=swap" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
@@ -39,8 +42,7 @@
 </nav>
 <!-- Sección de video de fondo en la landing page -->
 <section class="landing">
-  <video autoplay muted loop playsinline class="background-video">
-    <source src="images/Eclipse_small.mp4" type="video/mp4">
+  <video autoplay muted loop playsinline preload="none" poster="images/video-poster.svg" class="background-video js-bg-video" data-src="images/Eclipse_small.mp4">
     Tu navegador no soporta videos HTML5.
   </video>
 </section>
@@ -187,6 +189,9 @@ document.body.addEventListener('click', (e) => {
 });
 </script>
 <!-- BLOQUE PERF: en home no se carga lógica de Firestore porque no se renderiza listado dinámico aquí. -->
+
+<!-- BLOQUE PERF VIDEO: carga diferida y fallback estático para usuarios con reduced-motion/reduced-data. -->
+<script src="scripts/perf-media.js" defer></script>
 
 </body>
 
