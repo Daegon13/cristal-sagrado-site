@@ -7,6 +7,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { firebaseConfig } from "/admin/config.js";
+import { normalizeService, buildServiceWhatsappUrl, compareServicesForPublic } from "./service-helpers.js";
 
 // -------------------------
 // BLOQUE: Inicialización Firebase
@@ -41,8 +42,8 @@ function detectCategory(explicitCategory) {
 
 function normalizeItems(snap) {
   const arr = [];
-  snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-  arr.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  snap.forEach(d => arr.push(normalizeService(d.data(), d.id)));
+  arr.sort(compareServicesForPublic);
   return arr;
 }
 
@@ -129,17 +130,17 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
       li.className = "serv-card";
       li.dataset.id = s.id;
 
-      li.appendChild(createTextElement("h3", "serv-title", s.title ?? s.name ?? ""));
+      li.appendChild(createTextElement("h3", "serv-title", s.name));
 
-      const desc = createTextElement("p", "serv-desc clamp-3", s.description ?? "");
+      const desc = createTextElement("p", "serv-desc clamp-3", s.descriptionShort);
       li.appendChild(desc);
 
       const meta = document.createElement("div");
       meta.className = "serv-meta";
-      if (s.price) {
+      if (s.price !== null) {
         meta.appendChild(createTextElement("span", "serv-price", `$${s.price}`));
       }
-      if (s.duration) {
+      if (s.duration !== null) {
         meta.appendChild(createTextElement("span", "serv-duration", `${s.duration} días`));
       }
       li.appendChild(meta);
@@ -147,6 +148,13 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
       const btn = createTextElement("button", "serv-toggle", "Ver más");
       btn.type = "button";
       li.appendChild(btn);
+
+      const cta = createTextElement("a", "serv-cta", "Consultar por WhatsApp");
+      cta.href = buildServiceWhatsappUrl(s);
+      cta.target = "_blank";
+      cta.rel = "noopener noreferrer";
+      cta.setAttribute("aria-label", `Consultar por WhatsApp sobre ${s.name}`);
+      li.appendChild(cta);
 
       ul.appendChild(li);
     });
