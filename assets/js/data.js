@@ -163,12 +163,5 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
   }
 }
 
-// -------------------------
-// BLOQUE: Auto-inicialización “convención sobre configuración”
-// -------------------------
-document.addEventListener("DOMContentLoaded", () => {
-  const listEl = document.querySelector("#lista-servicios");
-  if (listEl) {
-    renderServices("#lista-servicios", undefined, { searchSelector: "#buscador-servicios" });
-  }
-});
+// Nota FASE 1: no hay auto-inicialización global. Cada página de categoría llama
+// explícitamente a renderServices() para evitar doble render y doble lectura Firestore.
