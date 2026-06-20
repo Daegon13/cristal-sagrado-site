@@ -12,3 +12,24 @@
 details > summary{cursor:pointer; font-weight:700}
 blockquote p{margin:0 0 .4rem}
 blockquote footer{color:var(--muted); font-size:.95rem}
+
+/* FASE 3A: CTA seguro por servicio renderizado desde Firestore. */
+.serv-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #111;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.serv-cta:hover,
+.serv-cta:focus {
+  filter: brightness(1.05);
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: 2px;
+}
