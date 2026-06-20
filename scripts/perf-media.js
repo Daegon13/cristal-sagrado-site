@@ -1,16 +1,24 @@
 // BLOQUE PERF VIDEO: evita que el video de fondo bloquee el render inicial.
-// - Respeta reduced-motion y reduced-data.
-// - Si aplica ahorro de datos/movimiento, mantiene solo el poster estático.
+// - Respeta reduced-motion, ahorro de datos y pantallas mobile.
+// - Si aplica alguna guarda, mantiene solo el poster/fallback estático.
 (() => {
-  const mediaQueryReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const mediaQueryReducedData = window.matchMedia('(prefers-reduced-data: reduce)');
-  const shouldDisableVideo = mediaQueryReducedMotion.matches || mediaQueryReducedData.matches;
+  const getMediaMatch = (query) => (
+    typeof window.matchMedia === 'function' && window.matchMedia(query).matches
+  );
+
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const shouldDisableVideo =
+    getMediaMatch('(prefers-reduced-motion: reduce)') ||
+    getMediaMatch('(prefers-reduced-data: reduce)') ||
+    getMediaMatch('(max-width: 767px)') ||
+    Boolean(connection && connection.saveData);
 
   document.querySelectorAll('.js-bg-video').forEach((video) => {
     const sourceUrl = video.dataset.src;
 
     if (!sourceUrl || shouldDisableVideo) {
       video.classList.add('background-video--disabled');
+      video.removeAttribute('autoplay');
       return;
     }
 

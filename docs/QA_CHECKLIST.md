@@ -34,9 +34,15 @@
 
 ## Performance
 
-- Video tiene `preload="none"` y `poster`.
-- `scripts/perf-media.js` carga el video de forma diferida.
-- Revisar en FASE 4: `images/Eclipse_small.mp4`, `images/Eclipse_small.7z` y `images/favicon_io.zip`.
+- Video tiene `preload="none"`, `poster` y no incluye `<source>` inicial bloqueante.
+- `scripts/perf-media.js` carga el video de forma diferida en idle solo cuando no aplica una guarda de performance/accesibilidad.
+- Home mobile debe mostrar fallback visual y no descargar `images/Eclipse_small.mp4`.
+- Con `prefers-reduced-motion: reduce` debe mostrarse fallback visual y no descargarse el video.
+- Con ahorro de datos (`prefers-reduced-data` o `navigator.connection.saveData`) debe mostrarse fallback visual y no descargarse el video.
+- No debe haber 404 de assets después de remover comprimidos no referenciados.
+- Home debe seguir sin importar Firebase, Firestore ni `assets/js/data.js`.
+- Páginas públicas principales deben responder HTTP 200: `/`, `/admin/`, `/magia-blanca.html`, `/magia-roja.html`, `/magia-negra.html`, `/magia-verde.html`, `/tarot.html`, `/faq.html`, `/como-trabajamos.html`.
+- Pendiente recomendado: Lighthouse mobile/desktop y revisión visual en navegador real.
 
 ## Accesibilidad/manual
 
