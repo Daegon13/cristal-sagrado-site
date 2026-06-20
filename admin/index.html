@@ -111,6 +111,21 @@
         <!-- LISTA: Servicios existentes (ordenables) -->
         <ul id="servicesList" class="list"></ul>
 
+        <section class="card legacy-diagnostics" aria-labelledby="legacyDiagnosticsTitle">
+          <h3 id="legacyDiagnosticsTitle">Diagnóstico legacy</h3>
+          <p class="muted">Esta herramienta no se ejecuta sola. Primero analiza, luego muestra una vista previa y solo escribe si confirmás.</p>
+          <p class="muted">Los servicios sin active no aparecen en la web pública porque las páginas filtran active == true.</p>
+          <div class="actions">
+            <button id="btnAnalyzeLegacy" type="button" class="btn btn--ghost">Analizar servicios legacy</button>
+            <button id="btnApplyLegacy" type="button" class="btn" disabled>Aplicar defaults legacy</button>
+          </div>
+          <p id="legacyDiagnosticStatus" class="muted" aria-live="polite"></p>
+          <p id="legacyDiagnosticSummary" class="legacy-summary"></p>
+          <ul id="legacyDiagnosticList" class="legacy-list"></ul>
+          <p id="legacyApplyResult" class="muted" aria-live="polite"></p>
+        </section>
+
+
         <!-- MODAL: Crear/editar servicio -->
         <dialog id="serviceModal">
           <form method="dialog" id="formService" class="card">

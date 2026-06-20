@@ -59,3 +59,16 @@
 - El listado admin inserta datos remotos con `textContent`, no con `innerHTML`.
 - El diagnóstico legacy advierte si faltan `active`, `slug` o `descriptionShort`, sin escribir cambios automáticamente.
 - No se ejecutó backfill automático; queda para FASE 3B.2.
+
+## Admin diagnóstico/backfill legacy — FASE 3B.2
+
+- Abrir `/admin` no debe escribir en Firestore ni ejecutar migraciones automáticas.
+- “Analizar servicios legacy” debe leer `services`, mostrar conteos y listar documentos afectados sin escribir cambios.
+- La vista previa debe mostrar total analizado, total con cambios propuestos, total con warnings y total actualizable automáticamente.
+- El botón “Aplicar defaults legacy” debe permanecer deshabilitado si no hay documentos seguros para actualizar.
+- Aplicar defaults debe requerir confirmación explícita con el texto que indica cuántos servicios se actualizarán y que no se borrarán datos existentes.
+- Solo se deben escribir documentos con `safeToPatch: true`.
+- El patch debe incluir únicamente campos faltantes/invalidos propuestos y `updatedAt`; no debe sobrescribir campos existentes ni borrar campos desconocidos.
+- Documentos sin `name`/`title` o sin `description` deben mostrar warning y omitirse del backfill automático.
+- La herramienta debe recordar que los servicios sin `active` no aparecen públicamente por la consulta `active == true`.
+- La migración histórica de categoría roja no debe ejecutarse automáticamente al cargar el listado.

@@ -23,6 +23,10 @@ import {
   stringArrayToLines,
   slugifyServiceName
 } from "./service-form-helpers.js";
+import {
+  analyzeLegacyService,
+  summarizeLegacyAnalysis
+} from "./legacy-service-backfill-helpers.js";
 
 // [Bloque] Inicialización única de Firebase.
 const app  = initializeApp(firebaseConfig);
@@ -66,6 +70,13 @@ const btnCloseModal = document.getElementById("closeServiceModal");
 const whatsappPreviewText = document.getElementById("whatsappPreviewText");
 const whatsappPreviewLink = document.getElementById("whatsappPreviewLink");
 const serviceDiagnostics = document.getElementById("serviceDiagnostics");
+const btnAnalyzeLegacy = document.getElementById("btnAnalyzeLegacy");
+const btnApplyLegacy = document.getElementById("btnApplyLegacy");
+const legacyDiagnosticStatus = document.getElementById("legacyDiagnosticStatus");
+const legacyDiagnosticSummary = document.getElementById("legacyDiagnosticSummary");
+const legacyDiagnosticList = document.getElementById("legacyDiagnosticList");
+const legacyApplyResult = document.getElementById("legacyApplyResult");
+let legacyAnalysisRows = [];
 
 // ===============================
 // 4) UTILIDADES DE UI
@@ -310,11 +321,9 @@ async function loadServices() {
     );
     const snap = await getDocs(q);
 
-    // Migración automática 1-shot: si en "roja" no hay nada, etiqueta huérfanos como 'roja'
-    if (snap.empty && CATEGORY === "roja") {
-      const migrated = await migrateMissingCategoryToRoja();
-      if (migrated > 0) return loadServices();
-    }
+    // FASE 3B.2: se removió la migración automática histórica que intentaba etiquetar
+    // huérfanos como `roja` cuando la categoría roja estaba vacía. El admin no debe
+    // escribir documentos durante la carga; cualquier mantenimiento debe ser manual.
 
     const items = [];
     snap.forEach(d => items.push({ id: d.id, ...d.data() }));
@@ -342,13 +351,129 @@ async function loadServices() {
       li.querySelector('[data-act="down"]')?.addEventListener("click", () => reorderSwapWithinCategory(s.id, +1));
       frag.appendChild(li);
     }
-    servicesList.innerHTML = "";
+    servicesList.textContent = "";
     servicesList.appendChild(frag);
   } catch (err) {
     console.error("Error listando servicios:", err);
     renderServicesMessage("Error al cargar servicios.", "error");
   }
 }
+
+// ===============================
+// 8B) DIAGNÓSTICO LEGACY / BACKFILL MANUAL
+// ===============================
+function setLegacyStatus(message, className = "muted") {
+  if (!legacyDiagnosticStatus) return;
+  legacyDiagnosticStatus.className = className;
+  legacyDiagnosticStatus.textContent = message;
+}
+
+function clearLegacyResults() {
+  if (legacyDiagnosticSummary) legacyDiagnosticSummary.textContent = "";
+  if (legacyDiagnosticList) legacyDiagnosticList.textContent = "";
+  if (legacyApplyResult) legacyApplyResult.textContent = "";
+  if (btnApplyLegacy) btnApplyLegacy.disabled = true;
+}
+
+function createLegacyRow(row) {
+  const li = document.createElement("li");
+  li.className = "legacy-row";
+
+  const title = document.createElement("strong");
+  title.textContent = row.name || row.title || "Servicio sin nombre";
+
+  const meta = document.createElement("p");
+  meta.className = "muted";
+  meta.textContent = `Categoría: ${row.category || "sin categoría"} · ID: ${String(row.id).slice(0, 8)}`;
+
+  const missing = document.createElement("p");
+  missing.textContent = `Faltan: ${row.analysis.missingFields.join(", ") || "sin faltantes"}`;
+
+  const proposed = document.createElement("p");
+  const proposedFields = Object.keys(row.analysis.proposedPatch || {});
+  proposed.textContent = `Cambios propuestos: ${proposedFields.join(", ") || "ninguno"}`;
+
+  const safety = document.createElement("p");
+  safety.className = row.analysis.safeToPatch ? "muted" : "diagnostics";
+  safety.textContent = row.analysis.warnings.length
+    ? `Warnings: ${row.analysis.warnings.join(" ")}`
+    : (row.analysis.safeToPatch ? "Actualizable automáticamente." : "Sin cambios seguros pendientes.");
+
+  li.append(title, meta, missing, proposed, safety);
+  return li;
+}
+
+function renderLegacyAnalysis(rows) {
+  const summary = summarizeLegacyAnalysis(rows.map((row) => row.analysis));
+  if (legacyDiagnosticSummary) {
+    legacyDiagnosticSummary.textContent = `Analizados: ${summary.totalAnalyzed}. Con cambios propuestos: ${summary.totalWithProposedChanges}. Con warnings: ${summary.totalWithWarnings}. Actualizables automáticamente: ${summary.totalSafeToPatch}. No se escribió nada todavía.`;
+  }
+
+  if (legacyDiagnosticList) {
+    legacyDiagnosticList.textContent = "";
+    const affected = rows.filter((row) => row.analysis.missingFields.length > 0 || row.analysis.warnings.length > 0);
+    const frag = document.createDocumentFragment();
+    affected.forEach((row) => frag.appendChild(createLegacyRow(row)));
+    if (affected.length === 0) {
+      const li = document.createElement("li");
+      li.className = "muted";
+      li.textContent = "No se detectaron servicios legacy con campos faltantes.";
+      frag.appendChild(li);
+    }
+    legacyDiagnosticList.appendChild(frag);
+  }
+
+  if (btnApplyLegacy) btnApplyLegacy.disabled = summary.totalSafeToPatch === 0;
+}
+
+async function analyzeLegacyServices() {
+  clearLegacyResults();
+  setLegacyStatus("Analizando servicios legacy…");
+  try {
+    const snap = await getDocs(collection(db, "services"));
+    legacyAnalysisRows = [];
+    snap.forEach((docSnap) => {
+      const data = docSnap.data() || {};
+      legacyAnalysisRows.push({ ...data, id: docSnap.id, analysis: analyzeLegacyService(data, docSnap.id) });
+    });
+    renderLegacyAnalysis(legacyAnalysisRows);
+    setLegacyStatus("Análisis listo. Revisá la vista previa antes de aplicar defaults.");
+  } catch (err) {
+    console.error("Error analizando legacy:", err);
+    setLegacyStatus("Error al analizar servicios legacy. Revisá la consola.", "error");
+  }
+}
+
+async function applyLegacyDefaults() {
+  const safeRows = legacyAnalysisRows.filter((row) => row.analysis.safeToPatch);
+  if (safeRows.length === 0) return;
+  const ok = confirm(`Vas a actualizar ${safeRows.length} servicios legacy. Esta acción completará campos faltantes, no borrará datos existentes. ¿Continuar?`);
+  if (!ok) return;
+
+  let updated = 0;
+  let errors = 0;
+  const omitted = legacyAnalysisRows.length - safeRows.length;
+  for (const row of safeRows) {
+    try {
+      await updateDoc(doc(db, "services", row.id), {
+        ...row.analysis.proposedPatch,
+        updatedAt: new Date().toISOString()
+      });
+      updated += 1;
+    } catch (err) {
+      errors += 1;
+      console.error(`Error actualizando servicio legacy ${row.id}:`, err);
+    }
+  }
+  await analyzeLegacyServices();
+  await loadServices();
+  if (legacyApplyResult) {
+    legacyApplyResult.textContent = `Resultado: actualizados ${updated}, omitidos ${omitted}, errores ${errors}.`;
+  }
+}
+
+btnAnalyzeLegacy?.addEventListener("click", analyzeLegacyServices);
+btnApplyLegacy?.addEventListener("click", applyLegacyDefaults);
 
 
 // [Bloque] Nuevo servicio / Editar servicio (abre modal, precarga y setea category hidden).
