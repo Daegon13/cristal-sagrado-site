@@ -61,3 +61,9 @@ Sitio estático en HTML, CSS y JavaScript, publicado como archivos planos. No us
 Desde FASE 3B.2, `/admin` puede incluir herramientas de mantenimiento explícitas para revisar deuda de datos sin automatismos destructivos. El diagnóstico legacy de `services` lee toda la colección, calcula campos faltantes en cliente y muestra una vista previa; solo escribe cuando el usuario presiona “Aplicar defaults legacy” y confirma la acción.
 
 El flujo evita escrituras durante la carga inicial del admin. En particular, la migración histórica automática que asignaba documentos sin categoría a `roja` cuando esa categoría estaba vacía quedó fuera del flujo de carga. Si se necesita recuperar documentos huérfanos de categoría, debe hacerse en un patch separado como acción manual, separada del backfill v2, con preview y confirmación.
+
+## Render público v2 compatible
+
+Desde FASE 3C.1, `assets/js/data.js` renderiza cards públicas enriquecidas con campos v2 opcionales (`featured`, `intent`, `idealFor`, `benefits`, `descriptionShort`, `ctaText` y `slug`) después de normalizar cada documento. La compatibilidad legacy se conserva mediante fallbacks en `assets/js/service-helpers.js`: si faltan campos v2, la card muestra solo la información disponible y evita secciones vacías.
+
+El render público sigue limitado a páginas de categoría, no carga Firestore en `index.html`, no crea páginas detalle y no escribe en Firestore. Los CTAs usan WhatsApp con número fijo y mensajes generados por helper compartido.

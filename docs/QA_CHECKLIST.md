@@ -72,3 +72,16 @@
 - Documentos sin `name`/`title` o sin `description` deben mostrar warning y omitirse del backfill automático.
 - La herramienta debe recordar que los servicios sin `active` no aparecen públicamente por la consulta `active == true`.
 - La migración histórica de categoría roja no debe ejecutarse automáticamente al cargar el listado.
+
+## Cards públicas v2 — FASE 3C.1
+
+- Las páginas `magia-blanca.html`, `magia-roja.html`, `magia-negra.html` y `magia-verde.html` siguen cargando servicios desde `assets/js/data.js`; la home no importa Firebase/Firestore.
+- Un servicio con `featured: true` muestra badge “Destacado” y no depende solo de color.
+- `descriptionShort` se muestra en la card; si falta, se ve el fallback legacy `description`.
+- `intent`, `idealFor` y `benefits` solo aparecen cuando tienen valores, sin títulos o listas vacías.
+- Precio y duración solo aparecen cuando existen y son valores normalizados válidos.
+- Cada card tiene CTA “Consultar por este servicio” como `<a>` a WhatsApp, con `aria-label` que incluye el nombre del servicio.
+- Si `ctaText` existe, modifica el mensaje prellenado de WhatsApp del servicio.
+- Si una categoría no tiene servicios, se muestra mensaje comercial con CTA general a WhatsApp.
+- Si Firestore falla, se muestra mensaje claro con CTA general y el detalle técnico queda solo en consola.
+- Las cards se renderizan creando nodos y usando `textContent` para datos remotos; no se usa `innerHTML` con contenido de Firestore.
