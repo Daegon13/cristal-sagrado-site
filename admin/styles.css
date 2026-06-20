@@ -118,3 +118,12 @@ input:focus, textarea:focus{ outline:1px solid var(--primary); }
   .service-item{ align-items:stretch; flex-direction:column; }
   .item-actions{ justify-content:flex-start; }
 }
+
+.legacy-diagnostics{ margin-top:18px; }
+.legacy-diagnostics h3{ margin-top:0; }
+.legacy-summary{ margin:10px 0; font-size:14px; }
+.legacy-list{ list-style:none; margin:12px 0 0; padding:0; display:grid; gap:10px; }
+.legacy-row{ border:1px solid var(--border); border-radius:10px; padding:10px; background:#10101a; }
+.legacy-row p{ margin:6px 0 0; }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
+.error{ color:#ffb6ae; font-size:12px; }

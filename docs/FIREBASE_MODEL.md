@@ -144,3 +144,32 @@ Las páginas públicas consultan Firestore con `where("active", "==", true)`. Po
 ### Backfill pendiente
 
 Un backfill controlado para documentos legacy sin `active`, `slug` o campos recomendados queda propuesto para FASE 3B.2. Debe ser explícito, revisable y no destructivo.
+
+## FASE 3B.2 — Diagnóstico legacy y backfill manual
+
+El panel `/admin` incluye una herramienta discreta de **Diagnóstico legacy** para revisar documentos antiguos de `services` antes de escribir cualquier dato. El flujo es intencionalmente manual:
+
+1. El botón “Analizar servicios legacy” lee la colección `services` y muestra una vista previa.
+2. El análisis no escribe en Firestore.
+3. El botón “Aplicar defaults legacy” solo se habilita cuando existen documentos seguros para actualizar.
+4. Antes de escribir se solicita confirmación explícita con `confirm()`.
+
+La herramienta propone completar solo campos faltantes o inválidos:
+
+- `active: true` cuando falta `active`.
+- `featured: false` cuando falta `featured`.
+- `slug` generado desde `name` o `title` cuando falta.
+- `descriptionShort` derivado de `description` y recortado de forma conservadora cuando falta.
+- `descriptionLong` copiado desde `description` cuando falta.
+- `order: 9999` cuando `order` falta o no es un número válido, para ubicar el servicio al final.
+- `updatedAt` se actualiza únicamente al aplicar el patch manual, porque el proyecto ya usa ese campo al guardar servicios desde admin.
+
+No se inventa copy comercial: si falta `description`, el documento queda con warning y no se actualiza automáticamente. Si falta `name`/`title`, tampoco se genera `slug` y el documento se omite del backfill automático. La escritura usa `updateDoc` con un patch de campos faltantes; no borra campos, no reemplaza documentos completos y preserva campos desconocidos.
+
+### Riesgo `active == true`
+
+Las páginas públicas consultan `services` con `where("active", "==", true)`. Firestore no devuelve documentos donde `active` no existe, aunque el normalizador público tenga fallback `active: true`. Por eso los documentos legacy sin `active` no aparecen en la web pública hasta que se completen manualmente desde el diagnóstico o mediante una edición individual.
+
+### Migración histórica de categoría roja
+
+Se detectó una migración histórica automática en `/admin` que intentaba etiquetar documentos huérfanos como `category: "roja"` cuando la consulta de magia roja volvía vacía. En FASE 3B.2 queda desactivada del flujo de carga: `/admin` ya no ejecuta esa escritura al cargar ni al cambiar de categoría. Cualquier recuperación de categorías huérfanas debe implementarse como herramienta manual separada, con preview y confirmación explícita, para no mezclarla con el backfill v2.
