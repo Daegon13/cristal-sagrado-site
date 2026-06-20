@@ -44,3 +44,18 @@
 - Hay foco visible en links/botones principales.
 - El contenido principal comienza con un h1 claro.
 - No hay errores de consola en carga inicial.
+
+## Admin servicios v2 — FASE 3B.1
+
+- `/admin` muestra campos legacy y v2 en el formulario de servicios.
+- Crear un servicio nuevo deja `active` marcado por defecto y guarda `active: true` salvo desmarcado explícito.
+- `featured` se guarda como booleano.
+- `intent`, `benefits`, `idealFor` y `notFor` se editan como una línea por ítem y se guardan como arrays de strings.
+- `slug` se sugiere desde `name` solo cuando está vacío; un slug manual no se sobreescribe.
+- Guardar sin slug genera fallback desde `name`.
+- El preview de WhatsApp usa `ctaText` si existe y, si no existe, genera el mensaje por defecto con el nombre del servicio.
+- Editar un servicio legacy no borra campos desconocidos porque el guardado usa merge/update de campos conocidos.
+- El listado admin muestra nombre, categoría, activo/inactivo, destacado/no destacado, orden y slug de forma compacta.
+- El listado admin inserta datos remotos con `textContent`, no con `innerHTML`.
+- El diagnóstico legacy advierte si faltan `active`, `slug` o `descriptionShort`, sin escribir cambios automáticamente.
+- No se ejecutó backfill automático; queda para FASE 3B.2.
