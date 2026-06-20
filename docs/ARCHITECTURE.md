@@ -55,3 +55,9 @@ Sitio estático en HTML, CSS y JavaScript, publicado como archivos planos. No us
 - Las páginas públicas necesitaban `h1` único y meta descriptions específicas.
 - `faq.html` tenía dos elementos `<main>` y contenido duplicado; queda consolidado en un solo `<main>`.
 - `assets/js/data.js` tenía auto-inicialización además de llamadas explícitas por página; eso podía duplicar render/lecturas Firestore.
+
+## Herramientas manuales de mantenimiento admin
+
+Desde FASE 3B.2, `/admin` puede incluir herramientas de mantenimiento explícitas para revisar deuda de datos sin automatismos destructivos. El diagnóstico legacy de `services` lee toda la colección, calcula campos faltantes en cliente y muestra una vista previa; solo escribe cuando el usuario presiona “Aplicar defaults legacy” y confirma la acción.
+
+El flujo evita escrituras durante la carga inicial del admin. En particular, la migración histórica automática que asignaba documentos sin categoría a `roja` cuando esa categoría estaba vacía quedó fuera del flujo de carga. Si se necesita recuperar documentos huérfanos de categoría, debe hacerse en un patch separado como acción manual, separada del backfill v2, con preview y confirmación.
