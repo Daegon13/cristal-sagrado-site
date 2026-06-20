@@ -17,6 +17,12 @@ import {
   getDocs, addDoc, updateDoc, deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { firebaseConfig, ALLOWED_EMAILS } from "./config.js";
+import {
+  buildServiceWhatsappPreviewUrl,
+  serviceFormDataToPayload,
+  stringArrayToLines,
+  slugifyServiceName
+} from "./service-form-helpers.js";
 
 // [Bloque] Inicialización única de Firebase.
 const app  = initializeApp(firebaseConfig);
@@ -57,6 +63,9 @@ const btnNewService = document.getElementById("btnNewService");
 const serviceModal  = document.getElementById("serviceModal");
 const formService   = document.getElementById("formService");
 const btnCloseModal = document.getElementById("closeServiceModal");
+const whatsappPreviewText = document.getElementById("whatsappPreviewText");
+const whatsappPreviewLink = document.getElementById("whatsappPreviewLink");
+const serviceDiagnostics = document.getElementById("serviceDiagnostics");
 
 // ===============================
 // 4) UTILIDADES DE UI
@@ -80,6 +89,7 @@ function getControl(form, name){ return form?.elements?.namedItem(name) ?? null;
 function setValue(ctrl, value){
   if (!ctrl) return;
   if (ctrl.type === "checkbox") ctrl.checked = Boolean(value);
+  else if (ctrl.tagName === "TEXTAREA" && Array.isArray(value)) ctrl.value = stringArrayToLines(value);
   else ctrl.value = (value ?? "");
 }
 function getValue(ctrl){
@@ -240,10 +250,58 @@ formSettings?.addEventListener("submit", async (e) => {
 // ===============================
 // 8) SERVICES (CRUD por categoría, sin índices compuestos)
 // ===============================
+function renderServicesMessage(message, className = "muted") {
+  if (!servicesList) return;
+  servicesList.textContent = "";
+  const li = document.createElement("li");
+  li.className = className;
+  li.textContent = message;
+  servicesList.appendChild(li);
+}
+
+function createStaticServiceItemShell() {
+  const li = document.createElement("li");
+  li.className = "service-item";
+
+  const main = document.createElement("div");
+  main.className = "item-main";
+  const head = document.createElement("div");
+  head.className = "item-head";
+  const title = document.createElement("strong");
+  title.className = "item-title";
+  const status = document.createElement("span");
+  status.className = "muted item-status";
+  const desc = document.createElement("p");
+  desc.className = "item-desc";
+  const meta = document.createElement("p");
+  meta.className = "muted item-meta";
+  head.append(title, status);
+  main.append(head, desc, meta);
+
+  const actions = document.createElement("div");
+  actions.className = "item-actions";
+  [
+    ["up", "↑", "Subir", ""],
+    ["down", "↓", "Bajar", ""],
+    ["edit", "Editar", "", ""],
+    ["del", "Eliminar", "", "danger"]
+  ].forEach(([act, text, titleText, className]) => {
+    const button = document.createElement("button");
+    button.dataset.act = act;
+    button.textContent = text;
+    if (titleText) button.title = titleText;
+    if (className) button.className = className;
+    actions.appendChild(button);
+  });
+
+  li.append(main, actions);
+  return li;
+}
+
 // [Bloque] Lista servicios de la categoría activa (order en cliente).
 async function loadServices() {
   if (!servicesList) return;
-  servicesList.innerHTML = `<li class="muted">Cargando…</li>`;
+  renderServicesMessage("Cargando…", "muted");
   try {
     // Consulta sin orderBy para evitar índice compuesto: se ordena en cliente.
     const q = query(
@@ -265,33 +323,19 @@ async function loadServices() {
     items.sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
 
     if (items.length === 0) {
-      servicesList.innerHTML = `<li class="muted">No hay servicios en esta categoría.</li>`;
+      renderServicesMessage("No hay servicios en esta categoría.", "muted");
       return;
     }
 
     const frag = document.createDocumentFragment();
     for (const s of items) {
-      const li = document.createElement("li");
-      li.className = "service-item";
+      const li = createStaticServiceItemShell();
       li.dataset.id = s.id;
-      // BLOQUE SEGURIDAD: la estructura es estática; los datos de Firestore se insertan con textContent.
-      li.innerHTML = `
-        <div class="item-head">
-          <strong class="item-title"></strong>
-          <span class="muted item-status"></span>
-        </div>
-        <p class="item-desc"></p>
-        <div class="item-actions">
-          <button data-act="up" title="Subir">↑</button>
-          <button data-act="down" title="Bajar">↓</button>
-          <button data-act="edit">Editar</button>
-          <button data-act="del" class="danger">Eliminar</button>
-        </div>
-      `;
 
       li.querySelector(".item-title").textContent = s.title ?? s.name ?? "";
-      li.querySelector(".item-status").textContent = `#${s.order ?? 0} · ${s.active ? "Activo" : "Inactivo"}`;
-      li.querySelector(".item-desc").textContent = s.description ?? "";
+      li.querySelector(".item-status").textContent = `#${s.order ?? 0} · ${s.active === false ? "Inactivo" : "Activo"} · ${s.featured ? "Destacado" : "No destacado"}`;
+      li.querySelector(".item-desc").textContent = s.descriptionShort ?? s.description ?? "";
+      li.querySelector(".item-meta").textContent = `Categoría: ${s.category ?? CATEGORY} · Slug: ${s.slug || "sin slug"}`;
       li.querySelector('[data-act="edit"]')?.addEventListener("click", () => openEditService(s));
       li.querySelector('[data-act="del"]') ?.addEventListener("click", () => deleteService(s.id));
       li.querySelector('[data-act="up"]')  ?.addEventListener("click", () => reorderSwapWithinCategory(s.id, -1));
@@ -302,7 +346,7 @@ async function loadServices() {
     servicesList.appendChild(frag);
   } catch (err) {
     console.error("Error listando servicios:", err);
-    servicesList.innerHTML = `<li class="error">Error al cargar servicios.</li>`;
+    renderServicesMessage("Error al cargar servicios.", "error");
   }
 }
 
@@ -313,10 +357,12 @@ function openEditService(service) {
   if (!formService || !serviceModal) return;
   formService.reset();
   formService.dataset.id = service?.id || "";
+  formService.dataset.createdAt = service?.createdAt || "";
 
   if (service) fillForm(formService, service);
   else {
     setValue(getControl(formService, "active"), true);
+    setValue(getControl(formService, "featured"), false);
     setValue(getControl(formService, "order"),  0);
   }
 
@@ -330,6 +376,9 @@ function openEditService(service) {
   }
   hidden.value = CATEGORY;
 
+  updateSlugSuggestion();
+  updateWhatsappPreview();
+  updateServiceDiagnostics(service || {});
   openDialogSafe(serviceModal);
 }
 
@@ -338,8 +387,9 @@ formService?.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!formService) return;
 
-  const id   = formService.dataset.id;
-  const data = formToPayload(formService); // incluye category + updatedAt
+  const id = formService.dataset.id;
+  const existing = formService.dataset.createdAt ? { createdAt: formService.dataset.createdAt } : null;
+  const data = serviceFormDataToPayload(new FormData(formService), { category: CATEGORY, existing });
 
   try {
     if (id) {
@@ -398,6 +448,39 @@ async function reorderSwapWithinCategory(id, delta, {
     console.error("Error reordenando:", err);
   }
 }
+
+
+function updateSlugSuggestion() {
+  const nameCtrl = getControl(formService, "name");
+  const slugCtrl = getControl(formService, "slug");
+  if (!nameCtrl || !slugCtrl || slugCtrl.value.trim()) return;
+  slugCtrl.value = slugifyServiceName(nameCtrl.value);
+}
+
+function updateWhatsappPreview() {
+  if (!formService || !whatsappPreviewText || !whatsappPreviewLink) return;
+  const name = getControl(formService, "name")?.value || "";
+  const ctaText = getControl(formService, "ctaText")?.value || "";
+  const url = buildServiceWhatsappPreviewUrl({ name, ctaText });
+  whatsappPreviewText.textContent = decodeURIComponent(url.split("text=")[1] || "");
+  whatsappPreviewLink.href = url;
+}
+
+function updateServiceDiagnostics(service = {}) {
+  if (!serviceDiagnostics) return;
+  const warnings = [];
+  if (typeof service.active === "undefined") warnings.push("Legacy: falta active. Al guardar quedará definido según el checkbox.");
+  if (!service.slug) warnings.push("Recomendado: falta slug. Al guardar se usará el slug sugerido o uno generado desde el nombre.");
+  if (!service.descriptionShort) warnings.push("Recomendado: falta descriptionShort para cards públicas v2.");
+  serviceDiagnostics.textContent = warnings.join(" ");
+  serviceDiagnostics.hidden = warnings.length === 0;
+}
+
+getControl(formService, "name")?.addEventListener("input", () => {
+  updateSlugSuggestion();
+  updateWhatsappPreview();
+});
+getControl(formService, "ctaText")?.addEventListener("input", updateWhatsappPreview);
 
 // ===============================
 // 9) CIERRE MODAL (botón ✖ del HTML)
