@@ -108,3 +108,39 @@ Para la siguiente fase, el formulario de `/admin` debería permitir editar sin r
 - Público: `assets/js/data.js` crea nodos DOM y usa `textContent` para datos remotos; no usa `innerHTML` con contenido de Firestore.
 - Normalización pública: `assets/js/service-helpers.js` evita mutar el documento original y tolera datos parciales/corruptos.
 - Admin: puede usar `innerHTML` solo para estructura estática; valores remotos deben insertarse con `textContent` o controles de formulario.
+
+## FASE 3B.1 — Campos editables desde `/admin`
+
+El panel `/admin` ya permite crear y editar el modelo legacy y los campos v2 opcionales en la misma colección `services`, sin migración destructiva ni backfill automático.
+
+### Campos legacy conservados
+
+- `name` (`string`): nombre visible principal. El render público sigue tolerando `title` en documentos antiguos.
+- `category` (`string`): se asigna desde la categoría activa del admin (`?cat=roja|blanca|negra|verde`).
+- `description` (`string`): descripción legacy.
+- `price` (`number|null`): precio opcional normalizado desde input numérico.
+- `duration` (`number|null`): duración opcional normalizada desde input numérico.
+- `order` (`number`): orden manual dentro de la categoría.
+- `active` (`boolean`): checkbox. En servicios nuevos queda marcado por defecto y se guarda como `true` salvo que el usuario lo desmarque.
+
+### Campos v2 editables
+
+- `slug` (`string`): editable. Si queda vacío al guardar, se genera desde `name`.
+- `descriptionShort` (`string`): copy corto para cards/listados.
+- `descriptionLong` (`string`): copy extendido opcional.
+- `intent` (`string[]`): textarea, un ítem por línea.
+- `benefits` (`string[]`): textarea, un ítem por línea.
+- `idealFor` (`string[]`): textarea, un ítem por línea.
+- `notFor` (`string[]`): textarea, un ítem por línea.
+- `featured` (`boolean`): checkbox.
+- `ctaText` (`string`): mensaje WhatsApp personalizado opcional.
+- `updatedAt` (`string ISO`): se actualiza en cada guardado.
+- `createdAt` (`string ISO`): se agrega al crear servicios nuevos; si un documento existente ya lo tiene, no se sobreescribe.
+
+### Riesgo legacy conocido
+
+Las páginas públicas consultan Firestore con `where("active", "==", true)`. Por eso, un documento legacy sin campo `active` no es devuelto por Firestore y el normalizador público no puede recuperarlo en cliente. FASE 3B.1 no ejecutó backfill ni modificó documentos existentes en lote. El panel muestra diagnóstico al editar y todo servicio nuevo queda con `active: true` por defecto.
+
+### Backfill pendiente
+
+Un backfill controlado para documentos legacy sin `active`, `slug` o campos recomendados queda propuesto para FASE 3B.2. Debe ser explícito, revisable y no destructivo.

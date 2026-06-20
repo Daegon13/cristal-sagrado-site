@@ -32,6 +32,7 @@ Sitio estático en HTML, CSS y JavaScript, publicado como archivos planos. No us
 3. `ALLOWED_EMAILS` mejora la UX, pero no reemplaza Firestore Rules.
 4. El panel lee/escribe `settings/site` y documentos de `services`.
 5. La categoría activa se decide por `?cat=roja|blanca|negra|verde`.
+6. Desde FASE 3B.1, el formulario de servicios conserva campos legacy y agrega edición opcional de modelo v2 (`slug`, copies extendidos, arrays de intención/beneficios, `featured` y `ctaText`) sin migración destructiva. Los servicios nuevos guardan `active: true` por defecto para ser compatibles con la consulta pública `where("active", "==", true)`.
 
 ## Dependencias externas
 
