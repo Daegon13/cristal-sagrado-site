@@ -55,12 +55,12 @@
                 <ul>
                     <li><a href="#servicios">Servicios</a></li>
                     <li><a href="#testimonios">Testimonios</a></li>
-
-            <!-- CTA a WhatsApp con texto prellenado -->
-                    <a class="btn btn--whatsapp" id="ctaWhats"
-                        href="https://wa.me/59896106373?text=Hola%20Luz,%20quiero%20un%20turno">
-                        Reservar
-                    </a>
+                    <!-- CTA a WhatsApp con texto prellenado -->
+                    <li>
+                        <a class="btn btn--whatsapp" id="ctaWhats"
+                           href="https://wa.me/59896106373?text=Hola%20Luz,%20quiero%20un%20turno">
+                            Reservar
+                        </a>
                     </li>
                 </ul>
             </nav>
@@ -216,34 +216,37 @@
     </div>
   </section>
 
-        <!-- Sección de formulario de contacto -->
-        <section class="form-intro container" aria-labelledby="formulario-title">
-            <h2 id="formulario-title">Contame tu situación</h2>
-            <p>Podés escribirme con tus dudas. Cuanto más claro me cuentes lo que estás viviendo, mejor voy a poder orientarte.</p>
+        <!-- Sección de contacto: un único formulario real y CTA final sin duplicar la acción -->
+        <section id="contacto" class="contact-section conversion-section" aria-labelledby="formulario-title">
+            <div class="container contact-section__inner">
+                <div class="form-intro">
+                    <h2 id="formulario-title">Contame tu situación</h2>
+                    <p>Podés escribirme con tus dudas. Cuanto más claro me cuentes lo que estás viviendo, mejor voy a poder orientarte.</p>
+                </div>
+                <form id="formulario" action="https://formspree.io/f/mdklwnlg" method="POST" aria-labelledby="formulario-title">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                    <!-- BLOQUE FORM: se usa type="text" + pattern para aceptar email o teléfono en un único campo. -->
+                    <label for="contacto-campo">Email o teléfono:</label>
+                    <input type="text" id="contacto-campo" name="contacto" required
+                           inputmode="email"
+                           pattern="(^[^\s@]+@[^\s@]+\.[^\s@]+$)|(^\+?[0-9\s\-()]{7,}$)"
+                           title="Ingresá un email válido o un teléfono válido.">
+                    <label for="mensaje">Mensaje:</label>
+                    <textarea id="mensaje" name="mensaje" required></textarea>
+                    <!-- Campo oculto para evitar spam (opcional) -->
+                    <input type="text" name="_gotcha" style="display:none">
+                    <button type="submit" class="cta-button">Enviar</button>
+                </form>
+            </div>
         </section>
-        <form id="formulario" action="https://formspree.io/f/mdklwnlg" method="POST" aria-labelledby="formulario-title">
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required>
-             <!-- BLOQUE FORM: se usa type="text" + pattern para aceptar email o teléfono en un único campo. -->
-             <label for="contacto">Email o teléfono:</label>
-            <input type="text" id="contacto" name="contacto" required
-                   inputmode="email"
-                   pattern="(^[^\s@]+@[^\s@]+\.[^\s@]+$)|(^\+?[0-9\s\-()]{7,}$)"
-                   title="Ingresá un email válido o un teléfono válido.">
-            <label for="mensaje">Mensaje:</label>
-            <textarea id="mensaje" name="mensaje" required></textarea>
-    <!-- Campo oculto para evitar spam (opcional) -->
-            <input type="text" name="_gotcha" style="display:none">
-            <button type="submit" class="cta-button">Enviar</button>
-        </form>
 
         <section class="final-cta conversion-section conversion-section--featured" aria-labelledby="final-cta-title">
             <div class="container final-cta__box">
-                <h2 id="final-cta-title">Contame tu caso con tranquilidad</h2>
-                <p>Podés escribirme por WhatsApp o completar el formulario. Te respondo de forma reservada y vemos juntas qué camino tiene más sentido para vos.</p>
+                <h2 id="final-cta-title">¿Preferís escribir directo?</h2>
+                <p>También podés contarme tu caso por WhatsApp con reserva. Te respondo con calma y vemos juntas qué camino tiene más sentido para vos.</p>
                 <div class="final-cta__actions">
                     <a class="cta-button" href="https://wa.me/59896106373?text=Hola%20Luz%2C%20llego%20desde%20la%20web%20de%20Cristal%20Sagrado.%20Quiero%20contarte%20mi%20caso%3A" aria-label="Consultar por WhatsApp a Cristal Sagrado">Consultar por WhatsApp</a>
-                    <a class="cta-button cta-button--secondary" href="#formulario">Enviar formulario</a>
                 </div>
             </div>
         </section>
