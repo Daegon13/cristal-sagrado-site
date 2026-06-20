@@ -7,7 +7,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { firebaseConfig } from "/admin/config.js";
-import { normalizeService, buildServiceWhatsappUrl, compareServicesForPublic } from "./service-helpers.js";
+import { WHATSAPP_NUMBER, normalizeService, buildServiceWhatsappUrl, compareServicesForPublic } from "./service-helpers.js";
 
 // -------------------------
 // BLOQUE: Inicialización Firebase
@@ -53,6 +53,114 @@ function createTextElement(tag, className, text) {
   if (className) el.className = className;
   el.textContent = text;
   return el;
+}
+
+
+function buildGeneralWhatsappUrl() {
+  const message = "Hola Luz, llego desde la web de Cristal Sagrado. Quiero consultar por esta categoría de servicios. Mi situación es:";
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+function createWhatsappCta(text, href, ariaLabel) {
+  const cta = createTextElement("a", "serv-cta", text);
+  cta.href = href;
+  cta.target = "_blank";
+  cta.rel = "noopener noreferrer";
+  cta.setAttribute("aria-label", ariaLabel);
+  return cta;
+}
+
+function createServiceSection(title, items, className) {
+  if (!items.length) return null;
+
+  const section = document.createElement("div");
+  section.className = `serv-detail ${className}`;
+  section.appendChild(createTextElement("h4", "serv-detail-title", title));
+
+  const list = document.createElement("ul");
+  list.className = "serv-detail-list";
+  items.forEach((item) => {
+    list.appendChild(createTextElement("li", "serv-detail-item", item));
+  });
+  section.appendChild(list);
+
+  return section;
+}
+
+function appendIntentChips(card, intents) {
+  if (!intents.length) return;
+
+  const chips = document.createElement("ul");
+  chips.className = "serv-intents";
+  chips.setAttribute("aria-label", "Intenciones del servicio");
+  intents.forEach((intent) => {
+    chips.appendChild(createTextElement("li", "serv-intent-chip", intent));
+  });
+  card.appendChild(chips);
+}
+
+function createServiceCard(service) {
+  const li = document.createElement("li");
+  li.className = "serv-card";
+  li.dataset.id = service.id;
+  if (service.slug) li.dataset.slug = service.slug;
+
+  const header = document.createElement("div");
+  header.className = "serv-card-header";
+  header.appendChild(createTextElement("h3", "serv-title", service.name));
+  if (service.featured === true) {
+    header.appendChild(createTextElement("span", "serv-featured-badge", "Destacado"));
+  }
+  li.appendChild(header);
+
+  if (service.descriptionShort) {
+    li.appendChild(createTextElement("p", "serv-desc clamp-3", service.descriptionShort));
+  }
+
+  appendIntentChips(li, service.intent);
+
+  const idealFor = createServiceSection("Ideal para", service.idealFor, "serv-ideal-for");
+  if (idealFor) li.appendChild(idealFor);
+
+  const benefits = createServiceSection("Beneficios", service.benefits, "serv-benefits");
+  if (benefits) li.appendChild(benefits);
+
+  const meta = document.createElement("div");
+  meta.className = "serv-meta";
+  if (service.price !== null) {
+    meta.appendChild(createTextElement("span", "serv-price", `$${service.price}`));
+  }
+  if (service.duration !== null) {
+    meta.appendChild(createTextElement("span", "serv-duration", `${service.duration} días`));
+  }
+  if (meta.childElementCount) li.appendChild(meta);
+
+  if (service.descriptionShort) {
+    const btn = createTextElement("button", "serv-toggle", "Ver más");
+    btn.type = "button";
+    li.appendChild(btn);
+  }
+
+  li.appendChild(createWhatsappCta(
+    "Consultar por este servicio",
+    buildServiceWhatsappUrl(service),
+    `Consultar por WhatsApp sobre ${service.name}`
+  ));
+
+  return li;
+}
+
+function renderMessageWithWhatsapp(container, className, message) {
+  container.innerHTML = "";
+  const li = document.createElement("li");
+  li.className = className;
+  li.appendChild(createTextElement("p", "serv-state-message", message));
+  li.appendChild(createWhatsappCta(
+    "Consultar por WhatsApp",
+    buildGeneralWhatsappUrl(),
+    "Consultar por WhatsApp sobre esta categoría de servicios"
+  ));
+  container.appendChild(li);
 }
 
 // Trunca/expande descripción
@@ -118,45 +226,18 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
     }
 
     if (!items.length) {
-      ul.innerHTML = "";
-      ul.appendChild(createTextElement("li", "muted", "Pronto habrá servicios disponibles aquí."));
+      renderMessageWithWhatsapp(
+        ul,
+        "serv-state serv-state-empty",
+        "En este momento no hay servicios cargados en esta categoría, pero podés escribirme y contarme tu situación para orientarte personalmente."
+      );
       return;
     }
 
     // BLOQUE SEGURIDAD: render por nodos DOM con textContent para evitar XSS (sin innerHTML con datos remotos).
     ul.innerHTML = "";
     items.forEach((s) => {
-      const li = document.createElement("li");
-      li.className = "serv-card";
-      li.dataset.id = s.id;
-
-      li.appendChild(createTextElement("h3", "serv-title", s.name));
-
-      const desc = createTextElement("p", "serv-desc clamp-3", s.descriptionShort);
-      li.appendChild(desc);
-
-      const meta = document.createElement("div");
-      meta.className = "serv-meta";
-      if (s.price !== null) {
-        meta.appendChild(createTextElement("span", "serv-price", `$${s.price}`));
-      }
-      if (s.duration !== null) {
-        meta.appendChild(createTextElement("span", "serv-duration", `${s.duration} días`));
-      }
-      li.appendChild(meta);
-
-      const btn = createTextElement("button", "serv-toggle", "Ver más");
-      btn.type = "button";
-      li.appendChild(btn);
-
-      const cta = createTextElement("a", "serv-cta", "Consultar por WhatsApp");
-      cta.href = buildServiceWhatsappUrl(s);
-      cta.target = "_blank";
-      cta.rel = "noopener noreferrer";
-      cta.setAttribute("aria-label", `Consultar por WhatsApp sobre ${s.name}`);
-      li.appendChild(cta);
-
-      ul.appendChild(li);
+      ul.appendChild(createServiceCard(s));
     });
 
     wireViewMore(ul);
@@ -166,8 +247,11 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
     }
   } catch (err) {
     console.error("Error cargando servicios:", err);
-    ul.innerHTML = "";
-    ul.appendChild(createTextElement("li", "error", "No se pudieron cargar los servicios. Intenta más tarde."));
+    renderMessageWithWhatsapp(
+      ul,
+      "serv-state serv-state-error",
+      "No pudimos cargar los servicios en este momento. Podés escribirme directamente por WhatsApp y te respondo con reserva."
+    );
   }
 }
 

@@ -33,3 +33,110 @@ blockquote footer{color:var(--muted); font-size:.95rem}
   outline: 2px solid rgba(255, 255, 255, 0.75);
   outline-offset: 2px;
 }
+
+/* FASE 3C.1: cards públicas v2 compatibles con servicios legacy. */
+.serv-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.serv-featured-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 214, 102, 0.65);
+  border-radius: 999px;
+  background: rgba(255, 214, 102, 0.14);
+  color: #ffe8a3;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.serv-featured-badge::before {
+  content: "★";
+  font-size: 0.78rem;
+}
+
+.serv-intents,
+.serv-detail-list {
+  list-style: none;
+  padding: 0;
+}
+
+.serv-intents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+
+.serv-intent-chip {
+  padding: 4px 9px;
+  border: 1px solid rgba(191, 168, 255, 0.45);
+  border-radius: 999px;
+  background: rgba(191, 168, 255, 0.1);
+  color: #f3edff;
+  font-size: 0.86rem;
+  line-height: 1.25;
+}
+
+.serv-detail {
+  margin: 10px 0 0;
+}
+
+.serv-detail-title {
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.serv-detail-list {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  color: #eee8ff;
+  font-size: 0.94rem;
+}
+
+.serv-detail-item {
+  position: relative;
+  padding-left: 1.05rem;
+}
+
+.serv-detail-item::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #bfa8ff;
+  font-weight: 800;
+}
+
+.serv-state {
+  border: 1px solid rgba(191, 168, 255, 0.28);
+  border-radius: 14px;
+  background: rgba(18, 15, 38, 0.72);
+  padding: 18px;
+}
+
+.serv-state-message {
+  margin: 0 0 12px;
+  color: #f4efff;
+  line-height: 1.55;
+}
+
+.serv-card .serv-cta,
+.serv-state .serv-cta {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .serv-card .serv-cta,
+  .serv-state .serv-cta {
+    width: auto;
+  }
+}

@@ -39,9 +39,21 @@
 }
 
 .landing {
-  background-image: url('../images/video-poster.svg');
+  min-height: 100vh;
+  background-color: #111;
+  background-image:
+    radial-gradient(circle at 50% 40%, rgba(212, 175, 55, 0.16), transparent 35%),
+    linear-gradient(rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.54)),
+    url('../images/video-poster.svg');
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 767px), (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
+  .background-video {
+    display: none;
+  }
 }
 
 /* Estilos generales del body: fuente, color de texto y fondo */

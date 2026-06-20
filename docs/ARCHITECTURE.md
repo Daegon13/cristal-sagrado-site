@@ -12,7 +12,7 @@ Sitio estático en HTML, CSS y JavaScript, publicado como archivos planos. No us
 - `servicios.html`: redirección heredada hacia la sección de servicios de la home.
 - `admin/`: panel administrativo con Firebase Auth y Firestore.
 - `assets/js/data.js`: lectura pública de servicios desde Firestore y render seguro de listados.
-- `scripts/perf-media.js`: carga diferida del video de fondo respetando señales de performance/accesibilidad.
+- `scripts/perf-media.js`: carga diferida del video de fondo después del primer render; evita cargarlo en mobile, reduced motion y ahorro de datos.
 - `css/`: estilos globales y estilos específicos por categoría.
 - `images/` y `favicon_io/`: video, poster y favicons.
 - `robots.txt`, `sitemap.xml`, `CNAME`: señales de SEO/deploy.
@@ -50,7 +50,7 @@ Sitio estático en HTML, CSS y JavaScript, publicado como archivos planos. No us
 
 ## Hallazgos FASE 0/1
 
-- Hay assets pesados en `images/`: `Eclipse_small.mp4` (~21 MB) y `Eclipse_small.7z` (~20 MB). Deben tratarse en FASE 4.
+- FASE 4A/4B inicial: `images/Eclipse_small.7z` y `images/favicon_io.zip` fueron removidos por ser comprimidos no referenciados dentro del deploy. `images/Eclipse_small.mp4` (~21 MB) sigue como asset pesado, pero se carga diferido y con guardas de mobile/reduced-motion/ahorro de datos.
 - `sitemap.xml` usaba `www`, mientras `CNAME` y `robots.txt` apuntan a `cristal-sagrado.com`. Se normaliza a dominio canónico sin `www`.
 - Las páginas públicas necesitaban `h1` único y meta descriptions específicas.
 - `faq.html` tenía dos elementos `<main>` y contenido duplicado; queda consolidado en un solo `<main>`.
@@ -61,3 +61,15 @@ Sitio estático en HTML, CSS y JavaScript, publicado como archivos planos. No us
 Desde FASE 3B.2, `/admin` puede incluir herramientas de mantenimiento explícitas para revisar deuda de datos sin automatismos destructivos. El diagnóstico legacy de `services` lee toda la colección, calcula campos faltantes en cliente y muestra una vista previa; solo escribe cuando el usuario presiona “Aplicar defaults legacy” y confirma la acción.
 
 El flujo evita escrituras durante la carga inicial del admin. En particular, la migración histórica automática que asignaba documentos sin categoría a `roja` cuando esa categoría estaba vacía quedó fuera del flujo de carga. Si se necesita recuperar documentos huérfanos de categoría, debe hacerse en un patch separado como acción manual, separada del backfill v2, con preview y confirmación.
+
+## Render público v2 compatible
+
+Desde FASE 3C.1, `assets/js/data.js` renderiza cards públicas enriquecidas con campos v2 opcionales (`featured`, `intent`, `idealFor`, `benefits`, `descriptionShort`, `ctaText` y `slug`) después de normalizar cada documento. La compatibilidad legacy se conserva mediante fallbacks en `assets/js/service-helpers.js`: si faltan campos v2, la card muestra solo la información disponible y evita secciones vacías.
+
+El render público sigue limitado a páginas de categoría, no carga Firestore en `index.html`, no crea páginas detalle y no escribe en Firestore. Los CTAs usan WhatsApp con número fijo y mensajes generados por helper compartido.
+
+## Estrategia de video/performance FASE 4A/4B inicial
+
+El video de fondo público se declara sin `<source>` inicial, con `preload="none"`, `poster` y `data-src`. `scripts/perf-media.js` decide en cliente si puede insertar el `<source>` después del primer render mediante `requestIdleCallback` o `setTimeout`.
+
+No se carga video en pantallas mobile (`max-width: 767px`), con `prefers-reduced-motion: reduce`, con `prefers-reduced-data: reduce` o con `navigator.connection.saveData`. En esos casos queda visible el fallback CSS basado en `images/video-poster.svg`, gradientes y color base. Esta decisión reduce peso inicial sin cambiar rutas públicas ni modelo Firebase.

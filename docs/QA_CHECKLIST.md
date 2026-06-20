@@ -34,9 +34,15 @@
 
 ## Performance
 
-- Video tiene `preload="none"` y `poster`.
-- `scripts/perf-media.js` carga el video de forma diferida.
-- Revisar en FASE 4: `images/Eclipse_small.mp4`, `images/Eclipse_small.7z` y `images/favicon_io.zip`.
+- Video tiene `preload="none"`, `poster` y no incluye `<source>` inicial bloqueante.
+- `scripts/perf-media.js` carga el video de forma diferida en idle solo cuando no aplica una guarda de performance/accesibilidad.
+- Home mobile debe mostrar fallback visual y no descargar `images/Eclipse_small.mp4`.
+- Con `prefers-reduced-motion: reduce` debe mostrarse fallback visual y no descargarse el video.
+- Con ahorro de datos (`prefers-reduced-data` o `navigator.connection.saveData`) debe mostrarse fallback visual y no descargarse el video.
+- No debe haber 404 de assets después de remover comprimidos no referenciados.
+- Home debe seguir sin importar Firebase, Firestore ni `assets/js/data.js`.
+- Páginas públicas principales deben responder HTTP 200: `/`, `/admin/`, `/magia-blanca.html`, `/magia-roja.html`, `/magia-negra.html`, `/magia-verde.html`, `/tarot.html`, `/faq.html`, `/como-trabajamos.html`.
+- Pendiente recomendado: Lighthouse mobile/desktop y revisión visual en navegador real.
 
 ## Accesibilidad/manual
 
@@ -72,3 +78,16 @@
 - Documentos sin `name`/`title` o sin `description` deben mostrar warning y omitirse del backfill automático.
 - La herramienta debe recordar que los servicios sin `active` no aparecen públicamente por la consulta `active == true`.
 - La migración histórica de categoría roja no debe ejecutarse automáticamente al cargar el listado.
+
+## Cards públicas v2 — FASE 3C.1
+
+- Las páginas `magia-blanca.html`, `magia-roja.html`, `magia-negra.html` y `magia-verde.html` siguen cargando servicios desde `assets/js/data.js`; la home no importa Firebase/Firestore.
+- Un servicio con `featured: true` muestra badge “Destacado” y no depende solo de color.
+- `descriptionShort` se muestra en la card; si falta, se ve el fallback legacy `description`.
+- `intent`, `idealFor` y `benefits` solo aparecen cuando tienen valores, sin títulos o listas vacías.
+- Precio y duración solo aparecen cuando existen y son valores normalizados válidos.
+- Cada card tiene CTA “Consultar por este servicio” como `<a>` a WhatsApp, con `aria-label` que incluye el nombre del servicio.
+- Si `ctaText` existe, modifica el mensaje prellenado de WhatsApp del servicio.
+- Si una categoría no tiene servicios, se muestra mensaje comercial con CTA general a WhatsApp.
+- Si Firestore falla, se muestra mensaje claro con CTA general y el detalle técnico queda solo en consola.
+- Las cards se renderizan creando nodos y usando `textContent` para datos remotos; no se usa `innerHTML` con contenido de Firestore.
