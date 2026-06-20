@@ -3,7 +3,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Home -->
   <url>
-    <loc>https://www.cristal-sagrado.com/</loc>
+    <loc>https://cristal-sagrado.com/</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -11,19 +11,19 @@
 
   <!-- Páginas informativas -->
   <url>
-    <loc>https://www.cristal-sagrado.com/como-trabajamos.html</loc>
+    <loc>https://cristal-sagrado.com/como-trabajamos.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://www.cristal-sagrado.com/faq.html</loc>
+    <loc>https://cristal-sagrado.com/faq.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://www.cristal-sagrado.com/tarot.html</loc>
+    <loc>https://cristal-sagrado.com/tarot.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -31,25 +31,25 @@
 
   <!-- Categorías de servicios -->
   <url>
-    <loc>https://www.cristal-sagrado.com/magia-blanca.html</loc>
+    <loc>https://cristal-sagrado.com/magia-blanca.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.cristal-sagrado.com/magia-roja.html</loc>
+    <loc>https://cristal-sagrado.com/magia-roja.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.cristal-sagrado.com/magia-verde.html</loc>
+    <loc>https://cristal-sagrado.com/magia-verde.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://www.cristal-sagrado.com/magia-negra.html</loc>
+    <loc>https://cristal-sagrado.com/magia-negra.html</loc>
     <lastmod>2025-09-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
