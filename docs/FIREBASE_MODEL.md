@@ -173,3 +173,19 @@ Las páginas públicas consultan `services` con `where("active", "==", true)`. F
 ### Migración histórica de categoría roja
 
 Se detectó una migración histórica automática en `/admin` que intentaba etiquetar documentos huérfanos como `category: "roja"` cuando la consulta de magia roja volvía vacía. En FASE 3B.2 queda desactivada del flujo de carga: `/admin` ya no ejecuta esa escritura al cargar ni al cambiar de categoría. Cualquier recuperación de categorías huérfanas debe implementarse como herramienta manual separada, con preview y confirmación explícita, para no mezclarla con el backfill v2.
+
+## FASE 3C.1 — Uso público de cards v2
+
+Las páginas públicas de categorías siguen leyendo la colección `services` sin crear documentos, sin backfill y sin cambiar rutas. Antes de renderizar, `assets/js/data.js` normaliza cada documento con `assets/js/service-helpers.js`, por lo que los documentos legacy continúan funcionando.
+
+Uso público de campos v2:
+
+- `descriptionShort`: se muestra como copy principal de la card. Si falta, se usa `description`.
+- `intent`: se muestra como chips compactos cuando contiene valores no vacíos.
+- `idealFor`: se muestra en el bloque “Ideal para” cuando contiene valores.
+- `benefits`: se muestra en el bloque “Beneficios” cuando contiene valores.
+- `featured`: si es `true`, agrega el badge visible “Destacado” y además participa en el ordenamiento público.
+- `ctaText`: no se usa necesariamente como texto visible del botón; se usa como mensaje personalizado de WhatsApp en la URL del CTA del servicio.
+- `slug`: se agrega como `data-slug` de la card cuando existe o cuando el normalizador lo genera, pero todavía no crea navegación a páginas detalle.
+
+Las secciones vacías no se renderizan. El CTA visible de cada servicio es “Consultar por este servicio”, con `aria-label` específico para el nombre del servicio y URL `wa.me` generada por el helper compartido. Los estados vacío y error también muestran CTA general a WhatsApp sin exponer detalles técnicos al usuario final.
