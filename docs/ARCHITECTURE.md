@@ -73,3 +73,19 @@ El render público sigue limitado a páginas de categoría, no carga Firestore e
 El video de fondo público se declara sin `<source>` inicial, con `preload="none"`, `poster` y `data-src`. `scripts/perf-media.js` decide en cliente si puede insertar el `<source>` después del primer render mediante `requestIdleCallback` o `setTimeout`.
 
 No se carga video en pantallas mobile (`max-width: 767px`), con `prefers-reduced-motion: reduce`, con `prefers-reduced-data: reduce` o con `navigator.connection.saveData`. En esos casos queda visible el fallback CSS basado en `images/video-poster.svg`, gradientes y color base. Esta decisión reduce peso inicial sin cambiar rutas públicas ni modelo Firebase.
+
+## Propuesta de migración progresiva a Astro
+
+La arquitectura legacy debe mantenerse estable mientras se prepara una migración progresiva a Astro. El plan recomendado está documentado en `docs/ASTRO_MIGRATION_PLAN.md` y prioriza una salida estática, componentización gradual y aislamiento estricto de Firebase.
+
+Principios para esa migración:
+
+- No reescribir todo de golpe ni borrar la versión HTML/CSS/JS legacy hasta tener QA visual y SEO aprobado.
+- Migrar primero la home como página estática sin Firestore, para eliminar deuda de layout/CSS sin afectar admin ni servicios dinámicos.
+- Conservar `/admin` inicialmente como legacy servido desde `public/admin`, sin pasar por Astro ni bundler.
+- Encapsular Firestore público solo en páginas de servicios (`/magia-blanca/`, `/magia-roja/`, `/magia-negra/`, `/magia-verde/`) mediante script/isla cliente específica.
+- Preservar rutas críticas de assets, especialmente `images/Eclipse_small.mp4`, `images/video-poster.svg`, favicons, `robots.txt`, `sitemap.xml` y `CNAME`.
+- Crear rutas limpias con trailing slash y mantener rutas `.html` como redirects o páginas puente para no romper SEO ni enlaces existentes.
+- Reemplazar la cascada CSS acumulada por tokens, layout base y estilos por componente, usando el legacy como referencia visual y de contenido, no como hoja global permanente.
+
+La fase actual es solo documental: no crea scaffold Astro, no toca producción, no cambia Firebase, no modifica admin y no altera HTML/CSS/JS público existente.
