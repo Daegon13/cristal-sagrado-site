@@ -84,8 +84,8 @@ Principios para esa migración:
 - Migrar primero la home como página estática sin Firestore, para eliminar deuda de layout/CSS sin afectar admin ni servicios dinámicos.
 - Conservar `/admin` inicialmente como legacy servido desde `public/admin`, sin pasar por Astro ni bundler.
 - Encapsular Firestore público solo en páginas de servicios (`/magia-blanca/`, `/magia-roja/`, `/magia-negra/`, `/magia-verde/`) mediante script/isla cliente específica.
-- Preservar rutas críticas de assets, especialmente `images/Eclipse_small.mp4`, `images/video-poster.svg`, favicons, `robots.txt`, `sitemap.xml` y `CNAME`.
+- Preservar rutas críticas de assets livianos en el scaffold, especialmente `images/video-poster.svg`, favicons, `robots.txt`, `sitemap.xml` y `CNAME`. El MP4 legacy `images/Eclipse_small.mp4` se conserva intacto en legacy y no debe duplicarse en `public/` durante M1; su integración Astro queda para M2/M4 con controles de carga.
 - Crear rutas limpias con trailing slash y mantener rutas `.html` como redirects o páginas puente para no romper SEO ni enlaces existentes.
 - Reemplazar la cascada CSS acumulada por tokens, layout base y estilos por componente, usando el legacy como referencia visual y de contenido, no como hoja global permanente.
 
-La fase actual es solo documental: no crea scaffold Astro, no toca producción, no cambia Firebase, no modifica admin y no altera HTML/CSS/JS público existente.
+La fase actual es solo documental en esta rama local: no crea scaffold Astro, no toca producción, no cambia Firebase, no modifica admin y no altera HTML/CSS/JS público existente. Para el scaffold M1, `public/images/Eclipse_small.mp4` debe permanecer fuera del árbol Astro; no se procesó ni comprimió el video legacy.
