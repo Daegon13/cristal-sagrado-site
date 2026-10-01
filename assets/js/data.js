@@ -7,7 +7,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { firebaseConfig } from "/admin/config.js";
-import { WHATSAPP_NUMBER, normalizeService, buildServiceWhatsappUrl, compareServicesForPublic } from "./service-helpers.js";
+import { normalizeService, buildServiceWhatsappUrl, compareServicesForPublic } from "./service-helpers.js";
+import { buildWhatsappUrl } from "./whatsapp.js";
 
 // -------------------------
 // BLOQUE: Inicialización Firebase
@@ -58,7 +59,7 @@ function createTextElement(tag, className, text) {
 
 function buildGeneralWhatsappUrl() {
   const message = "Hola Luz, llego desde la web de Cristal Sagrado. Quiero consultar por esta categoría de servicios. Mi situación es:";
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  return buildWhatsappUrl(message);
 }
 
 function createWhatsappCta(text, href, ariaLabel) {
@@ -141,11 +142,14 @@ function createServiceCard(service) {
     li.appendChild(btn);
   }
 
-  li.appendChild(createWhatsappCta(
+  const serviceCta = createWhatsappCta(
     "Consultar por este servicio",
     buildServiceWhatsappUrl(service),
     `Consultar por WhatsApp sobre ${service.name}`
-  ));
+  );
+  serviceCta.dataset.serviceName = service.name;
+  if (service.ctaText) serviceCta.dataset.ctaText = service.ctaText;
+  li.appendChild(serviceCta);
 
   return li;
 }

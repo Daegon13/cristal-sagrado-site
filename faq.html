@@ -27,6 +27,8 @@
     ]
   }
   </script>
+    <!-- BLOQUE CONTACTO: estilos del diálogo compartido. -->
+    <link rel="stylesheet" href="/css/whatsapp-contact.css">
 </head>
 <body>
 <div class="hamburger-menu" id="hamburgerMenu">
@@ -117,5 +119,7 @@ document.body.addEventListener('click', (e) => {
 <!-- BLOQUE PERF VIDEO: carga diferida y fallback estático para usuarios con reduced-motion/reduced-data. -->
 <script src="scripts/perf-media.js" defer></script>
 
+<!-- BLOQUE CONTACTO: flujo único para enlaces WhatsApp públicos. -->
+<script type="module" src="/assets/js/whatsapp-contact.js"></script>
 </body>
 </html>
