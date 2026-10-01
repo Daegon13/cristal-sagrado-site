@@ -54,7 +54,7 @@ Conclusión: Astro debe partir de una hoja base limpia, tokens y estilos por com
 
 | Asset | Uso | Estrategia propuesta |
 |---|---|---|
-| `images/Eclipse_small.mp4` | Video de fondo público. | Mantener ruta y archivo sin comprimir/reemplazar en esta fase. En Astro usar `VideoBackground.astro` con `preload="none"`, `poster` y `data-src`. |
+| `images/Eclipse_small.mp4` | Video de fondo público legacy. | Conservar intacto en legacy; no duplicar en `public/` durante M1. Integrarlo en Astro de forma controlada en M2/M4 con poster/fallback, `preload="none"` y guardas de carga. |
 | `images/video-poster.svg` | Poster/fallback de fondo. | Mantener como fallback estático y como base para reduced-motion/mobile. |
 | `favicon_io/*` | Favicons, manifest e íconos. | Copiar/servir desde `public/favicon_io/` preservando rutas durante migración. |
 | `robots.txt`, `sitemap.xml`, `CNAME` | SEO/deploy. | Mantener en `public/` en scaffold Astro y regenerar sitemap en fase SEO. |
@@ -161,8 +161,8 @@ Conclusión: Astro debe partir de una hoja base limpia, tokens y estilos por com
 
 ### 2.3 Estrategia para assets
 
-- Preservar rutas públicas críticas para minimizar regresiones: `/images/Eclipse_small.mp4`, `/images/video-poster.svg`, `/favicon_io/*`.
-- No comprimir ni reemplazar video durante esta fase; solo encapsular su markup y comportamiento en un componente.
+- Preservar rutas públicas críticas para minimizar regresiones, pero evitar duplicados pesados en M1: `/images/video-poster.svg`, `/favicon_io/*` y demás assets livianos pueden copiarse a `public/`; `images/Eclipse_small.mp4` permanece solo como asset legacy hasta la integración controlada de M2/M4.
+- No comprimir, reemplazar, procesar ni duplicar el video durante M1; `VideoBackground.astro` puede quedar preparado con poster/fallback sin solicitar agresivamente el MP4 pesado.
 - Separar assets de contenido público en `public/images/`; evitar imports procesados de Astro para assets con rutas históricas que ya están indexadas o referenciadas.
 - Documentar cualquier asset no usado antes de borrarlo en una fase posterior; no borrar legacy ahora.
 
@@ -236,7 +236,7 @@ No implementar redirects en esta fase documental. En GitHub Pages, validar si se
 
 - Crear proyecto Astro estático en rama de migración.
 - Configurar `src/pages`, `src/layouts`, `src/components`, `src/styles`, `src/lib` y `public`.
-- Copiar assets públicos críticos preservando rutas.
+- Copiar solo assets públicos críticos livianos preservando rutas. No copiar `images/Eclipse_small.mp4` a `public/` en M1; el MP4 legacy se conserva en `images/Eclipse_small.mp4` y se integrará de forma controlada en M2/M4.
 - No migrar admin todavía, salvo copia intacta planificada.
 - Verificar `astro build` con una página placeholder estática.
 
@@ -321,7 +321,7 @@ Restricciones:
 
 Tareas:
 1. Crear configuración mínima Astro con `src/pages`, `src/layouts`, `src/components`, `src/styles`, `src/lib` y `public`.
-2. Copiar assets críticos a `public` preservando rutas: `images/Eclipse_small.mp4`, `images/video-poster.svg`, `favicon_io`, `robots.txt`, `CNAME` y sitemap actual si aplica.
+2. Copiar assets críticos livianos a `public` preservando rutas: `images/video-poster.svg`, `favicon_io`, `robots.txt`, `CNAME` y sitemap actual si aplica. No copiar `images/Eclipse_small.mp4` a `public` en M1; conservar el original legacy intacto y documentar su integración controlada para M2/M4.
 3. Crear `BaseLayout.astro`, `Header.astro`, `Footer.astro`, `VideoBackground.astro` y una home placeholder estática que permita validar build sin cargar Firestore.
 4. Conservar `/admin` intacto como legacy en `public/admin` solo si no rompe rutas; si hay dudas, documentarlas y no tocar admin.
 5. Agregar scripts vanilla mínimos para menú y video diferido, sin frameworks de UI.
