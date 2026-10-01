@@ -1,0 +1,11 @@
+/* BLOQUE CONTACTO: diálogo nativo, legible en móvil y coherente con la paleta existente. */
+.contact-dialog{width:min(100% - 2rem, 32rem);max-height:calc(100dvh - 2rem);overflow:auto;border:1px solid var(--accent,#8C4DFE);border-radius:var(--radius,1.25rem);background:var(--bg,#0d0b1e);color:var(--fg,#EDE6FF);box-shadow:var(--shadow,0 10px 30px #0008);padding:clamp(1rem,4vw,2rem)}
+.contact-dialog::backdrop{background:rgba(0,0,0,.75)}
+.contact-dialog__form{display:grid;gap:.8rem}
+.contact-dialog h2,.contact-dialog p{margin:0}
+.contact-dialog textarea{width:100%;min-height:7rem;resize:vertical;padding:.75rem;border:1px solid var(--muted,#BFA8FF);border-radius:.75rem;background:#171329;color:var(--fg,#EDE6FF);font:inherit}
+.contact-dialog__error{color:#ffb7c0}
+.contact-dialog__actions{display:flex;justify-content:flex-end;gap:.75rem;flex-wrap:wrap}
+.contact-dialog button{cursor:pointer;font:inherit}
+@media(max-width:400px){.contact-dialog__actions button{width:100%}}
+@media(prefers-reduced-motion:reduce){.contact-dialog{scroll-behavior:auto}}

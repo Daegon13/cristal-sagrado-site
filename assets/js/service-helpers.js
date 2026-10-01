@@ -1,7 +1,8 @@
 // Helpers compartidos para servicios públicos.
 // Mantienen compatibilidad con documentos antiguos de Firestore y preparan modelo v2.
 
-export const WHATSAPP_NUMBER = "59896106373";
+import { WHATSAPP_NUMBER, buildWhatsappUrl, buildWhatsappMessage, buildWhatsappPreviewMessage } from "./whatsapp.js";
+export { WHATSAPP_NUMBER };
 const DEFAULT_SERVICE_NAME = "servicio";
 const ORDER_FALLBACK = Number.MAX_SAFE_INTEGER;
 
@@ -79,11 +80,10 @@ export function normalizeService(rawService = {}, id = "") {
   };
 }
 
-export function buildServiceWhatsappUrl(service) {
+export function buildServiceWhatsappUrl(service, caseText) {
   const normalized = normalizeService(service, service?.id);
-  const defaultMessage = `Hola Luz, llego desde la web de Cristal Sagrado. Quiero consultar por ${normalized.name}. Mi situación es:`;
-  const message = normalized.ctaText || defaultMessage;
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  const message = caseText === undefined ? buildWhatsappPreviewMessage({ serviceName: normalized.name, ctaText: normalized.ctaText }) : buildWhatsappMessage({ serviceName: normalized.name, ctaText: normalized.ctaText, caseText });
+  return buildWhatsappUrl(message);
 }
 
 export function compareServicesForPublic(a, b) {

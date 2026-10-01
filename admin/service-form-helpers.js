@@ -1,4 +1,5 @@
 import { slugifyServiceName } from "../assets/js/service-helpers.js";
+import { WHATSAPP_NUMBER, buildWhatsappUrl, buildWhatsappPreviewMessage } from "../assets/js/whatsapp.js";
 
 const ARRAY_FIELDS = ["intent", "benefits", "idealFor", "notFor"];
 
@@ -34,14 +35,11 @@ export function sanitizeSlug(value, fallbackName = "") {
 }
 
 export function getServiceWhatsappMessage({ name = "", ctaText = "" } = {}) {
-  const customMessage = String(ctaText ?? "").trim();
-  if (customMessage) return customMessage;
-  const serviceName = String(name ?? "").trim() || "este servicio";
-  return `Hola Luz, llego desde la web de Cristal Sagrado. Quiero consultar por ${serviceName}. Mi situación es:`;
+  return buildWhatsappPreviewMessage({ serviceName: name, ctaText });
 }
 
-export function buildServiceWhatsappPreviewUrl(service, whatsappNumber = "59896106373") {
-  return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(getServiceWhatsappMessage(service))}`;
+export function buildServiceWhatsappPreviewUrl(service, whatsappNumber = WHATSAPP_NUMBER) {
+  return buildWhatsappUrl(getServiceWhatsappMessage(service), whatsappNumber);
 }
 
 export function serviceFormDataToPayload(formData, { category, existing = null, now = new Date() } = {}) {
