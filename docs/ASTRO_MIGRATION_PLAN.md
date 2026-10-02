@@ -1,6 +1,6 @@
 # Plan exploratorio de migración progresiva a Astro — Cristal Sagrado
 
-> Estado: documentación exploratoria. No crea scaffold Astro, no cambia HTML/CSS/JS legacy, no toca Firebase/Admin y no modifica producción.
+> Estado: plan ejecutado en local el 2026-10-02. Se conserva como registro de decisiones y aceptación pendiente de QA manual donde indicado.
 
 ## 1. Diagnóstico de migrabilidad
 
@@ -303,7 +303,7 @@ No implementar redirects en esta fase documental. En GitHub Pages, validar si se
 - No se reemplaza ni recomprime el video en esta fase.
 - No se borra la versión legacy hasta que exista aprobación explícita.
 
-## 7. Siguiente prompt recomendado para scaffold Astro
+## 7. Scaffold original
 
 ```text
 Actuá como senior frontend engineer especializado en migraciones progresivas a Astro.
@@ -335,7 +335,27 @@ Entregables:
 
 ## 8. Git diff esperado en esta fase
 
-En esta fase exploratoria el diff debe limitarse a documentación:
+Este resumen describía el alcance exploratorio original y ya fue superado por la implementación.
 
 - Crear `docs/ASTRO_MIGRATION_PLAN.md`.
 - Actualizar `docs/ARCHITECTURE.md` con una nota de migración propuesta.
+
+## 9. Resultado de implementación M0-M7 — 2026-10-02
+
+- M0 completada parcialmente: inventario y baseline de contenido/SEO/performance contrastados con los HTML y documentos actuales. Se capturó Home Astro a 393 px; falta una captura legacy comparable y medición Lighthouse.
+- M1 completada: scaffold Astro estático, Node 22, assets, admin y multimedia copiados a public/.
+- M2 completada: Home y secciones compartidas migradas; formulario Formspree único y sin Firebase global.
+- M3 completada: Tarot, FAQ con JSON-LD y Cómo trabajamos migradas.
+- M4 completada: cuatro páginas de categoría conectadas al flujo Firestore actual, solo desde esas rutas.
+- M5 completada: admin/ copiado a public/admin/ sin bundling ni cambios al código funcional original.
+- M6 completada: metadata/canonical, sitemap, CNAME y robots preservados; puentes de rutas antiguas y workflows Astro para producción y preview.
+- M7 parcial: build, tests, rutas y metadata verificados. Chrome headless confirmó Home sin overflow a 320, 360, 393, 430, 768, 1024, 1366 y 1440 px, un H1, menú móvil y diálogo WhatsApp operativos, y video sin source en móvil/reduced-motion. Todos los clean URLs, bridges .html y /admin/ devuelven HTTP 200. Falta probar catálogo Firestore real, login Admin, envío Formspree, reduced-data/saveData y comparación visual legacy. No se declara PASS completo.
+
+### Desviaciones y límites
+
+- Se usan puentes HTML con meta refresh, enlace y JS en vez de redirects HTTP, conforme a GitHub Pages.
+- Se conserva el texto legacy visible de FAQ y su JSON-LD preexistente aunque difieren sobre la duración de la lectura, para evitar alterar copy comercial.
+- Durante la verificación de dependencias, Astro se actualizó a 7.3.5: npm marcaba el Astro 5 del primer lockfile con un aviso crítico y la corrección disponible era una versión mayor. Este sitio no usa integraciones; el build Astro 7.3.5 y los cuatro tests pasaron, y el audit final reportó cero vulnerabilidades.
+- No se eliminaron HTML ni binarios del repositorio. Los HTML originales de raíz quedan como referencia y public/*.html son los puentes del build.
+- La verificación estática no confirma reglas/disponibilidad de Firebase; no se ejecutaron escrituras ni cambios de datos.
+- No se desplegó a producción.

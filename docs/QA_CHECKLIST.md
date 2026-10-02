@@ -91,3 +91,24 @@
 - Si una categoría no tiene servicios, se muestra mensaje comercial con CTA general a WhatsApp.
 - Si Firestore falla, se muestra mensaje claro con CTA general y el detalle técnico queda solo en consola.
 - Las cards se renderizan creando nodos y usando `textContent` para datos remotos; no se usa `innerHTML` con contenido de Firestore.
+
+## Migración Astro — 2026-10-01
+
+- [x] Build estático Astro (8 rutas limpias).
+- [x] Suite Node completa (4 archivos, 4 aprobados).
+- [x] Astro 7.3.5; npm audit reporta 0 vulnerabilidades.
+- [x] Deploy de producción y workflow de previews compilan dist/; preview admite BASE_PATH.
+- [x] Home tiene un único H1 y formulario Formspree.
+- [x] Canonical y títulos/descripciones específicos, robots, sitemap y CNAME preservados.
+- [x] Puentes HTML para categorías, Tarot, FAQ, Cómo trabajamos y servicios.
+- [x] Firebase solo está incluido por las páginas de categoría en el HTML generado.
+- [x] /admin/ y media se copiaron; comparación de contenido por hash.
+- [x] Los binarios multimedia conservan las mismas rutas, contenido y hash.
+- [x] Chrome headless: Home responde en 320, 360, 393, 430, 768, 1024, 1366 y 1440 px sin overflow horizontal.
+- [x] Chrome headless: menú móvil abre, CTA WhatsApp abre el diálogo de descripción del caso y reduced-motion/mobile dejan el video sin source.
+- [x] Rutas públicas limpias, puentes .html y /admin/ responden HTTP 200 en Astro preview.
+- [ ] Lectura real de Firestore y login Admin con acceso Firebase autorizado.
+- [ ] Envío real del formulario Formspree y validación de destino final de WhatsApp (se evitó mandar datos reales).
+- [ ] reduced-data/saveData y comparación visual lado a lado con captura legacy.
+
+Resultado: parcial hasta completar los checks externos/legados pendientes. La revisión no hizo escrituras en Firebase ni envió formularios.

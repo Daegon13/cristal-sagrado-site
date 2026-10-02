@@ -19,29 +19,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare site folder
-        run: |
-          set -euxo pipefail
-          rm -rf __site
-          mkdir __site
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
 
-          # Copy repo contents to __site (exclude workflow files and temp dirs)
-          rsync -av --delete \
-            --exclude ".git" \
-            --exclude ".github" \
-            --exclude "__site" \
-            --exclude "__preview" \
-            --exclude "node_modules" \
-            ./ __site/
+      - name: Install dependencies
+        run: npm ci
 
-          # Avoid Jekyll processing on Pages
-          touch __site/.nojekyll
+      - name: Run tests
+        run: npm test
+
+      - name: Build static Astro site
+        run: npm run build
+
+      - name: Disable Jekyll processing
+        run: touch dist/.nojekyll
 
       - name: Deploy to gh-pages (keep PR/branch previews)
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: __site
+          folder: dist
           clean: true
           # Preserve preview folders so open PR previews don't disappear on prod deploy
           clean-exclude: |

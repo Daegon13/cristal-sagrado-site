@@ -25,6 +25,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
       - name: Compute preview path
         run: |
           set -euxo pipefail
@@ -40,31 +46,27 @@ jobs:
           echo "PREVIEW_DIR=$PREVIEW_DIR" >> "$GITHUB_ENV"
           echo "BASE_PATH=/$PREVIEW_DIR" >> "$GITHUB_ENV"
 
-      - name: Prepare preview folder
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build preview for its subpath
+        run: npm run build
+        env:
+          BASE_PATH: ${{ env.PREVIEW_DIR }}
+
+      - name: Prepare preview output
         run: |
           set -euxo pipefail
-          rm -rf __preview
-          mkdir __preview
-
-          rsync -av --delete \
-            --exclude ".git" \
-            --exclude ".github" \
-            --exclude "__site" \
-            --exclude "__preview" \
-            --exclude "node_modules" \
-            ./ __preview/
-
-          touch __preview/.nojekyll
-
-          # Rewrite absolute-root paths (href="/...", src="/...", url(/...))
-          # so the preview works under /previews/... without changing your prod code.
-          python3 scripts/rewrite_basepath.py "__preview" "$BASE_PATH"
+          touch dist/.nojekyll
 
       - name: Deploy preview to gh-pages subfolder
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: __preview
+          folder: dist
           target-folder: ${{ env.PREVIEW_DIR }}
           clean: true
 

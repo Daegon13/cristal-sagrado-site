@@ -1,0 +1,14 @@
+---
+interface Props { title: string; description: string; category: "blanca" | "roja" | "negra" | "verde"; }
+const { title, description, category } = Astro.props;
+---
+<!-- Estado inicial accesible y cliente Firebase aislado a páginas de categorías. -->
+<main class="wrap category-page" data-pagecat={category}><h1>{title}</h1><p class="section-intro">{description}</p>
+<label class="search-label" for="buscador-servicios">Buscar servicios</label><input id="buscador-servicios" type="search" placeholder="Buscar servicios…" autocomplete="off" />
+<p class="sr-only" aria-live="polite">Los servicios se están cargando.</p><ul id="lista-servicios" class="serv-list" aria-label={title}><li class="service-state">Los servicios se están cargando. Si lo preferís, podés escribirme directamente por WhatsApp.</li></ul></main>
+<script>
+// Importación presente solo en las cuatro rutas de categoría para evitar Firebase en páginas estáticas.
+import { renderServices, attachSearch } from "../../assets/js/data.js";
+const category = document.querySelector<HTMLElement>("[data-pagecat]")?.dataset.pagecat;
+if (category) { await renderServices("#lista-servicios", category); attachSearch("#buscador-servicios", "#lista-servicios"); }
+</script>

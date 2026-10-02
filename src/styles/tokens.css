@@ -1,0 +1,2 @@
+/* Paleta, tipografía base y medidas compartidas. */
+:root{color-scheme:dark;--bg:#100817;--panel:rgba(16,10,25,.88);--fg:#fff7df;--muted:#ded4ed;--purple:#bfa8ff;--gold:#d4af37;--green:#25d366;--border:rgba(212,175,55,.25);--radius:1.15rem;--shadow:0 1rem 2.8rem #0006;font-family:Roboto,Arial,sans-serif}

@@ -1,0 +1,7 @@
+---
+import { processSteps } from "../lib/constants";
+interface Props { heading?: string; intro?: string; introFirst?: boolean; steps?: typeof processSteps; }
+const { heading = "¿Cómo trabajamos?", intro = "Primero escucho tu situación con atención y reserva. Después vemos qué tipo de orientación, lectura o trabajo espiritual se adapta mejor a lo que estás viviendo. La idea no es que elijas a ciegas, sino que puedas consultar con claridad antes de avanzar.", introFirst = false, steps = processSteps } = Astro.props;
+---
+<!-- Proceso compartido, renderizado como HTML estático. -->
+<section class="section" id="proceso"><div class="wrap"><div class="section-intro">{introFirst && intro && <p>{intro}</p>}{heading && <h2>{heading}</h2>}{!introFirst && intro && <p>{intro}</p>}</div><ol class="process-grid">{steps.map((step) => <li class="surface"><h3>{step.title}</h3>{step.text && <p>{step.text}</p>}</li>)}</ol></div></section>

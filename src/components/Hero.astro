@@ -1,0 +1,6 @@
+---
+interface Props { title: string; subtitle?: string; action?: string; href?: string; }
+const { title, subtitle, action, href = "#contacto" } = Astro.props;
+---
+<!-- Hero común con un solo encabezado principal por página. -->
+<section class="hero"><div class="wrap hero__content"><h1>{title}</h1>{subtitle && <p>{subtitle}</p>}{action && <a class="button button--primary" href={href}>{action}</a>}</div></section>

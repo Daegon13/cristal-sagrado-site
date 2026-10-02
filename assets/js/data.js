@@ -6,7 +6,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-import { firebaseConfig } from "/admin/config.js";
+import { firebaseConfig } from "../../admin/config.js";
 import { normalizeService, buildServiceWhatsappUrl, compareServicesForPublic } from "./service-helpers.js";
 import { buildWhatsappUrl } from "./whatsapp.js";
 

@@ -1,0 +1,6 @@
+---
+import { SITE } from "../lib/constants";
+const whatsapp = `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(SITE.whatsappDefaultMessage)}`;
+---
+<!-- Enlaces sociales centralizados para todas las páginas públicas. -->
+<footer class="site-footer"><div class="wrap footer-inner"><p>© 2026 Cristal Sagrado. Todos los derechos reservados.</p><ul class="social-links"><li><a href={whatsapp}>WhatsApp</a></li><li><a href={SITE.instagram}>Instagram</a></li><li><a href={SITE.tiktok}>TikTok</a></li></ul></div></footer>

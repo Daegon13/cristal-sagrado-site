@@ -1,0 +1,4 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro"; import Hero from "../components/Hero.astro"; import IntentCards from "../components/IntentCards.astro"; import ServiceGrid from "../components/ServiceGrid.astro"; import ProcessSection from "../components/ProcessSection.astro"; import TrustSection from "../components/TrustSection.astro"; import Testimonials from "../components/Testimonials.astro"; import ContactForm from "../components/ContactForm.astro"; import FinalCTA from "../components/FinalCTA.astro"; import { pageMetadata } from "../lib/seo";
+---
+<BaseLayout {...pageMetadata.home} path="/"><main><Hero title="Tarot, limpiezas y orientación espiritual" subtitle="Transforma tu vida con nuestros rituales y lecturas personalizadas." action="Solicita una Consulta" /><IntentCards /><ServiceGrid /><ProcessSection /><TrustSection /><Testimonials /><ContactForm /><FinalCTA /></main></BaseLayout>

@@ -1,0 +1,17 @@
+---
+import { SITE } from "../lib/constants";
+const intents = [
+  ["Amor y pareja", "Orientación para vínculos, dudas afectivas, distancias o situaciones que necesitás mirar con calma."],
+  ["Lectura de tarot", "Una lectura para ordenar preguntas, ver posibilidades y recibir guía espiritual sobre tu momento."],
+  ["Limpieza energética", "Acompañamiento cuando sentís carga, bloqueo, cansancio espiritual o ambientes densos."],
+  ["Protección espiritual", "Para situaciones donde buscás resguardo, calma y una orientación cuidada antes de avanzar."],
+  ["Abrecaminos", "Orientación para destrabar caminos, tomar impulso y revisar qué puede estar frenando tu avance."],
+  ["Trabajo y dinero", "Consultas sobre prosperidad, decisiones laborales, movimiento económico o metas materiales."],
+  ["Consulta urgente", "Si necesitás contar algo sensible pronto, escribime con reserva para entender qué está pasando."],
+  ["No sé qué necesito", "Si no tenés claro qué servicio corresponde, contame tu caso y lo ordenamos juntas."]
+];
+---
+<!-- Intenciones actuales de Home y enlaces con contexto para el diálogo de WhatsApp. -->
+<section class="section section--featured" aria-labelledby="intent-title"><div class="wrap"><div class="section-intro"><h2 id="intent-title">¿Qué estás buscando hoy?</h2><p>Cada situación es distinta. Elegí la opción que más se acerca a lo que estás viviendo y contame tu caso para orientarte mejor.</p></div>
+  <ul class="intent-grid">{intents.map(([title, text]) => <li class="intent-card surface"><h3>{title}</h3><p>{text}</p><a href={`https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(`Hola Luz, llego desde la web de Cristal Sagrado. Quiero consultar por ${title.toLowerCase()}. Mi situación es:`)}`} aria-label={`Consultar por WhatsApp sobre ${title}`}>Consultar por WhatsApp</a></li>)}</ul>
+</div></section>

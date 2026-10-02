@@ -1,0 +1,5 @@
+---
+import { testimonials } from "../lib/constants";
+---
+<!-- Testimonios preservados y servidos en HTML estático. -->
+<section class="section" id="testimonios"><div class="wrap"><h2>Lo que dicen</h2><div class="testimonial-grid">{testimonials.map((item) => <blockquote class="surface"><p>“{item.quote}”</p><footer>— {item.attribution}</footer></blockquote>)}</div></div></section>

@@ -1,0 +1,6 @@
+---
+interface Props { name: string; description: string; href: string; }
+const { name, description, href } = Astro.props;
+---
+<!-- Card reutilizable de enlaces a servicios estáticos. -->
+<a class="service-card surface" href={href}><h3>{name}</h3><p>{description}</p></a>

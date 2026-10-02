@@ -1,0 +1,6 @@
+---
+import { SITE } from "../lib/constants";
+const href = `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(SITE.whatsappDefaultMessage)}`;
+---
+<!-- CTA flotante para móviles conectado al flujo de consulta con descripción del caso. -->
+<a class="whatsapp-float" href={href} aria-label="Consultar por WhatsApp">💬</a>

@@ -1,0 +1,9 @@
+---
+---
+<!-- Formulario Formspree único de Home, con email o teléfono en el mismo campo. -->
+<section class="section" id="contacto"><div class="wrap contact-panel"><div><h2>Contame tu situación</h2><p>Podés escribirme con tus dudas. Cuanto más claro me cuentes lo que estás viviendo, mejor voy a poder orientarte.</p></div>
+<form id="formulario" action="https://formspree.io/f/mdklwnlg" method="POST" aria-label="Formulario de contacto">
+<label for="nombre">Nombre:</label><input id="nombre" name="nombre" type="text" autocomplete="name" required />
+<label for="contacto-campo">Email o teléfono:</label><input id="contacto-campo" name="contacto" type="text" inputmode="text" pattern="(^[^ @]+@[^ @]+[.][^ @]+$)|(^[+]?[0-9 ()-]{7,}$)" title="Ingresá un email válido o un teléfono válido." required />
+<label for="mensaje">Mensaje:</label><textarea id="mensaje" name="mensaje" required></textarea><input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
+<button class="button button--primary" type="submit">Enviar</button></form></div></section>
