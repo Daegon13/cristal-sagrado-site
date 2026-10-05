@@ -1,6 +1,5 @@
 ---
-import { SITE } from "../lib/constants";
-const href = `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent("Hola Luz, llego desde la web de Cristal Sagrado. Quiero contarte mi caso:")}`;
+import WhatsAppCTA from "./WhatsAppCTA.astro";
 ---
 <!-- CTA de WhatsApp con texto previo conservado; el módulo común solicita el caso. -->
-<section class="section section--featured"><div class="wrap final-cta surface"><h2>¿Preferís escribir directo?</h2><p>También podés contarme tu caso por WhatsApp con reserva. Te respondo con calma y vemos juntas qué camino tiene más sentido para vos.</p><a data-cta-location="final_cta" class="button button--primary" href={href}>Consultar por WhatsApp</a></div></section>
+<section class="section section--featured"><div class="wrap final-cta surface"><h2>¿Preferís escribir directo?</h2><p>También podés contarme tu caso por WhatsApp con reserva. Te respondo con calma y vemos juntas qué camino tiene más sentido para vos.</p><WhatsAppCTA label="Consultar por WhatsApp" className="button button--primary" ctaLocation="final_cta" /></div></section>

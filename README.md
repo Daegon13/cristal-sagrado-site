@@ -42,7 +42,7 @@ GitHub Actions publica dist/ en la rama gh-pages al hacer push a main. Las previ
 
 - Home, Tarot, FAQ y Cómo trabajamos son HTML estático y no cargan Firebase.
 - Solo las cuatro páginas de categoría inicializan Firebase público y consultan Firestore; el orden, normalización y render seguro actuales se conservan.
-- Los CTA wa.me pasan por el diálogo que requiere describir el caso y conservan el contexto del servicio.
+- Los CTA públicos abren el panel obligatorio de caso y generan la URL de WhatsApp solo tras validar el texto. Sin JavaScript llevan al formulario de Home.
 - El único formulario Formspree está en Home.
 - /admin/ se copia sin bundling desde admin/; validar login con credenciales autorizadas y el proyecto Firebase habitual.
 - Los .html existentes se sirven como puentes porque el hosting actual es GitHub Pages. Las rutas limpias son canónicas.

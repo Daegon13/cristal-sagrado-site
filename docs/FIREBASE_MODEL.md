@@ -65,7 +65,7 @@ Las páginas públicas consultan por `category` y `active == true` para mantener
 
 ## CTA WhatsApp por servicio
 
-El número se mantiene fijo en `59896106373`. Cada card de servicio genera una URL `https://wa.me/59896106373?text=...` con el mensaje encodeado. Si `ctaText` existe, se usa como override del mensaje.
+El número se mantiene fijo en `59896106373`. Cada card de servicio genera un trigger del panel de caso; la URL `https://wa.me/59896106373?text=...` se crea únicamente después de validar el caso. Si `ctaText` existe, se usa como override del mensaje.
 
 ## Documento `settings/site`
 
@@ -188,4 +188,4 @@ Uso público de campos v2:
 - `ctaText`: no se usa necesariamente como texto visible del botón; se usa como mensaje personalizado de WhatsApp en la URL del CTA del servicio.
 - `slug`: se agrega como `data-slug` de la card cuando existe o cuando el normalizador lo genera, pero todavía no crea navegación a páginas detalle.
 
-Las secciones vacías no se renderizan. El CTA visible de cada servicio es “Consultar por este servicio”, con `aria-label` específico para el nombre del servicio y URL `wa.me` generada por el helper compartido. Los estados vacío y error también muestran CTA general a WhatsApp sin exponer detalles técnicos al usuario final.
+Las secciones vacías no se renderizan. El CTA visible de cada servicio es “Consultar por este servicio”, con `aria-label` específico para el nombre del servicio y trigger del panel compartido. Los estados vacío y error también muestran CTA general al panel sin exponer detalles técnicos al usuario final.

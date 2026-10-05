@@ -1,6 +1,5 @@
 ---
-import { SITE } from "../lib/constants";
-const href = `https://wa.me/${SITE.whatsappNumber}?text=${encodeURIComponent(SITE.whatsappDefaultMessage)}`;
+import WhatsAppCTA from "./WhatsAppCTA.astro";
 ---
 <!-- CTA flotante para móviles conectado al flujo de consulta con descripción del caso. -->
-<a data-cta-location="mobile_sticky" class="whatsapp-float" href={href} aria-label="Consultar por WhatsApp">💬</a>
+<div class="whatsapp-sticky"><WhatsAppCTA label="Contame tu caso por WhatsApp" className="whatsapp-sticky__button" ctaLocation="mobile_sticky" /></div>

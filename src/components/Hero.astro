@@ -1,6 +1,7 @@
 ---
 interface Props { title: string; subtitle?: string; action?: string; href?: string; ctaLocation?: string; }
 const { title, subtitle, action, href = "#contacto", ctaLocation = "hero" } = Astro.props;
+import WhatsAppCTA from "./WhatsAppCTA.astro";
 ---
 <!-- Hero común con un solo encabezado principal por página. -->
-<section class="hero"><div class="wrap hero__content"><h1>{title}</h1>{subtitle && <p>{subtitle}</p>}{action && <a data-cta-location={ctaLocation} class="button button--primary" href={href}>{action}</a>}</div></section>
+<section class="hero"><div class="wrap hero__content"><h1>{title}</h1>{subtitle && <p>{subtitle}</p>}{action && (href === "#contacto" || href.endsWith("#formulario") ? <WhatsAppCTA label={action} className="button button--primary" ctaLocation={ctaLocation} /> : <a data-cta-location={ctaLocation} class="button button--primary" href={href}>{action}</a>)}</div></section>

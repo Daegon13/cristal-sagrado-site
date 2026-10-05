@@ -10,10 +10,10 @@ const contextFor = (link) => ({
 
 document.addEventListener("click", (event) => {
   const target = event.target instanceof Element ? event.target : null;
-  const intentLink = target?.closest(".intent-card a[href^='https://wa.me/']");
+  const intentLink = target?.closest(".intent-card [data-whatsapp-trigger]");
   if (intentLink) trackEvent("intent_click", { intent: intentLink.dataset.intent, page: page() });
 
-  const link = target?.closest("a[href^='https://wa.me/']");
+  const link = target?.closest("[data-whatsapp-trigger]");
   if (!link) {
     const cta = target?.closest("a[data-cta-location]");
     if (cta) trackEvent("nav_cta", { page: page(), cta_location: cta.dataset.ctaLocation });

@@ -18,9 +18,11 @@
 
 ## Conversión
 
-- CTA de header abre WhatsApp.
-- Botón flotante abre WhatsApp.
-- Links de footer a WhatsApp, Instagram y TikTok funcionan.
+- Los CTA de header, Hero, intención, servicio, footer y barra móvil abren el panel de caso antes de WhatsApp.
+- Caso vacío, espacios y texto corto impiden continuar; solo un caso válido genera la URL de WhatsApp.
+- Sin JavaScript, los CTA llevan al formulario de contacto de Home, que requiere mensaje.
+- La barra móvil se oculta con el panel abierto y cuando el formulario entra en pantalla.
+- Links de footer a Instagram y TikTok funcionan; WhatsApp usa el mismo panel.
 - Formspree mantiene `action="https://formspree.io/f/mdklwnlg"`.
 - El campo “Email o teléfono” acepta email o teléfono.
 
@@ -59,6 +61,14 @@
 - El contenido principal comienza con un h1 claro.
 - No hay errores de consola en carga inicial.
 
+## Instagram en teléfono real (pendiente antes de llamar PASS a WebView)
+
+1. Abrir `cristal-sagrado.com` desde Instagram.
+2. Probar CTA de Hero, barra inferior y servicio cargado de Firestore.
+3. Intentar continuar con caso vacío y luego con espacios; debe permanecer en el panel.
+4. Escribir un caso válido; verificar que recién entonces se abre WhatsApp con el contexto del CTA y el caso.
+5. Cerrar el panel y comprobar foco, scroll y teclado; repetir desde el menú móvil.
+
 ## Admin servicios v2 — FASE 3B.1
 
 - `/admin` muestra campos legacy y v2 en el formulario de servicios.
@@ -94,9 +104,9 @@
 - `descriptionShort` se muestra en la card; si falta, se ve el fallback legacy `description`.
 - `intent`, `idealFor` y `benefits` solo aparecen cuando tienen valores, sin títulos o listas vacías.
 - Precio y duración solo aparecen cuando existen y son valores normalizados válidos.
-- Cada card tiene CTA “Consultar por este servicio” como `<a>` a WhatsApp, con `aria-label` que incluye el nombre del servicio.
+- Cada card tiene CTA “Consultar por este servicio” con `aria-label` que incluye el nombre del servicio y dispara el panel obligatorio antes de WhatsApp.
 - Si `ctaText` existe, modifica el mensaje prellenado de WhatsApp del servicio.
-- Si una categoría no tiene servicios, se muestra mensaje comercial con CTA general a WhatsApp.
+- Si una categoría no tiene servicios, se muestra mensaje comercial con CTA general al mismo panel de caso.
 - Si Firestore falla, se muestra mensaje claro con CTA general y el detalle técnico queda solo en consola.
 - Las cards se renderizan creando nodos y usando `textContent` para datos remotos; no se usa `innerHTML` con contenido de Firestore.
 

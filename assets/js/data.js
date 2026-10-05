@@ -7,8 +7,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { firebaseConfig } from "../../admin/config.js";
-import { normalizeService, buildServiceWhatsappUrl, compareServicesForPublic } from "./service-helpers.js";
-import { buildWhatsappUrl } from "./whatsapp.js";
+import { normalizeService, compareServicesForPublic } from "./service-helpers.js";
 
 // -------------------------
 // BLOQUE: Inicialización Firebase
@@ -57,16 +56,10 @@ function createTextElement(tag, className, text) {
 }
 
 
-function buildGeneralWhatsappUrl() {
-  const message = "Hola Luz, llego desde la web de Cristal Sagrado. Quiero consultar por esta categoría de servicios. Mi situación es:";
-  return buildWhatsappUrl(message);
-}
-
-function createWhatsappCta(text, href, ariaLabel) {
+function createWhatsappCta(text, ariaLabel) {
   const cta = createTextElement("a", "serv-cta", text);
-  cta.href = href;
-  cta.target = "_blank";
-  cta.rel = "noopener noreferrer";
+  cta.href = `${import.meta.env.BASE_URL || "/"}#formulario`;
+  cta.dataset.whatsappTrigger = "";
   cta.setAttribute("aria-label", ariaLabel);
   return cta;
 }
@@ -145,7 +138,6 @@ function createServiceCard(service) {
 
   const serviceCta = createWhatsappCta(
     "Consultar por este servicio",
-    buildServiceWhatsappUrl(service),
     `Consultar por WhatsApp sobre ${service.name}`
   );
   serviceCta.dataset.serviceName = service.name;
@@ -165,9 +157,10 @@ function renderMessageWithWhatsapp(container, className, message) {
   li.appendChild(createTextElement("p", "serv-state-message", message));
   li.appendChild(createWhatsappCta(
     "Consultar por WhatsApp",
-    buildGeneralWhatsappUrl(),
     "Consultar por WhatsApp sobre esta categoría de servicios"
   ));
+  li.querySelector("[data-whatsapp-trigger]").dataset.category = detectCategory();
+  li.querySelector("[data-whatsapp-trigger]").dataset.ctaLocation = "contact_section";
   container.appendChild(li);
 }
 
