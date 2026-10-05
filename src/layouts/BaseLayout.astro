@@ -5,6 +5,9 @@ import { canonical } from "../lib/seo"; import { SITE } from "../lib/constants";
 interface Props { title: string; description: string; path: string; schema?: Record<string, unknown>; }
 const { title, description, path, schema } = Astro.props; const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const robots = base === "/" ? "index,follow" : "noindex,follow";
+const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
+const umamiScriptUrl = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL;
+const productionHost = new URL(SITE.origin).hostname;
 ---
 <!doctype html><html lang="es"><head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -12,5 +15,39 @@ const robots = base === "/" ? "index,follow" : "noindex,follow";
   <meta property="og:type" content="website" /><meta property="og:site_name" content={SITE.name} /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical(path)} /><meta name="twitter:card" content="summary" />
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" /><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" sizes="32x32" href={`${base}favicon_io/favicon-32x32.png`} /><link rel="icon" type="image/png" sizes="16x16" href={`${base}favicon_io/favicon-16x16.png`} /><link rel="apple-touch-icon" sizes="180x180" href={`${base}favicon_io/apple-touch-icon.png`} /><link rel="manifest" href={`${base}favicon_io/site.webmanifest`} />
-  {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}<script type="module" src={`${base}assets/js/whatsapp-contact.js`}></script>
+  {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+  {umamiWebsiteId && umamiScriptUrl && <>
+    <script is:inline>
+      window.cristalUmamiBeforeSend = (type, payload) => {
+        if (location.pathname.startsWith("/previews/") || location.pathname.includes("/previews/")) return false;
+        const denied = new Set(["message", "mensaje", "case", "caso", "email", "phone", "telefono", "name", "nombre", "whatsapp_text"]);
+        const clean = (value) => {
+          if (!value || typeof value !== "object") return value;
+          if (Array.isArray(value)) return value.map(clean);
+          return Object.fromEntries(Object.entries(value).filter(([key]) => {
+            const normalized = key.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase().replace(/[-\s]/g, "_");
+            return !denied.has(normalized) && !/^(message|mensaje|case|caso|email|phone|telefono)(_|$)/.test(normalized);
+          }).map(([key, item]) => [key, clean(item)]));
+        };
+        const safe = clean(payload);
+        const sanitizeUrl = (value, preserveOrigin = false) => {
+          try {
+            const url = new URL(value, location.href);
+            const allowed = new Set(["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]);
+            const query = new URLSearchParams();
+            for (const [key, value] of url.searchParams) if (allowed.has(key.toLowerCase())) query.append(key.toLowerCase(), value);
+            return `${preserveOrigin ? url.origin : ""}${url.pathname}${query.size ? `?${query}` : ""}`;
+          } catch { return location.pathname; }
+        };
+        if (safe && typeof safe.url === "string") safe.url = sanitizeUrl(safe.url);
+        if (safe && typeof safe.referrer === "string" && safe.referrer) safe.referrer = sanitizeUrl(safe.referrer, true);
+        return safe;
+      };
+    </script>
+    <script defer src={umamiScriptUrl} data-website-id={umamiWebsiteId} data-domains={productionHost} data-do-not-track="true" data-performance="true" data-before-send="cristalUmamiBeforeSend"></script>
+  </>}
+  <script>
+    import "../../assets/js/analytics-events.js";
+    import "../../assets/js/whatsapp-contact.js";
+  </script>
 </head><body><VideoBackground /><Header /><slot /><Footer /><WhatsAppButton /></body></html>

@@ -24,6 +24,14 @@
 - Formspree mantiene `action="https://formspree.io/f/mdklwnlg"`.
 - El campo “Email o teléfono” acepta email o teléfono.
 
+## Analítica pública
+
+- Sin `PUBLIC_UMAMI_WEBSITE_ID`, build y páginas públicas funcionan sin tracker.
+- Umami se incluye una sola vez desde `BaseLayout.astro`, nunca desde `/admin/`.
+- Se respetan Do Not Track y dominio de producción; localhost y `/previews/` no generan eventos.
+- Payloads y referrer solo conservan UTM conocidos; eventos no incluyen texto de situación ni datos del formulario.
+- `wa_outbound` se cuenta como lead potencial, no venta; el flujo WhatsApp navega normalmente.
+
 ## Firebase y admin
 
 - Firebase público solo carga en páginas de categoría que renderizan servicios.

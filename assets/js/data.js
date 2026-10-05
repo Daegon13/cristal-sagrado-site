@@ -105,6 +105,7 @@ function createServiceCard(service) {
   li.className = "serv-card";
   li.dataset.id = service.id;
   if (service.slug) li.dataset.slug = service.slug;
+  li.dataset.category = service.category;
 
   const header = document.createElement("div");
   header.className = "serv-card-header";
@@ -148,6 +149,9 @@ function createServiceCard(service) {
     `Consultar por WhatsApp sobre ${service.name}`
   );
   serviceCta.dataset.serviceName = service.name;
+  serviceCta.dataset.serviceSlug = service.slug || "";
+  serviceCta.dataset.category = service.category;
+  serviceCta.dataset.ctaLocation = "service_card";
   if (service.ctaText) serviceCta.dataset.ctaText = service.ctaText;
   li.appendChild(serviceCta);
 

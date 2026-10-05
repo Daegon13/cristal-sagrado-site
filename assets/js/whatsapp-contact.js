@@ -1,4 +1,5 @@
 import { buildWhatsappMessage, buildWhatsappUrl, validCase } from "./whatsapp.js";
+import { trackEvent } from "./analytics.js";
 
 // BLOQUE CONTACTO: un solo diálogo para todos los enlaces públicos, incluidos los creados por Firestore.
 const dialog = document.createElement("dialog");
@@ -46,6 +47,9 @@ dialog.querySelector("form").addEventListener("submit", (event) => {
     return;
   }
   const url = buildWhatsappUrl(buildWhatsappMessage({ ...context, caseText: textarea.value }));
+  const properties = { ...context, page: location.pathname, cta_location: context.ctaLocation };
+  trackEvent("wa_case_valid", properties);
+  trackEvent("wa_outbound", properties);
   closeDialog();
   window.location.assign(url);
 });
@@ -59,6 +63,10 @@ document.addEventListener("click", (event) => {
   const legacyMessage = new URL(link.href).searchParams.get("text") || "";
   const legacyService = legacyMessage.match(/Quiero consultar por (.+?)\./i)?.[1] || "";
   context = { serviceName: link.dataset.serviceName || legacyService, ctaText: link.dataset.ctaText || "" };
+  context = { ...context, service: link.dataset.serviceSlug || context.serviceName, category: link.dataset.category || location.pathname.match(/magia-(roja|blanca|negra|verde)/)?.[1], intent: link.dataset.intent };
+  const ctaLocation = link.dataset.ctaLocation || (link.closest("header") ? "header" : link.closest("footer") ? "footer" : link.closest(".intent-card") ? "intent" : link.closest(".final-cta") ? "final_cta" : link.closest(".serv-card") ? "service_card" : link.closest(".category-page") ? "contact_section" : link.closest(".hero") ? "hero" : "contact_section");
+  context.ctaLocation = ctaLocation;
+  trackEvent("wa_open", { ...context, page: location.pathname, cta_location: ctaLocation });
   textarea.value = "";
   error.hidden = true;
   textarea.removeAttribute("aria-invalid");

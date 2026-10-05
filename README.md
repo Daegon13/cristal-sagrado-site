@@ -20,6 +20,8 @@ Astro muestra la dirección local del servidor, normalmente http://localhost:432
     npm run build
     npm run preview
 
+Configuración de Umami self-hosted y del reporte semanal por email: [docs/ANALYTICS.md](docs/ANALYTICS.md).
+
 El build crea el sitio estático completo en dist/. El preview sirve ese build localmente.
 
 ## Deploy

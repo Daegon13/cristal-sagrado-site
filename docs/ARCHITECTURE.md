@@ -12,6 +12,8 @@ El sitio público se genera como archivos HTML estáticos con Astro, output dire
 
 El contenido informativo sale estático. Los scripts de menú, video y diálogo WhatsApp se limitan a interacciones. Formspree mantiene un único formulario HTML en Home.
 
+La analítica opcional de Umami se integra una sola vez en `BaseLayout.astro`, solo con Website ID configurado y restringida al dominio público. `assets/js/analytics.js` filtra eventos y payloads; no se instrumenta `/admin/`. Ver `ANALYTICS.md` para taxonomía y privacidad.
+
 ## Firebase y servicios
 
 El cliente Firestore se importa únicamente desde las cuatro páginas de categoría. Consulta services por category y active == true, conserva normalización v2, cache, orden, búsqueda, expansión y mensajes de error/vacío. El render remoto sigue creando nodos y usando textContent. No hay Firebase en Home, Tarot, FAQ ni Cómo trabajamos.
