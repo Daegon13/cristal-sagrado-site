@@ -3,14 +3,14 @@
 .video-background:after{position:absolute;inset:0;content:"";background:linear-gradient(#0c071466,#0c0714bb),radial-gradient(circle at 50% 30%,#d4af3717,transparent 40%)}
 .video-background video{width:100%;height:100%;object-fit:cover}
 /* Cabecera y navegación: menú desplegable para pantallas táctiles, enlaces en línea en escritorio. */
-.site-header{position:sticky;top:0;z-index:20;background:#0c0714d9;border-bottom:1px solid var(--border);backdrop-filter:blur(12px)}
-.site-header__inner{min-height:4.8rem;display:flex;align-items:center;gap:.6rem}
-.brand{min-width:0;font:700 clamp(1.15rem,3.8vw,1.65rem)/1.15 "Playfair Display",Georgia,serif;text-decoration:none;overflow-wrap:anywhere}
+.site-header{position:sticky;top:0;z-index:30;width:100%;max-width:100%;box-sizing:border-box;background:#0c0714;border-bottom:1px solid var(--border);isolation:isolate}
+.site-header__inner{width:100%;max-width:75rem;min-width:0;min-height:4.8rem;margin-inline:auto;padding-inline:max(1rem,env(safe-area-inset-left,0px)) max(1rem,env(safe-area-inset-right,0px));display:flex;align-items:center;gap:.6rem}
+.brand{flex:1 1 auto;min-width:0;font:700 clamp(1.15rem,3.8vw,1.65rem)/1.15 "Playfair Display",Georgia,serif;text-decoration:none;overflow-wrap:anywhere}
 .desktop-nav{display:none;margin-left:auto;align-items:center;gap:clamp(.6rem,2vw,1.5rem)}
 .desktop-nav>a:not(.button){text-decoration:none}
-.menu-toggle{flex:none;margin-left:auto;width:2.9rem;height:2.9rem;display:grid;align-content:center;justify-items:center;gap:5px;border:1px solid var(--border);border-radius:.75rem;background:#ffffff0b;color:var(--fg)}
+.menu-toggle{position:relative;z-index:2;flex:0 0 3rem;margin-left:auto;width:3rem;min-width:3rem;height:3rem;min-height:3rem;display:grid;align-content:center;justify-items:center;gap:5px;border:1px solid var(--border);border-radius:.75rem;background:#ffffff0b;color:var(--fg);opacity:1;visibility:visible;pointer-events:auto;touch-action:manipulation;cursor:pointer}
 .menu-toggle>span:not(.sr-only){width:1.15rem;height:2px;background:currentColor}
-.mobile-menu{display:none;position:absolute;inset:100% 0 auto;max-height:calc(100dvh - 4.8rem);overflow-y:auto;padding:1rem max(1rem,calc((100% - 75rem)/2));background:#100817f5;border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
+.mobile-menu{display:none;position:absolute;z-index:1;inset:100% 0 auto;width:100%;max-width:100%;max-height:calc(100dvh - 4.8rem - env(safe-area-inset-bottom,0px));overflow-y:auto;overscroll-behavior:contain;padding:1rem max(1rem,env(safe-area-inset-right,0px)) calc(1rem + env(safe-area-inset-bottom,0px)) max(1rem,env(safe-area-inset-left,0px));background:#100817;border-bottom:1px solid var(--border);box-shadow:var(--shadow)}
 .mobile-menu.is-open{display:grid;gap:1rem}
 .mobile-menu ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr));gap:.25rem;margin:0;padding:0;list-style:none}
 .mobile-menu li a{display:block;padding:.65rem .5rem;text-decoration:none;border-radius:.5rem}
@@ -79,7 +79,7 @@
 .social-links a{color:var(--purple);text-decoration:none}
 .whatsapp-sticky{position:fixed;inset:auto 0 0;z-index:19;padding:.55rem max(1rem,env(safe-area-inset-left,0px)) calc(.55rem + env(safe-area-inset-bottom,0px));background:#0c0714f2;border-top:1px solid var(--border)}
 .whatsapp-sticky__button{display:flex;min-height:2.9rem;align-items:center;justify-content:center;border-radius:999px;background:var(--green);color:#102017;font-weight:700;text-align:center;text-decoration:none}
-.contact-open .whatsapp-sticky,.inline-cta-visible .whatsapp-sticky{display:none}
+.contact-open .whatsapp-sticky,.inline-cta-visible .whatsapp-sticky,.mobile-menu-open .whatsapp-sticky{display:none}
 .contact-dialog__actions .btn{display:inline-flex;min-height:2.8rem;align-items:center;justify-content:center;padding:.6rem .9rem;border-radius:999px;font-weight:700}
 .contact-dialog__actions .btn--ghost{border:1px solid #ffffff55;background:transparent;color:var(--fg)}
 .contact-dialog__actions .btn--whatsapp{border:0;background:var(--green);color:#102017}

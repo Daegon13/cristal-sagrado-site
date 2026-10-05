@@ -57,6 +57,9 @@
 ## Accesibilidad/manual
 
 - Navegación mobile abre/cierra menú hamburguesa.
+- En móvil, comprobar el centro del botón con `elementFromPoint` y toque real arriba, al 25/50/75 % y al final del scroll; repetir tras cerrar el menú y el panel WhatsApp.
+- El menú móvil se desplaza verticalmente cuando el viewport es bajo; Escape devuelve el foco al botón.
+- Al cruzar 60rem, el menú móvil se cierra y `aria-expanded` vuelve a `false`.
 - Hay foco visible en links/botones principales.
 - El contenido principal comienza con un h1 claro.
 - No hay errores de consola en carga inicial.
@@ -68,6 +71,10 @@
 3. Intentar continuar con caso vacío y luego con espacios; debe permanecer en el panel.
 4. Escribir un caso válido; verificar que recién entonces se abre WhatsApp con el contexto del CTA y el caso.
 5. Cerrar el panel y comprobar foco, scroll y teclado; repetir desde el menú móvil.
+
+## Header en Safari iOS e Instagram (pendiente de dispositivo real)
+
+En 30 segundos: abrir Home, mirar el botón arriba y tras deslizar hasta mitad y final, tocarlo en cada punto, cerrar el menú y abrir/cerrar el panel WhatsApp. Confirmar que el botón sigue visible y responde; repetir en Safari y en el navegador interno de Instagram.
 
 ## Admin servicios v2 — FASE 3B.1
 

@@ -7,15 +7,33 @@ const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL :
 <header class="site-header"><div class="site-header__inner wrap">
   <a class="brand" href={base} aria-label="Cristal Sagrado, inicio">Cristal Sagrado</a>
   <nav class="desktop-nav" aria-label="Navegación principal"><a href={`${base}#servicios`}>Servicios</a><a href={`${base}#testimonios`}>Testimonios</a><WhatsAppCTA label="Reservar" className="button button--whatsapp" ctaLocation="header" /></nav>
-  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle><span class="sr-only">Abrir menú</span><span></span><span></span><span></span></button>
+  <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle><span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
 </div><nav id="mobile-menu" class="mobile-menu" aria-label="Páginas del sitio" data-side-nav><ul>{navigation.map((item) => <li><a href={`${base}${item.href}`}>{item.label}</a></li>)}</ul><WhatsAppCTA label="Reservar" className="button button--whatsapp" ctaLocation="mobile_menu" /></nav></header>
 <script>
-// Mantiene el estado del menú anunciado para teclado y tecnologías de asistencia.
+// Mantiene el estado del menú sincronizado con su visibilidad y el breakpoint.
 const toggle = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
 const menu = document.querySelector<HTMLElement>("[data-side-nav]");
-const close = () => { menu?.classList.remove("is-open"); toggle?.setAttribute("aria-expanded", "false"); };
-toggle?.addEventListener("click", () => { const open = toggle.getAttribute("aria-expanded") !== "true"; toggle.setAttribute("aria-expanded", String(open)); menu?.classList.toggle("is-open", open); });
+const desktopQuery = window.matchMedia("(min-width: 60rem)");
+const close = (restoreFocus = false) => {
+  menu?.classList.remove("is-open");
+  document.body.classList.remove("mobile-menu-open");
+  toggle?.setAttribute("aria-expanded", "false");
+  toggle?.setAttribute("aria-label", "Abrir menú");
+  if (restoreFocus && !desktopQuery.matches) toggle?.focus();
+};
+toggle?.addEventListener("click", (event) => {
+  const open = toggle.getAttribute("aria-expanded") !== "true";
+  if (!open) { close(); return; }
+  toggle.setAttribute("aria-expanded", "true");
+  toggle.setAttribute("aria-label", "Cerrar menú");
+  menu?.classList.add("is-open");
+  document.body.classList.add("mobile-menu-open");
+  if (event.detail === 0) menu?.querySelector<HTMLElement>("a")?.focus();
+});
 document.addEventListener("click", (event) => { if (menu?.classList.contains("is-open") && !menu.contains(event.target as Node) && !toggle?.contains(event.target as Node)) close(); });
-menu?.querySelectorAll("a").forEach((link) => link.addEventListener("click", close));
-document.addEventListener("keydown", (event) => { if (event.key === "Escape") close(); });
+menu?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => close()));
+document.addEventListener("keydown", (event) => { if (event.key === "Escape" && menu?.classList.contains("is-open")) { event.preventDefault(); close(true); } });
+const onBreakpoint = (event: MediaQueryListEvent) => { if (event.matches) close(); };
+if ("addEventListener" in desktopQuery) desktopQuery.addEventListener("change", onBreakpoint);
+else desktopQuery.addListener(onBreakpoint);
 </script>
