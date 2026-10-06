@@ -9,7 +9,7 @@ const EVENT_PROPERTIES = {
   service_detail: ["service", "category"],
   service_wa: ["service", "category"],
   form_submit: ["page"],
-  nav_cta: ["page", "cta_location"]
+  nav_cta: ["page", "cta_location", "category"]
 };
 const normalizeKey = (key) => key.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase().replace(/[-\s]/g, "_");
 const isPrivateKey = (key) => {

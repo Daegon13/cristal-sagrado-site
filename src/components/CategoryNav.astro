@@ -1,0 +1,9 @@
+---
+import { categories } from "../lib/constants";
+const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+<nav class="category-nav" aria-label="Magia y tarot">
+  <ul class="wrap category-nav__list">
+    {categories.map((category) => <li><a href={`${base}${category.href}`} data-cta-location="magic_category_nav" data-category={category.key}>{category.label}</a></li>)}
+  </ul>
+</nav>

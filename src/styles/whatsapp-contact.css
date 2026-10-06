@@ -1,10 +1,10 @@
 .contact-overlay[hidden]{display:none}
-.contact-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:1rem max(1rem,env(safe-area-inset-left,0px)) calc(1rem + env(safe-area-inset-bottom,0px));background:#000c;overscroll-behavior:contain}
-.contact-dialog{width:min(100%,32rem);max-height:100%;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--accent,#8c4dfe);border-radius:var(--radius,1.25rem);background:var(--bg,#0d0b1e);color:var(--fg,#ede6ff);box-shadow:var(--shadow,0 10px 30px #0008);padding:clamp(1rem,4vw,2rem)}
+.contact-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:1rem max(1rem,env(safe-area-inset-left,0px)) calc(1rem + env(safe-area-inset-bottom,0px));background:var(--scrim);overscroll-behavior:contain}
+.contact-dialog{width:min(100%,32rem);max-height:100%;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);color:var(--fg);box-shadow:var(--shadow);padding:clamp(1rem,4vw,2rem)}
 .contact-dialog__form{display:grid;min-width:0;gap:.8rem}
 .contact-dialog h2,.contact-dialog p{margin:0}
-.contact-dialog textarea{width:100%;min-height:6rem;resize:vertical;padding:.75rem;border:1px solid var(--muted,#bfa8ff);border-radius:.75rem;background:#171329;color:var(--fg,#ede6ff);font:inherit}
-.contact-dialog__error{color:#ffb7c0}
+.contact-dialog textarea{width:100%;min-height:6rem;resize:vertical;padding:.75rem;border:1px solid var(--border);border-radius:.5rem;background:var(--bg-deep);color:var(--fg);font:inherit}
+.contact-dialog__error{color:var(--error)}
 .contact-dialog__actions{display:flex;justify-content:flex-end;gap:.75rem;flex-wrap:wrap}
 .contact-dialog button{cursor:pointer;font:inherit}
 @media(max-width:400px){.contact-dialog__actions button{width:100%}}

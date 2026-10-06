@@ -1,5 +1,4 @@
 ---
 import { trustPoints } from "../lib/constants";
 ---
-<!-- Puntos de confianza de la Home organizados en filas fluidas. -->
-<section class="section section--featured"><div class="wrap trust-layout"><div><h2>Un espacio espiritual cuidado y confidencial</h2><p>Cada consulta se trata con respeto, discreción y atención personalizada. No todos los casos necesitan lo mismo, por eso antes de recomendar un servicio busco entender qué estás viviendo y qué tipo de acompañamiento puede ayudarte mejor.</p></div><ul class="trust-grid">{trustPoints.map((point) => <li class="surface"><strong>{point.title}</strong><span>{point.text}</span></li>)}</ul></div></section>
+<section class="trust-strip" aria-label="Cómo te acompaño"><div class="wrap"><ul>{trustPoints.map((point) => <li><strong>{point.title}</strong><span>{point.text}</span></li>)}</ul></div></section>

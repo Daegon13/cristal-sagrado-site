@@ -10,7 +10,7 @@ El sitio público se genera como archivos HTML estáticos con Astro, output dire
 - src/lib/: constantes públicas, número de WhatsApp y metadata SEO.
 - public/: admin independiente, assets, multimedia, favicons, robots, sitemap, CNAME y puentes legacy.
 
-El contenido informativo sale estático. Los scripts de menú, video y diálogo WhatsApp se limitan a interacciones. Formspree mantiene un único formulario HTML en Home.
+El contenido informativo sale estático. La navegación móvil es HTML siempre visible y no necesita JavaScript. Los scripts de video y diálogo WhatsApp se limitan a interacciones. Formspree mantiene un único formulario HTML en Home.
 
 La analítica opcional de Umami se integra una sola vez en `BaseLayout.astro`, solo con Website ID configurado y restringida al dominio público. `assets/js/analytics.js` filtra eventos y payloads; no se instrumenta `/admin/`. Ver `ANALYTICS.md` para taxonomía y privacidad.
 
@@ -30,7 +30,7 @@ Producción compila dist/ y publica en gh-pages preservando previews. El workflo
 
 ## Media y capas visuales
 
-El video conserva su binario y rutas de origen. VideoBackground.astro lo mantiene fijo fuera del flujo y lo carga en idle únicamente si no aplican mobile, reduced-motion, reduced-data o saveData. El poster y gradiente quedan como fallback.
+El video conserva su binario y rutas de origen. VideoBackground.astro lo mantiene fijo fuera del flujo y lo carga en idle únicamente desde 960 px si no aplican reduced-motion, reduced-data o saveData. Un fotograma WebP derivado del mismo video se usa como fondo estático del Hero hasta 959 px; el poster SVG y el gradiente quedan como fallback.
 
 ## Documentos relacionados
 

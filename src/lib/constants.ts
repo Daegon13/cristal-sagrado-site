@@ -11,11 +11,11 @@ export const navigation = [
   { label: "¿Cómo trabajamos?", href: "como-trabajamos/" }
 ] as const;
 export const categories = [
-  { label: "Magia Blanca", description: "Rituales para protección, amor y prosperidad.", href: "magia-blanca/" },
-  { label: "Magia Negra", description: "Soluciones para situaciones complejas y desafiantes.", href: "magia-negra/" },
-  { label: "Magia Roja", description: "Rituales para el amor, amarres y endulzamientos.", href: "magia-roja/" },
-  { label: "Magia Verde", description: "Conexión con la naturaleza y sanación.", href: "magia-verde/" },
-  { label: "Tarot", description: "Lecturas precisas para guiar tu camino.", href: "tarot/" }
+  { key: "blanca", label: "Magia Blanca", description: "Rituales para protección, amor y prosperidad.", href: "magia-blanca/", cta: "Ver trabajos de Magia Blanca" },
+  { key: "roja", label: "Magia Roja", description: "Rituales para el amor, amarres y endulzamientos.", href: "magia-roja/", cta: "Ver trabajos de Magia Roja" },
+  { key: "negra", label: "Magia Negra", description: "Soluciones para situaciones complejas y desafiantes.", href: "magia-negra/", cta: "Ver trabajos de Magia Negra" },
+  { key: "verde", label: "Magia Verde", description: "Conexión con la naturaleza y sanación.", href: "magia-verde/", cta: "Ver trabajos de Magia Verde" },
+  { key: "tarot", label: "Tarot", description: "Lecturas precisas para guiar tu camino.", href: "tarot/", cta: "Ver lecturas de Tarot" }
 ] as const;
 export const faqItems = [
   { question: "¿Cómo reservo un turno?", answer: "Escribime por WhatsApp y coordinamos día y hora. Si es online, te envío el enlace de la videollamada." },
@@ -36,7 +36,7 @@ export const processSteps = [
   { title: "Me contás tu caso", text: "Podés escribirme por WhatsApp o por el formulario de la web." },
   { title: "Ordenamos la situación", text: "Te ayudo a entender qué tipo de consulta o trabajo puede tener más sentido." },
   { title: "Te explico las opciones", text: "Hablamos de tiempos, enfoque y recomendaciones antes de comenzar." },
-  { title: "Avanzamos con reserva", text: "Cada caso se trata de forma personalizada, cuidada y confidencial." }
+  { title: "Realizo el trabajo y te acompaño", text: "Cuando corresponde, podés pedir un resumen o registro del trabajo." }
 ] as const;
 export const aboutSteps = [
   { title: "Escuchamos tu caso y resolvemos tus dudas.", text: "" },

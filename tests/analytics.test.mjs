@@ -42,3 +42,10 @@ test("nombres de servicio con caracteres especiales no rompen el evento", () => 
   trackEvent("service_wa", { service: "Amor & vínculos: edición ‘luna’ 💜", category: "roja" }, umami);
   assert.equal(captured[1].service, "Amor & vínculos: edición ‘luna’ 💜");
 });
+
+test("nav_cta registra categoría estática y descarta contacto privado", () => {
+  let captured;
+  const umami = { track: (...args) => { captured = args; } };
+  trackEvent("nav_cta", { page: "/", cta_location: "magic_category_nav", category: "roja", contact: "luz@example.com", message: "privado" }, umami);
+  assert.deepEqual(captured, ["nav_cta", { page: "/", cta_location: "magic_category_nav", category: "roja" }]);
+});

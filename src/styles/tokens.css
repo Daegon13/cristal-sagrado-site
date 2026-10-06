@@ -1,2 +1,34 @@
-/* Paleta, tipografía base y medidas compartidas. */
-:root{color-scheme:dark;--bg:#100817;--panel:rgba(16,10,25,.88);--fg:#fff7df;--muted:#ded4ed;--purple:#bfa8ff;--gold:#d4af37;--green:#25d366;--border:rgba(212,175,55,.25);--radius:1.15rem;--shadow:0 1rem 2.8rem #0006;font-family:Roboto,Arial,sans-serif}
+/* Negro violáceo, dorado y superficies de cristal recuperados del diseño anterior. */
+:root {
+  color-scheme: dark;
+  --bg: #100817;
+  --bg-deep: #090713;
+  --panel: rgba(17, 11, 29, .88);
+  --panel-soft: rgba(33, 18, 50, .82);
+  --glass: rgba(18, 11, 32, .78);
+  --glass-low: rgba(31, 18, 48, .56);
+  --wine: #482239;
+  --wine-deep: #251225;
+  --fg: #fff7df;
+  --muted: #d8cfe1;
+  --purple: #cbb9ff;
+  --gold: #d9b64c;
+  --gold-soft: #f1d981;
+  --green: #25d366;
+  --green-ink: #102017;
+  --error: #ffb7c0;
+  --border: rgba(217, 182, 76, .3);
+  --border-strong: rgba(217, 182, 76, .62);
+  --ambient: rgba(122, 74, 169, .24);
+  --video-veil-top: rgba(9, 7, 19, .38);
+  --video-veil-bottom: rgba(9, 7, 19, .74);
+  --video-halo: rgba(217, 182, 76, .09);
+  --hero-dark: rgba(9, 7, 19, .78);
+  --hero-mid: rgba(19, 10, 31, .38);
+  --hero-edge: rgba(9, 7, 19, .16);
+  --hero-panel: rgba(11, 7, 21, .7);
+  --scrim: #000c;
+  --radius: .9rem;
+  --shadow: 0 1rem 2.8rem #0008;
+  font-family: Roboto, Arial, sans-serif;
+}

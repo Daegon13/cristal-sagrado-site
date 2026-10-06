@@ -25,6 +25,10 @@
 - Links de footer a Instagram y TikTok funcionan; WhatsApp usa el mismo panel.
 - Formspree mantiene `action="https://formspree.io/f/mdklwnlg"`.
 - El campo “Email o teléfono” acepta email o teléfono.
+- Las cinco categorías se alcanzan desde la franja visible de Home, las tarjetas de Trabajos y lecturas y el footer mediante enlaces HTML directos.
+- La consulta de Header, Hero, intenciones, proceso, testimonios, CTA final y barra móvil abre el mismo panel obligatorio de WhatsApp.
+- El formulario Formspree muestra errores inline para nombre, contacto y mensaje; rechaza contactos triviales y no intenta enviarlos.
+- Un contacto válido permite el intento de envío; comprobar la entrega real solo con autorización y un destinatario controlado.
 
 ## Analítica pública
 
@@ -46,7 +50,7 @@
 
 - Video tiene `preload="none"`, `poster` y no incluye `<source>` inicial bloqueante.
 - `scripts/perf-media.js` carga el video de forma diferida en idle solo cuando no aplica una guarda de performance/accesibilidad.
-- Home mobile debe mostrar fallback visual y no descargar `images/Eclipse_small.mp4`.
+- Home hasta 959 px debe mostrar el poster estático y no descargar `images/Eclipse_small.mp4`.
 - Con `prefers-reduced-motion: reduce` debe mostrarse fallback visual y no descargarse el video.
 - Con ahorro de datos (`prefers-reduced-data` o `navigator.connection.saveData`) debe mostrarse fallback visual y no descargarse el video.
 - No debe haber 404 de assets después de remover comprimidos no referenciados.
@@ -56,10 +60,10 @@
 
 ## Accesibilidad/manual
 
-- Navegación mobile abre/cierra menú hamburguesa.
-- En móvil, comprobar el centro del botón con `elementFromPoint` y toque real arriba, al 25/50/75 % y al final del scroll; repetir tras cerrar el menú y el panel WhatsApp.
-- El menú móvil se desplaza verticalmente cuando el viewport es bajo; Escape devuelve el foco al botón.
-- Al cruzar 60rem, el menú móvil se cierra y `aria-expanded` vuelve a `false`.
+- Navegación móvil visible sin JavaScript: Trabajos, Tarot, Cómo funciona y FAQ; sin botón hamburguesa ni panel desplegable.
+- En móvil, comprobar los cuatro enlaces y el CTA Consultar a 320, 360, 375, 390, 393, 412 y 430 px; revisar targets, safe areas y ausencia de overflow horizontal.
+- Comprobar la franja de categorías, targets de 44 px y ausencia de overflow a 320, 360, 390, 393, 430, 768, 1024, 1366 y 1440 px.
+- Al cruzar 60rem, verificar que la navegación de escritorio sea visible y la segunda fila móvil desaparezca.
 - Hay foco visible en links/botones principales.
 - El contenido principal comienza con un h1 claro.
 - No hay errores de consola en carga inicial.
@@ -70,11 +74,11 @@
 2. Probar CTA de Hero, barra inferior y servicio cargado de Firestore.
 3. Intentar continuar con caso vacío y luego con espacios; debe permanecer en el panel.
 4. Escribir un caso válido; verificar que recién entonces se abre WhatsApp con el contexto del CTA y el caso.
-5. Cerrar el panel y comprobar foco, scroll y teclado; repetir desde el menú móvil.
+5. Cerrar el panel y comprobar foco, scroll y teclado; repetir desde el CTA Consultar del header.
 
 ## Header en Safari iOS e Instagram (pendiente de dispositivo real)
 
-En 30 segundos: abrir Home, mirar el botón arriba y tras deslizar hasta mitad y final, tocarlo en cada punto, cerrar el menú y abrir/cerrar el panel WhatsApp. Confirmar que el botón sigue visible y responde; repetir en Safari y en el navegador interno de Instagram.
+En 60 segundos: abrir Home, tocar Trabajos, Tarot, Cómo funciona y FAQ sin esperar JavaScript; volver a Home, tocar Consultar y comprobar el panel obligatorio. Deslizar hasta el final y probar la barra inferior de WhatsApp. Repetir en Safari iOS, Chrome Android y el navegador interno de Instagram, comprobando que no haya recortes ni controles superpuestos.
 
 ## Admin servicios v2 — FASE 3B.1
 

@@ -1,4 +1,5 @@
 import { trackEvent } from "./analytics.js";
+import { isValidContactForm } from "./contact-validation.js";
 
 const page = () => `${location.pathname}`;
 const categoryFromPath = () => location.pathname.match(/magia-(roja|blanca|negra|verde)/)?.[1] || "";
@@ -16,7 +17,7 @@ document.addEventListener("click", (event) => {
   const link = target?.closest("[data-whatsapp-trigger]");
   if (!link) {
     const cta = target?.closest("a[data-cta-location]");
-    if (cta) trackEvent("nav_cta", { page: page(), cta_location: cta.dataset.ctaLocation });
+    if (cta) trackEvent("nav_cta", { page: page(), cta_location: cta.dataset.ctaLocation, category: cta.dataset.category });
     return;
   }
   const context = contextFor(link);
@@ -38,7 +39,7 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("submit", (event) => {
-  if (event.target instanceof HTMLFormElement && event.target.id === "formulario" && event.target.checkValidity()) {
+  if (event.target instanceof HTMLFormElement && event.target.id === "formulario" && isValidContactForm(event.target)) {
     trackEvent("form_submit", { page: page() });
   }
 });

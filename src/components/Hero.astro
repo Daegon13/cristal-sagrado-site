@@ -2,6 +2,6 @@
 interface Props { title: string; subtitle?: string; action?: string; href?: string; ctaLocation?: string; }
 const { title, subtitle, action, href = "#contacto", ctaLocation = "hero" } = Astro.props;
 import WhatsAppCTA from "./WhatsAppCTA.astro";
+const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
-<!-- Hero común con un solo encabezado principal por página. -->
-<section class="hero"><div class="wrap hero__content"><h1>{title}</h1>{subtitle && <p>{subtitle}</p>}{action && (href === "#contacto" || href.endsWith("#formulario") ? <WhatsAppCTA label={action} className="button button--primary" ctaLocation={ctaLocation} /> : <a data-cta-location={ctaLocation} class="button button--primary" href={href}>{action}</a>)}</div></section>
+<section class="hero" style={`--hero-image:url("${base}images/moon-poster.webp")`}><div class="wrap hero__content"><span class="eyebrow">Cristal Sagrado · Uruguay</span><h1>{title}</h1>{subtitle && <p>{subtitle}</p>}{action && <div class="hero__actions">{href === "#contacto" || href.endsWith("#formulario") ? <WhatsAppCTA label={action} className="button button--primary" ctaLocation={ctaLocation} /> : <a data-cta-location={ctaLocation} class="button button--primary" href={href}>{action}</a>}{ctaLocation === "hero" && <a class="text-link" data-cta-location="hero" href={`${base}#servicios`}>Ver trabajos <span aria-hidden="true">↗</span></a>}</div>}</div></section>

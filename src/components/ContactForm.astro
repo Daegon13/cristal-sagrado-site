@@ -1,9 +1,34 @@
 ---
+import WhatsAppCTA from "./WhatsAppCTA.astro";
 ---
-<!-- Formulario Formspree único de Home, con email o teléfono en el mismo campo. -->
-<section class="section" id="contacto"><div class="wrap contact-panel"><div><h2>Contame tu situación</h2><p>Podés escribirme con tus dudas. Cuanto más claro me cuentes lo que estás viviendo, mejor voy a poder orientarte.</p></div>
-<form id="formulario" action="https://formspree.io/f/mdklwnlg" method="POST" aria-label="Formulario de contacto">
-<label for="nombre">Nombre:</label><input id="nombre" name="nombre" type="text" autocomplete="name" required />
-<label for="contacto-campo">Email o teléfono:</label><input id="contacto-campo" name="contacto" type="text" inputmode="text" pattern="(^[^ @]+@[^ @]+[.][^ @]+$)|(^[+]?[0-9 ()-]{7,}$)" title="Ingresá un email válido o un teléfono válido." required />
-<label for="mensaje">Mensaje:</label><textarea id="mensaje" name="mensaje" required></textarea><input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
-<button class="button button--primary" type="submit">Enviar</button></form></div></section>
+<!-- Único formulario Formspree de Home. WhatsApp sigue siendo la vía principal. -->
+<section class="section contact-section" id="contacto">
+  <div class="wrap contact-panel">
+    <div>
+      <span class="eyebrow">Otra forma de escribir</span>
+      <h2>¿Preferís dejarme tus datos?</h2>
+      <p>También podés enviarme tu consulta por este formulario. Te respondo con reserva para orientarte.</p>
+      <WhatsAppCTA label="Prefiero conversar por WhatsApp" className="text-link" ctaLocation="form_alternative" />
+    </div>
+    <form id="formulario" action="https://formspree.io/f/mdklwnlg" method="POST" aria-label="Formulario de contacto">
+      <label for="nombre">Nombre:</label>
+      <input id="nombre" name="nombre" type="text" autocomplete="name" aria-describedby="nombre-error" required />
+      <p id="nombre-error" class="field-error" role="alert" hidden>Ingresá tu nombre para poder responderte.</p>
+
+      <label for="contacto-campo">Email o teléfono:</label>
+      <input id="contacto-campo" name="contacto" type="text" inputmode="text" pattern="(^[^ @]+@[^ @]+[.][^ @]+$)|(^[+]?[0-9 ()-]{8,}$)" title="Ingresá un email o teléfono válido para poder responderte." aria-describedby="contacto-ayuda contacto-error" required />
+      <p id="contacto-ayuda" class="field-help">Podés dejarme un email o un teléfono, con código de país si corresponde.</p>
+      <p id="contacto-error" class="field-error" role="alert" hidden>Ingresá un email o teléfono válido para poder responderte.</p>
+
+      <label for="mensaje">Mensaje:</label>
+      <textarea id="mensaje" name="mensaje" aria-describedby="mensaje-error" required></textarea>
+      <p id="mensaje-error" class="field-error" role="alert" hidden>Contame brevemente tu situación.</p>
+      <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <button class="button button--primary" type="submit">Enviar consulta</button>
+    </form>
+  </div>
+</section>
+<script>
+  import { initContactForm } from "../../assets/js/contact-form.js";
+  initContactForm();
+</script>
