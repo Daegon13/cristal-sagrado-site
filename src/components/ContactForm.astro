@@ -7,7 +7,7 @@ import WhatsAppCTA from "./WhatsAppCTA.astro";
     <div>
       <span class="eyebrow">Otra forma de escribir</span>
       <h2>¿Preferís dejarme tus datos?</h2>
-      <p>También podés enviarme tu consulta por este formulario. Te respondo con reserva para orientarte.</p>
+      <p>Si preferís no abrir WhatsApp, dejame tus datos y tu consulta acá. Te respondo de forma privada.</p>
       <WhatsAppCTA label="Prefiero conversar por WhatsApp" className="text-link" ctaLocation="form_alternative" />
     </div>
     <form id="formulario" action="https://formspree.io/f/mdklwnlg" method="POST" aria-label="Formulario de contacto">
@@ -17,14 +17,14 @@ import WhatsAppCTA from "./WhatsAppCTA.astro";
 
       <label for="contacto-campo">Email o teléfono:</label>
       <input id="contacto-campo" name="contacto" type="text" inputmode="text" pattern="(^[^ @]+@[^ @]+[.][^ @]+$)|(^[+]?[0-9 ()-]{8,}$)" title="Ingresá un email o teléfono válido para poder responderte." aria-describedby="contacto-ayuda contacto-error" required />
-      <p id="contacto-ayuda" class="field-help">Podés dejarme un email o un teléfono, con código de país si corresponde.</p>
+      <p id="contacto-ayuda" class="field-help">Dejá un medio de contacto donde pueda responderte. Si es un teléfono de otro país, incluí el código.</p>
       <p id="contacto-error" class="field-error" role="alert" hidden>Ingresá un email o teléfono válido para poder responderte.</p>
 
-      <label for="mensaje">Mensaje:</label>
+      <label for="mensaje">Tu consulta:</label>
       <textarea id="mensaje" name="mensaje" aria-describedby="mensaje-error" required></textarea>
       <p id="mensaje-error" class="field-error" role="alert" hidden>Contame brevemente tu situación.</p>
       <input type="text" name="_gotcha" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
-      <button class="button button--primary" type="submit">Enviar consulta</button>
+      <button class="button button--primary" type="submit">Enviar mi consulta</button>
     </form>
   </div>
 </section>

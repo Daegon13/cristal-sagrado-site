@@ -2,7 +2,7 @@
 import { processSteps } from "../lib/constants";
 import WhatsAppCTA from "./WhatsAppCTA.astro";
 interface Props { heading?: string; intro?: string; introFirst?: boolean; steps?: typeof processSteps; }
-const { heading = "¿Cómo trabajamos?", intro = "Primero escucho tu situación. Después te oriento sobre la lectura o el trabajo que puede tener más sentido.", introFirst = false, steps = processSteps } = Astro.props;
+const { heading = "¿Cómo trabajamos?", intro = "Primero me contás qué estás viviendo. Después vemos qué lectura o trabajo puede tener sentido para vos.", introFirst = false, steps = processSteps } = Astro.props;
 ---
 <!-- Proceso compartido, renderizado como HTML estático. -->
-<section class="section process" id="proceso"><div class="wrap"><div class="section-intro"><span class="eyebrow">Un camino claro</span>{introFirst && intro && <p>{intro}</p>}{heading && <h2>{heading}</h2>}{!introFirst && intro && <p>{intro}</p>}</div><ol class="process-grid">{steps.map((step, index) => <li><span class="step-number">{String(index + 1).padStart(2, "0")}</span><h3>{step.title}</h3>{step.text && <p>{step.text}</p>}</li>)}</ol><div class="section-action"><WhatsAppCTA label="Contame qué necesitás" className="button button--primary" ctaLocation="process" /></div></div></section>
+<section class="section process" id="proceso"><div class="wrap"><div class="section-intro"><span class="eyebrow">Un camino claro</span>{introFirst && intro && <p>{intro}</p>}{heading && <h2>{heading}</h2>}{!introFirst && intro && <p>{intro}</p>}</div><ol class="process-grid">{steps.map((step, index) => <li><span class="step-number">{String(index + 1).padStart(2, "0")}</span><h3>{step.title}</h3>{step.text && <p>{step.text}</p>}</li>)}</ol><div class="section-action"><WhatsAppCTA label="Consultar por WhatsApp" className="button button--primary" ctaLocation="process" /></div></div></section>

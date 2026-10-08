@@ -1,4 +1,4 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro"; import Hero from "../../components/Hero.astro"; import ProcessSection from "../../components/ProcessSection.astro"; import FinalCTA from "../../components/FinalCTA.astro"; import { aboutSteps } from "../../lib/constants"; import { pageMetadata } from "../../lib/seo";
 ---
-<BaseLayout {...pageMetadata.process} path="/como-trabajamos/"><main><Hero title="¿Cómo trabajamos?" /><ProcessSection heading="Paso a paso:" introFirst intro="En Cristal Sagrado, cada consulta y ritual es personalizado. Analizamos tu situación, te orientamos con honestidad y realizamos los trabajos con ética y profesionalismo." steps={aboutSteps} /><FinalCTA /></main></BaseLayout>
+<BaseLayout {...pageMetadata.process} path="/como-trabajamos/"><main><Hero title="Cómo trabajamos" subtitle="Me contás tu situación, vemos las opciones y te explico cómo seguimos antes de avanzar." /><ProcessSection heading="Paso a paso" introFirst intro="No necesitás saber qué lectura o ritual elegir. Empezamos por conversar sobre lo que estás viviendo." steps={aboutSteps} /><FinalCTA /></main></BaseLayout>

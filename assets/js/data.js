@@ -131,13 +131,13 @@ function createServiceCard(service) {
   if (meta.childElementCount) li.appendChild(meta);
 
   if (service.descriptionShort) {
-    const btn = createTextElement("button", "serv-toggle", "Ver más");
+    const btn = createTextElement("button", "serv-toggle", "Ver descripción completa");
     btn.type = "button";
     li.appendChild(btn);
   }
 
   const serviceCta = createWhatsappCta(
-    "Consultar por este servicio",
+    "Consultar este trabajo",
     `Consultar por WhatsApp sobre ${service.name}`
   );
   serviceCta.dataset.serviceName = service.name;
@@ -171,7 +171,7 @@ function wireViewMore(ul) {
       const p = btn.closest("li")?.querySelector(".serv-desc");
       if (!p) return;
       p.classList.toggle("clamp-3");
-      btn.textContent = p.classList.contains("clamp-3") ? "Ver más" : "Ver menos";
+      btn.textContent = p.classList.contains("clamp-3") ? "Ver descripción completa" : "Mostrar menos";
     });
   });
 }
@@ -188,12 +188,20 @@ export function attachSearch(inputSelector = "#buscador-servicios", listSelector
 
   input.addEventListener("input", () => {
     const term = input.value.trim().toLowerCase();
+    let matches = 0;
     list.querySelectorAll("li.serv-card").forEach(li => {
       const title = (li.querySelector(".serv-title")?.textContent || "").toLowerCase();
       const desc  = (li.querySelector(".serv-desc")?.textContent || "").toLowerCase();
       const match = !term || title.includes(term) || desc.includes(term);
       li.style.display = match ? "" : "none";
+      if (match) matches += 1;
     });
+    let empty = list.querySelector(".serv-search-empty");
+    if (term && !matches && !empty) {
+      empty = createTextElement("li", "service-state serv-search-empty", "No encontré trabajos con esa búsqueda. Probá con otra palabra o consultame por WhatsApp.");
+      list.appendChild(empty);
+    }
+    if (empty) empty.hidden = !term || matches > 0;
   });
 }
 
@@ -206,7 +214,7 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
 
   const cat = detectCategory(category);
   ul.innerHTML = "";
-  ul.appendChild(createTextElement("li", "muted", "Cargando…"));
+  ul.appendChild(createTextElement("li", "muted", "Cargando trabajos…"));
 
   try {
     const now = Date.now();
@@ -230,7 +238,7 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
       renderMessageWithWhatsapp(
         ul,
         "serv-state serv-state-empty",
-        "En este momento no hay servicios cargados en esta categoría, pero podés escribirme y contarme tu situación para orientarte personalmente."
+        "Por ahora no hay trabajos publicados en esta categoría. Podés contarme tu situación por WhatsApp para que te oriente."
       );
       return;
     }
@@ -251,7 +259,7 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
     renderMessageWithWhatsapp(
       ul,
       "serv-state serv-state-error",
-      "No pudimos cargar los servicios en este momento. Podés escribirme directamente por WhatsApp y te respondo con reserva."
+      "No pude cargar los trabajos en este momento. Podés contarme tu situación por WhatsApp."
     );
   }
 }

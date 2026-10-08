@@ -11,43 +11,39 @@ export const navigation = [
   { label: "¿Cómo trabajamos?", href: "como-trabajamos/" }
 ] as const;
 export const categories = [
-  { key: "blanca", label: "Magia Blanca", description: "Rituales para protección, amor y prosperidad.", href: "magia-blanca/", cta: "Ver trabajos de Magia Blanca" },
-  { key: "roja", label: "Magia Roja", description: "Rituales para el amor, amarres y endulzamientos.", href: "magia-roja/", cta: "Ver trabajos de Magia Roja" },
-  { key: "negra", label: "Magia Negra", description: "Soluciones para situaciones complejas y desafiantes.", href: "magia-negra/", cta: "Ver trabajos de Magia Negra" },
-  { key: "verde", label: "Magia Verde", description: "Conexión con la naturaleza y sanación.", href: "magia-verde/", cta: "Ver trabajos de Magia Verde" },
-  { key: "tarot", label: "Tarot", description: "Lecturas precisas para guiar tu camino.", href: "tarot/", cta: "Ver lecturas de Tarot" }
+  { key: "blanca", label: "Magia Blanca", description: "Trabajos de limpieza, protección y armonización.", href: "magia-blanca/", cta: "Explorar Magia Blanca" },
+  { key: "roja", label: "Magia Roja", description: "Trabajos para vínculos, amor y armonización afectiva.", href: "magia-roja/", cta: "Explorar Magia Roja" },
+  { key: "negra", label: "Magia Negra", description: "Trabajos para situaciones complejas, con orientación previa.", href: "magia-negra/", cta: "Explorar Magia Negra" },
+  { key: "verde", label: "Magia Verde", description: "Trabajos vinculados con la naturaleza y la armonización.", href: "magia-verde/", cta: "Explorar Magia Verde" },
+  { key: "tarot", label: "Tarot", description: "Lecturas para explorar preguntas y mirar tu situación.", href: "tarot/", cta: "Explorar lecturas de Tarot" }
 ] as const;
 export const faqItems = [
+  { question: "¿Cómo sé qué trabajo necesito?", answer: "No tenés que elegirlo antes de consultar. Contame brevemente tu situación por WhatsApp y te oriento sobre las opciones que pueden tener sentido para vos." },
+  { question: "¿Qué tengo que enviar para consultar?", answer: "Al tocar un botón de WhatsApp, primero aparece un espacio para contarme brevemente qué estás viviendo. Después se abre WhatsApp con tu mensaje preparado." },
   { question: "¿Cómo reservo un turno?", answer: "Escribime por WhatsApp y coordinamos día y hora. Si es online, te envío el enlace de la videollamada." },
-  { question: "¿Atendés online?", answer: "Sí, por videollamada. Podés pedir resumen escrito o foto y videos del tiraje o trabajos cuando corresponda." },
+  { question: "¿Atendés online?", answer: "Sí, por videollamada. Podés pedir un resumen escrito o un registro del tiraje o trabajo cuando corresponda." },
   { question: "¿Cuánto dura una sesión?", answer: "La lectura completa dura 45 minutos a una hora; la consulta express, 30 minutos." },
   { question: "¿Qué no hacés en lectura?", answer: "Trabajo con ética: no realizo fatalismos, no diagnostico salud ni reemplazo asesoría legal o médica." },
   { question: "¿Puedo reprogramar?", answer: "Sí, avisando con al menos 24 h de anticipación para mantener tu seña." },
-  { question: "¿Las sesiones son confidenciales?", answer: "Sí, toda la información que compartís se maneja con reserva." }
+  { question: "¿Las sesiones son confidenciales?", answer: "Sí, la información que compartís se trata con reserva." }
 ] as const;
-export const faqSchemaItems = [
-  { question: "¿Cómo reservo un turno?", answer: "Escribime por WhatsApp y coordinamos día y hora. Si es online, te envío el enlace de la videollamada." },
-  { question: "¿Atendés online?", answer: "Sí, por videollamada. Podés pedir resumen escrito o foto del tiraje." },
-  { question: "¿Cuánto dura una sesión?", answer: "La lectura completa dura 60 minutos; la consulta express, 30 minutos." },
-  { question: "¿Qué no hacés en lectura?", answer: "Trabajo con ética: no realizo fatalismos, no diagnostico salud ni reemplazo asesoría legal o médica." },
-  { question: "¿Puedo reprogramar?", answer: "Sí, avisando con al menos 24 h de anticipación para mantener tu seña." }
-] as const;
+export const faqSchemaItems = faqItems;
 export const processSteps = [
-  { title: "Me contás tu caso", text: "Podés escribirme por WhatsApp o por el formulario de la web." },
-  { title: "Ordenamos la situación", text: "Te ayudo a entender qué tipo de consulta o trabajo puede tener más sentido." },
-  { title: "Te explico las opciones", text: "Hablamos de tiempos, enfoque y recomendaciones antes de comenzar." },
-  { title: "Realizo el trabajo y te acompaño", text: "Cuando corresponde, podés pedir un resumen o registro del trabajo." }
+  { title: "Me contás tu situación", text: "Escribime brevemente por WhatsApp. Si preferís, usá el formulario de contacto." },
+  { title: "Vemos las opciones", text: "Te oriento sobre la lectura o el trabajo que puede tener sentido para vos." },
+  { title: "Te explico antes de avanzar", text: "Conversamos sobre el enfoque, los tiempos y tus dudas." },
+  { title: "Hacemos la lectura o el trabajo", text: "Te acompaño durante el proceso y, cuando corresponde, podés pedir un registro." }
 ] as const;
 export const aboutSteps = [
-  { title: "Escuchamos tu caso y resolvemos tus dudas.", text: "" },
-  { title: "Te recomendamos el servicio más adecuado.", text: "" },
-  { title: "Realizamos el ritual o lectura de tarot.", text: "" },
-  { title: "Te acompañamos durante el proceso y resolvemos tus inquietudes.", text: "" }
+  { title: "Me contás tu situación", text: "Escribime brevemente qué estás viviendo." },
+  { title: "Vemos las opciones", text: "Te oriento sobre la lectura o el trabajo que puede tener sentido." },
+  { title: "Te explico cómo seguimos", text: "Conversamos sobre el enfoque y tus dudas antes de avanzar." },
+  { title: "Te acompaño en el proceso", text: "Realizo la lectura o el trabajo acordado y seguimos en contacto." }
 ] as const;
 export const trustPoints = [
   { title: "Atención online", text: "Consultas desde Uruguay o desde cualquier lugar." },
-  { title: "Reserva total", text: "Tu situación se conversa de forma privada y respetuosa." },
-  { title: "Orientación personalizada", text: "Cada lectura o trabajo se adapta al caso." },
+  { title: "Consulta privada", text: "Tu situación se conversa con reserva y respeto." },
+  { title: "Orientación personalizada", text: "Vemos qué lectura o trabajo tiene sentido para tu situación." },
   { title: "Comunicación clara", text: "Antes de avanzar, sabés qué se va a trabajar y cómo." }
 ] as const;
 export const testimonials = [

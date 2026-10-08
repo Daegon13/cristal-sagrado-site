@@ -1,14 +1,14 @@
 ---
 import WhatsAppCTA from "./WhatsAppCTA.astro";
 const intents = [
-  ["Amor y pareja", "Cuando un vínculo te genera dudas o necesitás mirar la situación con calma."],
-  ["Limpieza y protección", "Para conversar sobre cargas, bloqueos o una búsqueda de resguardo."],
-  ["Tarot", "Una lectura para ordenar preguntas y explorar posibilidades."],
-  ["Trabajo, dinero y caminos", "Si buscás orientación sobre decisiones, movimiento o prosperidad."],
-  ["No sé qué necesito", "Contame lo que pasa y vemos juntas por dónde empezar."]
+  ["Amor y pareja", "Si un vínculo te genera dudas y querés conversar sobre lo que pasa.", "Consultar sobre amor y pareja"],
+  ["Limpieza y protección", "Si sentís que necesitás una limpieza o buscás protección.", "Consultar sobre limpieza y protección"],
+  ["Tarot", "Si querés explorar una pregunta a través de una lectura.", "Consultar sobre tarot"],
+  ["Trabajo, dinero y caminos", "Si querés orientación sobre decisiones laborales o económicas.", "Consultar sobre trabajo y dinero"],
+  ["No sé qué necesito", "Contame qué está pasando y vemos por dónde empezar.", "Pedir orientación por WhatsApp"]
 ];
 ---
 <section class="section intentions" aria-labelledby="intent-title"><div class="wrap">
   <div class="section-intro"><span class="eyebrow">Empezá por vos</span><h2 id="intent-title">¿Qué estás viviendo?</h2><p>No necesitás conocer el nombre de un ritual. Elegí lo que más se acerca a tu situación.</p></div>
-  <ul class="intent-grid">{intents.map(([title, description], index) => <li class="intent-card"><span class="intent-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><div><h3>{title}</h3><p>{description}</p><WhatsAppCTA label="Contame tu caso ↗" ctaLocation="intent" intent={title} ariaLabel={`Contame tu caso sobre ${title}`} /></div></li>)}</ul>
+  <ul class="intent-grid">{intents.map(([title, description, action], index) => <li class="intent-card"><span class="intent-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><div><h3>{title}</h3><p>{description}</p><WhatsAppCTA label={`${action} ↗`} ctaLocation="intent" intent={title} /></div></li>)}</ul>
 </div></section>

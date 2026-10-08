@@ -7,9 +7,9 @@ const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL :
     <a class="brand" href={base} aria-label="Cristal Sagrado, inicio">Cristal Sagrado</a>
     <nav class="desktop-nav" aria-label="Navegación principal">
       <a href={`${base}#servicios`}>Trabajos</a><a href={`${base}tarot/`}>Tarot</a><a href={`${base}como-trabajamos/`}>Cómo funciona</a><a href={`${base}faq/`}>FAQ</a>
-      <WhatsAppCTA label="Consultar" className="button button--header" ctaLocation="header" />
+      <WhatsAppCTA label="Consultar por WhatsApp" className="button button--header" ctaLocation="header" />
     </nav>
-    <WhatsAppCTA label="Consultar" className="button button--header mobile-consult" ctaLocation="header" />
+    <WhatsAppCTA label="WhatsApp" ariaLabel="Consultar por WhatsApp" className="button button--header mobile-consult" ctaLocation="header" />
   </div>
   <nav class="mobile-nav" aria-label="Navegación móvil">
     <a href={`${base}#servicios`}>Trabajos</a><a href={`${base}tarot/`}>Tarot</a><a href={`${base}como-trabajamos/`}>Cómo funciona</a><a href={`${base}faq/`}>FAQ</a>

@@ -8,11 +8,11 @@ overlay.hidden = true;
 overlay.innerHTML = `<section class="contact-dialog" role="dialog" aria-modal="true" aria-labelledby="contact-title" aria-describedby="contact-description" tabindex="-1">
   <form class="contact-dialog__form" novalidate>
     <h2 id="contact-title">Contame brevemente tu situación</h2>
-    <p id="contact-description">Así puedo orientar mejor tu consulta desde el primer mensaje.</p>
-    <label for="contact-case">Tu situación</label>
-    <textarea id="contact-case" rows="5" required aria-describedby="contact-description contact-error"></textarea>
+    <p id="contact-description">Con unas líneas alcanza. Así puedo entender mejor tu situación antes de seguir por WhatsApp.</p>
+    <label for="contact-case">¿Qué estás viviendo?</label>
+    <textarea id="contact-case" rows="5" required placeholder="Contame brevemente qué está pasando y qué te gustaría trabajar…" aria-describedby="contact-description contact-error"></textarea>
     <p id="contact-error" class="contact-dialog__error" role="alert" hidden>Contame un poco más sobre tu situación (al menos 18 caracteres).</p>
-    <div class="contact-dialog__actions"><button type="button" class="btn btn--ghost" data-contact-cancel>Cancelar</button><button type="submit" class="btn btn--whatsapp">Continuar por WhatsApp</button></div>
+    <div class="contact-dialog__actions"><button type="button" class="btn btn--ghost" data-contact-cancel>Cancelar</button><button type="submit" class="btn btn--whatsapp">Continuar a WhatsApp</button></div>
   </form>
 </section>`;
 document.body.append(overlay);
