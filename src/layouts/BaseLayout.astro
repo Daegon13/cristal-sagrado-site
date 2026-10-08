@@ -1,5 +1,5 @@
 ---
-import Header from "../components/Header.astro"; import Footer from "../components/Footer.astro"; import VideoBackground from "../components/VideoBackground.astro"; import WhatsAppButton from "../components/WhatsAppButton.astro";
+import Header from "../components/Header.astro"; import Footer from "../components/Footer.astro"; import WhatsAppButton from "../components/WhatsAppButton.astro";
 import "../styles/tokens.css"; import "../styles/global.css"; import "../styles/components.css"; import "../styles/whatsapp-contact.css";
 import { canonical } from "../lib/seo"; import { SITE } from "../lib/constants";
 interface Props { title: string; description: string; path: string; schema?: Record<string, unknown>; }
@@ -50,4 +50,4 @@ const productionHost = new URL(SITE.origin).hostname;
     import "../../assets/js/analytics-events.js";
     import "../../assets/js/whatsapp-contact.js";
   </script>
-</head><body><VideoBackground /><Header /><slot /><Footer /><WhatsAppButton /></body></html>
+</head><body style={`--poster-url:url("${base}images/video-poster.svg")`}><Header /><slot /><Footer /><WhatsAppButton /></body></html>

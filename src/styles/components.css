@@ -1,7 +1,4 @@
 /* Fondo astral y navegación pública. */
-.video-background { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; background: var(--bg-deep) var(--poster-url) center/cover no-repeat; }
-.video-background::after { position: absolute; inset: 0; content: ""; background: linear-gradient(var(--video-veil-top), var(--video-veil-bottom)), radial-gradient(circle at 50% 30%, var(--video-halo), transparent 42%); }
-.video-background video { width: 100%; height: 100%; object-fit: cover; }
 .site-header { position: relative; z-index: 30; border-bottom: 1px solid var(--border); background: var(--bg-deep); }
 .site-header__inner { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-height: 4.25rem; padding-inline: max(0px, env(safe-area-inset-left)) max(0px, env(safe-area-inset-right)); }
 .brand { min-width: 0; font: 700 clamp(1.18rem, 5vw, 1.65rem)/1.2 "Playfair Display", Georgia, serif; text-decoration: none; }
@@ -29,8 +26,9 @@
 .section-intro h2 { max-width: 18ch; margin: .1rem 0 .7rem; }
 .section-intro p { margin: 0; color: var(--muted); }
 
-/* Un fotograma del video aprobado da a móvil la luna que antes solo se veía en escritorio. */
+/* Hero de Home con imágenes propias; las otras páginas conservan su imagen actual. */
 .hero { display: grid; align-items: end; min-height: clamp(34rem, 72svh, 40rem); padding-block: 10rem 2rem; background-image: linear-gradient(90deg, var(--hero-dark), var(--hero-mid) 70%, var(--hero-edge)), var(--hero-image); background-position: center, 15% -260px; background-size: cover, auto 920px; border-bottom: 1px solid var(--border); }
+.hero--ritual { align-items: center; min-height: clamp(42rem, 100svh, 50rem); padding-block: 3rem; background-image: linear-gradient(90deg, var(--hero-dark), var(--hero-mid) 70%, var(--hero-edge)), var(--hero-mobile); background-position: center; background-size: cover; }
 .hero__content { min-width: 0; max-width: 49rem; margin-left: max(1rem, calc((100vw - 75rem)/2)); padding: clamp(1.15rem, 3vw, 2rem); border: 1px solid var(--border); border-radius: 1.15rem; background: var(--hero-panel); box-shadow: var(--shadow); }
 .hero h1 { max-width: 17ch; margin: 0 0 1rem; }
 .hero p { max-width: 43ch; margin: 0; color: var(--fg); font-size: clamp(1.05rem, 2vw, 1.25rem); }
@@ -154,7 +152,8 @@
   .site-header { position: sticky; top: 0; }
   .desktop-nav { display: flex; }
   .mobile-consult, .mobile-nav { display: none; }
-  .hero { align-items: center; min-height: 38rem; padding-block: 3rem; background-image: linear-gradient(90deg, var(--hero-dark), var(--hero-mid) 55%, var(--hero-edge)); background-position: center; background-size: cover; }
+  .hero { align-items: center; min-height: 38rem; padding-block: 3rem; background-image: linear-gradient(90deg, var(--hero-dark), var(--hero-mid) 55%, var(--hero-edge)), var(--hero-image); background-position: center; background-size: cover; }
+  .hero--ritual { background-image: linear-gradient(90deg, var(--hero-dark), var(--hero-mid) 55%, var(--hero-edge)), var(--hero-desktop); }
   .hero__content { margin-left: max(1rem, calc((100vw - 75rem)/2)); }
   .hero h1 { max-width: 20ch; font-size: clamp(3rem, 4.8vw, 4rem); }
   .intent-grid { gap: 1rem; }
