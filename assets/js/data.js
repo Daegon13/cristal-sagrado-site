@@ -8,6 +8,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/fireba
 import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { firebaseConfig } from "../../admin/config.js";
 import { normalizeService, compareServicesForPublic } from "./service-helpers.js";
+import { wireViewMore } from "./service-interactions.js";
 
 // -------------------------
 // BLOQUE: Inicialización Firebase
@@ -165,45 +166,12 @@ function renderMessageWithWhatsapp(container, className, message) {
 }
 
 // Trunca/expande descripción
-function wireViewMore(ul) {
-  ul.querySelectorAll(".serv-toggle").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const p = btn.closest("li")?.querySelector(".serv-desc");
-      if (!p) return;
-      p.classList.toggle("clamp-3");
-      btn.textContent = p.classList.contains("clamp-3") ? "Ver descripción completa" : "Mostrar menos";
-    });
-  });
-}
 
 // -------------------------
 // BLOQUE: Búsqueda en vivo (client-side)
 // -------------------------
 // - inputSelector: selector del <input> de búsqueda (opcional)
 // - listSelector:  el UL/OL donde se renderizaron los servicios
-export function attachSearch(inputSelector = "#buscador-servicios", listSelector = "#lista-servicios") {
-  const input = document.querySelector(inputSelector);
-  const list  = document.querySelector(listSelector);
-  if (!input || !list) return;
-
-  input.addEventListener("input", () => {
-    const term = input.value.trim().toLowerCase();
-    let matches = 0;
-    list.querySelectorAll("li.serv-card").forEach(li => {
-      const title = (li.querySelector(".serv-title")?.textContent || "").toLowerCase();
-      const desc  = (li.querySelector(".serv-desc")?.textContent || "").toLowerCase();
-      const match = !term || title.includes(term) || desc.includes(term);
-      li.style.display = match ? "" : "none";
-      if (match) matches += 1;
-    });
-    let empty = list.querySelector(".serv-search-empty");
-    if (term && !matches && !empty) {
-      empty = createTextElement("li", "service-state serv-search-empty", "No encontré trabajos con esa búsqueda. Probá con otra palabra o consultame por WhatsApp.");
-      list.appendChild(empty);
-    }
-    if (empty) empty.hidden = !term || matches > 0;
-  });
-}
 
 // -------------------------
 // BLOQUE: Render de servicios por categoría
@@ -213,8 +181,7 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
   if (!ul) return;
 
   const cat = detectCategory(category);
-  ul.innerHTML = "";
-  ul.appendChild(createTextElement("li", "muted", "Cargando trabajos…"));
+  const hasStaticCards = Boolean(ul.querySelector(".serv-card"));
 
   try {
     const now = Date.now();
@@ -235,6 +202,7 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
     }
 
     if (!items.length) {
+      if (hasStaticCards) return;
       renderMessageWithWhatsapp(
         ul,
         "serv-state serv-state-empty",
@@ -251,11 +219,10 @@ export async function renderServices(containerSelector = "#lista-servicios", cat
 
     wireViewMore(ul);
 
-    if (options.searchSelector) {
-      attachSearch(options.searchSelector, containerSelector);
-    }
+    if (options.searchSelector) document.querySelector(options.searchSelector)?.dispatchEvent(new Event("input"));
   } catch (err) {
     console.error("Error cargando servicios:", err);
+    if (hasStaticCards) return;
     renderMessageWithWhatsapp(
       ul,
       "serv-state serv-state-error",

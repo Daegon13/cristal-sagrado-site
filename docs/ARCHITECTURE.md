@@ -16,7 +16,7 @@ La analítica opcional de Umami se integra una sola vez en `BaseLayout.astro`, s
 
 ## Firebase y servicios
 
-El cliente Firestore se importa únicamente desde las cuatro páginas de categoría. Consulta services por category y active == true, conserva normalización v2, cache, orden, búsqueda, expansión y mensajes de error/vacío. El render remoto sigue creando nodos y usando textContent. No hay Firebase en Home, Tarot, FAQ ni Cómo trabajamos.
+El build consulta Firestore con la configuración pública, filtra `active == true` y guarda una snapshot saneada de `services` en `src/data/generated/services.public.json`. Astro genera las cuatro categorías con fichas HTML reales desde esa snapshot. El cliente Firestore se carga después en esas páginas para actualizar las fichas si la lectura tiene éxito; el buscador y la expansión funcionan sobre el HTML inicial aunque Firebase falle. El render remoto sigue creando nodos y usando `textContent`. No hay Firebase en Home, Tarot, FAQ ni Cómo trabajamos. Ver `SEO_GROWTH.md` para sincronización, fallback y Search Console.
 
 ## Admin
 

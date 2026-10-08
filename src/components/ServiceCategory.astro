@@ -1,14 +1,34 @@
 ---
+import snapshot from "../data/generated/services.public.json";
+import { getServicesByCategory } from "../lib/public-services.js";
 interface Props { title: string; description: string; category: "blanca" | "roja" | "negra" | "verde"; }
 const { title, description, category } = Astro.props;
+const services = getServicesByCategory(snapshot, category);
 ---
-<!-- Estado inicial accesible y cliente Firebase aislado a páginas de categorías. -->
-<main class="wrap category-page" data-pagecat={category}><h1>{title}</h1><p class="section-intro">{description}</p>
-<label class="search-label" for="buscador-servicios">Buscar un trabajo en esta categoría</label><input id="buscador-servicios" type="search" placeholder="Buscar por nombre o descripción…" autocomplete="off" />
-<p class="sr-only" aria-live="polite">Los trabajos se están cargando.</p><ul id="lista-servicios" class="serv-list" aria-label={title}><li class="service-state">Los trabajos se están cargando. También podés consultarme por WhatsApp.</li></ul></main>
+<main class="wrap category-page" data-pagecat={category}>
+  <h1>{title}</h1><p class="section-intro">{description}</p>
+  <label class="search-label" for="buscador-servicios">Buscar un trabajo en esta categoría</label>
+  <input id="buscador-servicios" type="search" placeholder="Buscar por nombre o descripción…" autocomplete="off" />
+  <ul id="lista-servicios" class="serv-list" aria-label={title}>
+    {services.map((service) => <li class="serv-card" data-id={service.id} data-slug={service.slug} data-category={service.category}>
+      <div class="serv-card-header"><h3 class="serv-title">{service.name}</h3>{service.featured && <span class="serv-featured-badge">Destacado</span>}</div>
+      {service.descriptionShort && <p class="serv-desc clamp-3">{service.descriptionShort}</p>}
+      {service.intent.length > 0 && <ul class="serv-intents" aria-label="Intenciones del servicio">{service.intent.map((intent) => <li class="serv-intent-chip">{intent}</li>)}</ul>}
+      {service.idealFor.length > 0 && <div class="serv-detail serv-ideal-for"><h4 class="serv-detail-title">Ideal para</h4><ul class="serv-detail-list">{service.idealFor.map((item) => <li class="serv-detail-item">{item}</li>)}</ul></div>}
+      {service.benefits.length > 0 && <div class="serv-detail serv-benefits"><h4 class="serv-detail-title">Beneficios</h4><ul class="serv-detail-list">{service.benefits.map((item) => <li class="serv-detail-item">{item}</li>)}</ul></div>}
+      {(service.price !== null || service.duration !== null) && <div class="serv-meta">{service.price !== null && <span class="serv-price">${service.price}</span>}{service.duration !== null && <span class="serv-duration">{service.duration} días</span>}</div>}
+      {service.descriptionShort && <button type="button" class="serv-toggle">Ver descripción completa</button>}
+      <button type="button" class="serv-cta" data-whatsapp-trigger data-service-name={service.name} data-service-slug={service.slug} data-category={service.category} data-cta-location="service_card" data-cta-text={service.ctaText || undefined} aria-label={`Consultar por WhatsApp sobre ${service.name}`}>Consultar este trabajo</button>
+    </li>)}
+    {services.length === 0 && <li class="service-state"><p>Por ahora no hay trabajos publicados en esta categoría. Podés contarme tu situación por WhatsApp.</p><button type="button" class="serv-cta" data-whatsapp-trigger data-category={category} data-cta-location="contact_section">Consultar por WhatsApp</button></li>}
+  </ul>
+</main>
+<style>.serv-card[hidden], .serv-search-empty[hidden] { display: none !important; }</style>
 <script>
-// Importación presente solo en las cuatro rutas de categoría para evitar Firebase en páginas estáticas.
-import { renderServices, attachSearch } from "../../assets/js/data.js";
-const category = document.querySelector<HTMLElement>("[data-pagecat]")?.dataset.pagecat;
-if (category) { await renderServices("#lista-servicios", category); attachSearch("#buscador-servicios", "#lista-servicios"); }
+  import { attachSearch, wireViewMore } from "../../assets/js/service-interactions.js";
+  const list = document.querySelector<HTMLElement>("#lista-servicios");
+  const category = document.querySelector<HTMLElement>("[data-pagecat]")?.dataset.pagecat;
+  if (list) wireViewMore(list);
+  attachSearch();
+  if (category) import("../../assets/js/data.js").then(({ renderServices }) => renderServices("#lista-servicios", category, { searchSelector: "#buscador-servicios" })).catch((error) => console.error("No se pudo actualizar el catálogo:", error));
 </script>
