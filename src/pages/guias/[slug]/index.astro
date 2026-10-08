@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import WhatsAppCTA from "../../../components/WhatsAppCTA.astro";
+import snapshot from "../../../data/generated/services.public.json";
+import { seoGuides } from "../../../data/seo-guides.js";
+import { selectedServices } from "../../../lib/seo-services.js";
+import { categories } from "../../../lib/constants";
+import { canonical } from "../../../lib/seo";
+export function getStaticPaths() { return seoGuides.map((guide) => ({ params: { slug: guide.slug }, props: { guide } })); }
+const { guide } = Astro.props;
+const selected = selectedServices(snapshot);
+const linked = guide.services.map((slug) => selected.find((item) => item.service.slug === slug));
+if (linked.some((item) => !item)) throw new Error(`Guía con servicio fuera de allowlist: ${guide.slug}`);
+const category = categories.find((item) => item.key === guide.category);
+const path = `/guias/${guide.slug}/`;
+const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const local = (url) => `${base}${url.slice(1)}`;
+const schema = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+  { "@type": "ListItem", position: 1, name: "Inicio", item: canonical("/") },
+  { "@type": "ListItem", position: 2, name: "Guías", item: canonical("/guias/") },
+  { "@type": "ListItem", position: 3, name: guide.title, item: canonical(path) }
+] };
+---
+<BaseLayout title={`${guide.title} | Cristal Sagrado`} description={guide.description} path={path} schema={schema}><main class="wrap seo-page"><nav aria-label="Ruta de navegación" class="seo-breadcrumbs"><ol><li><a href={base}>Inicio</a></li><li><a href={`${base}guias/`}>Guías</a></li><li aria-current="page">{guide.title}</li></ol></nav><article><header><span class="eyebrow">Guía</span><h1>{guide.title}</h1><p class="seo-lead">{guide.answer}</p></header>{guide.sections.map((section) => <section><h2>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}</section>)}<section><h2>Trabajos relacionados del catálogo</h2><ul class="seo-related">{linked.map((item) => <li><a href={local(item.path)} data-cta-location="seo_guide_service" data-category={item.service.category}>{item.service.name}</a></li>)}</ul><p><a href={local(`/${category.href}`)}>Explorar {category.label}</a></p></section>{guide.faq?.length > 0 && <section><h2>Preguntas frecuentes</h2>{guide.faq.map((item) => <><h3>{item.q}</h3><p>{item.a}</p></>)}</section>}<section class="seo-final"><h2>¿Querés contarme tu situación?</h2><p>Podés consultar sin elegir un trabajo de antemano.</p><WhatsAppCTA label="Consultar por WhatsApp" className="serv-cta" ctaLocation="seo_guide" category={guide.category} /></section></article></main></BaseLayout>

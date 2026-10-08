@@ -120,6 +120,26 @@
 .serv-toggle { min-height: 44px; margin-top: .4rem; padding: 0; border: 0; background: none; color: var(--purple); text-decoration: underline; cursor: pointer; }
 .clamp-3 { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .serv-cta { display: inline-flex; max-width: 100%; min-height: 44px; align-items: center; justify-content: center; margin-top: .8rem; padding: .65rem 1rem; border: 0; border-radius: 99px; background: var(--green); color: var(--green-ink); font: inherit; font-weight: 700; text-align: center; cursor: pointer; }
+.serv-detail-link { display: inline-flex; min-height: 44px; align-items: center; margin: .65rem .7rem 0 0; color: var(--gold-soft); font-weight: 700; text-underline-offset: .2em; }
+.serv-title a { text-underline-offset: .15em; }
+.seo-page { max-width: 57rem; padding-block: clamp(2rem, 6vw, 4rem) 4rem; }
+.seo-page header { margin-bottom: 2rem; }
+.seo-page h1 { margin: .4rem 0 1rem; }
+.seo-page h2 { font-size: clamp(1.5rem, 4vw, 2.15rem); margin: 0 0 .8rem; }
+.seo-page h3 { font-size: 1.25rem; margin-bottom: .4rem; }
+.seo-page section { margin-block: 2rem; }
+.seo-page section p { color: var(--muted); }
+.seo-page .seo-lead { color: var(--fg); font-size: clamp(1.12rem, 2vw, 1.35rem); }
+.seo-page a { color: var(--gold-soft); text-underline-offset: .2em; }
+.seo-page dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem 1rem; max-width: 35rem; }
+.seo-page dd { margin: 0; color: var(--gold-soft); font-weight: 700; }
+.seo-breadcrumbs ol { display: flex; flex-wrap: wrap; gap: .35rem; padding: 0; margin: 0 0 2rem; list-style: none; color: var(--muted); font-size: .9rem; }
+.seo-breadcrumbs li + li::before { content: ">"; margin-right: .35rem; color: var(--muted); }
+.seo-related, .seo-guide-list { display: grid; gap: .7rem; padding-left: 1.2rem; }
+.seo-guide-list { list-style: none; padding: 0; }
+.seo-guide-list li, .seo-final { padding: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--glass); }
+.seo-guide-list h2 { font-size: 1.45rem; }
+.seo-final { margin-top: 3rem; }
 .serv-state, .service-state { padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--glass); }
 
 /* Footer, WhatsApp persistente y panel obligatorio. */

@@ -1,0 +1,35 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import WhatsAppCTA from "./WhatsAppCTA.astro";
+import snapshot from "../data/generated/services.public.json";
+import { relatedServices } from "../lib/seo-services.js";
+import { canonical } from "../lib/seo";
+import { categories } from "../lib/constants";
+const { entry } = Astro.props;
+const { service, path } = entry;
+const category = categories.find((item) => item.key === service.category);
+const related = relatedServices(snapshot, entry);
+const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const local = (url) => `${base}${url.slice(1)}`;
+const cleanName = service.name.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, "").trim();
+const crumbs = [
+  { name: "Inicio", item: canonical("/") },
+  { name: category.label, item: canonical(`/${category.href}`) },
+  { name: cleanName, item: canonical(path) }
+];
+const schema = { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: crumbs.map((crumb, i) => ({ "@type": "ListItem", position: i + 1, name: crumb.name, item: crumb.item })) };
+---
+<BaseLayout title={entry.title} description={entry.description} path={path} schema={schema}>
+  <main class="wrap seo-page">
+    <nav aria-label="Ruta de navegación" class="seo-breadcrumbs"><ol><li><a href={local("/")}>Inicio</a></li><li><a href={local(`/${category.href}`)}>{category.label}</a></li><li aria-current="page">{cleanName}</li></ol></nav>
+    <header class="seo-page__intro"><span class="eyebrow">{category.label}</span><h1>{cleanName}</h1><p class="seo-lead">{entry.intro}</p><WhatsAppCTA label="Consultar por WhatsApp" className="serv-cta" ctaLocation="seo_service_page" serviceName={service.name} serviceSlug={service.slug} ctaText={service.ctaText || `Quiero consultar por ${cleanName}`} category={service.category} /></header>
+    <section aria-labelledby="que-es"><h2 id="que-es">¿Qué tipo de consulta es?</h2><p>{entry.approach}</p><p>{entry.detail}</p></section>
+    <section aria-labelledby="cuando"><h2 id="cuando">Puede tener sentido si...</h2><p>{entry.situation}</p>{service.idealFor.length > 0 && <ul>{service.idealFor.map((item) => <li>{item}</li>)}</ul>}</section>
+    {service.benefits.length > 0 && <section aria-labelledby="beneficios"><h2 id="beneficios">Aspectos publicados del trabajo</h2><ul>{service.benefits.map((item) => <li>{item}</li>)}</ul></section>}
+    {(service.price !== null || service.duration !== null) && <section aria-labelledby="datos"><h2 id="datos">Datos publicados del servicio</h2><dl>{service.price !== null && <><dt>Precio publicado</dt><dd>${service.price}</dd></>}{service.duration !== null && <><dt>Duración indicada en el catálogo</dt><dd>{service.duration} {service.duration === 1 ? "día" : "días"}</dd></>}</dl><p>Confirmá disponibilidad, precio y alcance al consultar. La duración indicada describe el trabajo publicado; no es un plazo de resultados.</p></section>}
+    <section aria-labelledby="consulta"><h2 id="consulta">¿Cómo funciona la consulta?</h2><p>Contame brevemente tu situación. Antes de abrir WhatsApp, el sitio te pide ese contexto para poder orientarte. Después conversamos sobre las opciones y tus dudas antes de avanzar.</p></section>
+    <section aria-labelledby="preguntas"><h2 id="preguntas">Preguntas frecuentes</h2><h3>¿Tengo que elegir este trabajo antes de escribir?</h3><p>No. Podés contarme qué está pasando y te oriento sobre las opciones del catálogo.</p><h3>¿Se garantiza un resultado?</h3><p>No se prometen resultados ni cambios en la voluntad de otras personas. Primero conversamos sobre el alcance de la propuesta.</p></section>
+    <section aria-labelledby="relacionados"><h2 id="relacionados">Otros trabajos que podés explorar</h2><ul class="seo-related">{related.map((item) => <li><a href={local(item.path)}>{item.service.name}</a></li>)}</ul><p><a href={local(`/${category.href}`)}>Ver todos los trabajos de {category.label}</a></p></section>
+    <section class="seo-final"><h2>Contame tu situación</h2><p>Si no sabés qué opción corresponde a tu caso, puedo orientarte antes de avanzar.</p><WhatsAppCTA label="Consultar por WhatsApp" className="serv-cta" ctaLocation="seo_service_page" serviceName={service.name} serviceSlug={service.slug} ctaText={service.ctaText || `Quiero consultar por ${cleanName}`} category={service.category} /></section>
+  </main>
+</BaseLayout>

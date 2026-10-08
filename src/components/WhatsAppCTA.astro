@@ -1,5 +1,5 @@
 ---
-interface Props { label: string; className?: string; ctaLocation: string; serviceName?: string; ctaText?: string; category?: string; intent?: string; ariaLabel?: string; }
-const { label, className = "", ctaLocation, serviceName, ctaText, category, intent, ariaLabel } = Astro.props;
+interface Props { label: string; className?: string; ctaLocation: string; serviceName?: string; serviceSlug?: string; ctaText?: string; category?: string; intent?: string; ariaLabel?: string; }
+const { label, className = "", ctaLocation, serviceName, serviceSlug, ctaText, category, intent, ariaLabel } = Astro.props;
 ---
-<button type="button" class={className} data-whatsapp-trigger data-cta-location={ctaLocation} data-service-name={serviceName} data-cta-text={ctaText} data-category={category} data-intent={intent} aria-label={ariaLabel}>{label}</button>
+<button type="button" class={className} data-whatsapp-trigger data-cta-location={ctaLocation} data-service-name={serviceName} data-service-slug={serviceSlug} data-cta-text={ctaText} data-category={category} data-intent={intent} aria-label={ariaLabel}>{label}</button>

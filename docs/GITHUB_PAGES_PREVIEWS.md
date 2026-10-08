@@ -1,5 +1,7 @@
 # GitHub Pages con Previews (PR & patch branches)
 
+Status: Historical para la sección sobre reescritura de HTML legacy. El workflow actual usa `BASE_PATH` al compilar Astro y no ejecuta `scripts/rewrite_basepath.py`; ese script se conserva como registro de la migración.
+
 GitHub Pages no trae previews nativos de PR en modo general (lo “preview” del action oficial no está abierto al público).
 Por eso usamos una estrategia práctica:
 

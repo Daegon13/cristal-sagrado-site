@@ -1,0 +1,10 @@
+---
+import snapshot from "../../../data/generated/services.public.json";
+import { selectedServices } from "../../../lib/seo-services.js";
+import SeoServicePage from "../../../components/SeoServicePage.astro";
+export function getStaticPaths() {
+  return selectedServices(snapshot).map((entry) => ({ params: { category: `magia-${entry.service.category}`, slug: entry.service.slug }, props: { entry } }));
+}
+const { entry } = Astro.props;
+---
+<SeoServicePage entry={entry} />

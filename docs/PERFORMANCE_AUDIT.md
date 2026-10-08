@@ -1,5 +1,7 @@
 # Performance audit — FASE 4A / 4B inicial
 
+Status: Historical. El inventario y las referencias al video corresponden al sitio previo a la limpieza; ver `LEGACY_AUDIT.md` para los assets actuales.
+
 Fecha: 2026-06-20.
 
 ## Alcance

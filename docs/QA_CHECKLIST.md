@@ -1,5 +1,7 @@
 # QA Checklist — Cristal Sagrado
 
+Status: Historical. Algunos pasos describen el video y el HTML legacy; usar las pruebas actuales y `LEGACY_AUDIT.md` para validar el build Astro.
+
 ## SEO técnico básico
 
 - Cada página pública tiene un `<title>` único.

@@ -4,13 +4,13 @@
 
 El sitio público se genera como archivos HTML estáticos con Astro, output directory format y CSS mobile-first. No hay framework de UI ni hidratación global.
 
-- src/pages/: Home, cuatro categorías, Tarot, FAQ y Cómo trabajamos.
-- src/components/: layout base, header/menú, footer, video, formularios, CTAs y contenido compartido.
+- src/pages/: Home, cuatro categorías, Tarot, FAQ, Cómo trabajamos, guías y landings SEO.
+- src/components/: layout base, header/menú, footer, Hero estático, formularios, CTAs y contenido compartido.
 - src/styles/tokens.css, global.css y components.css: variables, base y presentación responsive separados.
 - src/lib/: constantes públicas, número de WhatsApp y metadata SEO.
-- public/: admin independiente, assets, multimedia, favicons, robots, sitemap, CNAME y puentes legacy.
+- public/: admin independiente, assets, favicons, robots, CNAME y puentes legacy. El sitemap sale de src/pages/sitemap.xml.js.
 
-El contenido informativo sale estático. La navegación móvil es HTML siempre visible y no necesita JavaScript. Los scripts de video y diálogo WhatsApp se limitan a interacciones. Formspree mantiene un único formulario HTML en Home.
+El contenido informativo sale estático. La navegación móvil es HTML siempre visible y no necesita JavaScript. El diálogo WhatsApp usa el flujo público compartido. Formspree mantiene un único formulario HTML en Home.
 
 La analítica opcional de Umami se integra una sola vez en `BaseLayout.astro`, solo con Website ID configurado y restringida al dominio público. `assets/js/analytics.js` filtra eventos y payloads; no se instrumenta `/admin/`. Ver `ANALYTICS.md` para taxonomía y privacidad.
 
@@ -20,17 +20,17 @@ El build consulta Firestore con la configuración pública, filtra `active == tr
 
 ## Admin
 
-admin/ se copia íntegro a public/admin/ y se sirve sin bundling bajo /admin/. Firebase Auth, CDN, formularios y rutas relativas del panel quedan fuera de Astro. Firestore Rules continúan siendo la autoridad de seguridad.
+public/admin/ se sirve sin bundling bajo /admin/. admin/ contiene una copia idéntica usada por el sync de servicios y tests; no hay automatización que mantenga ambas carpetas sincronizadas. Firebase Auth, CDN, formularios y rutas relativas del panel quedan fuera de Astro. Firestore Rules continúan siendo la autoridad de seguridad.
 
 ## Rutas, dominio y deploy
 
 Las URLs canónicas son rutas limpias con slash final. Los .html se conservan en public/ como puentes con canonical, meta refresh, redirección de respaldo y enlace. GitHub Pages no usa redirects de servidor en el workflow actual. servicios.html conduce a la sección de Home.
 
-Producción compila dist/ y publica en gh-pages preservando previews. El workflow de previews define BASE_PATH y compila para su subdirectorio. CNAME, robots.txt y sitemap mantienen cristal-sagrado.com.
+Producción compila dist/ y publica en gh-pages preservando previews. El workflow de previews define BASE_PATH y compila para su subdirectorio. public/CNAME y public/robots.txt se copian a dist/; src/pages/sitemap.xml.js genera el sitemap.
 
 ## Media y capas visuales
 
-El video conserva su binario y rutas de origen. VideoBackground.astro lo mantiene fijo fuera del flujo y lo carga en idle únicamente desde 960 px si no aplican reduced-motion, reduced-data o saveData. Un fotograma WebP derivado del mismo video se usa como fondo estático del Hero hasta 959 px; el poster SVG y el gradiente quedan como fallback.
+El Hero usa public/hero-ritual-desktop.webp y public/hero-ritual-mobile.webp. El fondo general usa public/images/video-poster.svg; otras páginas pueden usar public/images/moon-poster.webp. El video legacy y su componente sin consumidores se retiraron del árbol activo.
 
 ## Documentos relacionados
 

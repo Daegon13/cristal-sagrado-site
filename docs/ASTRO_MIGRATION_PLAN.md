@@ -1,5 +1,7 @@
 # Plan exploratorio de migración progresiva a Astro — Cristal Sagrado
 
+Status: Historical. Las referencias a HTML, CSS y video legacy describen el estado previo a la migración; ver `ARCHITECTURE.md` y `LEGACY_AUDIT.md` para el estado actual.
+
 > Estado: plan ejecutado en local el 2026-10-02. Se conserva como registro de decisiones y aceptación pendiente de QA manual donde indicado.
 
 ## 1. Diagnóstico de migrabilidad

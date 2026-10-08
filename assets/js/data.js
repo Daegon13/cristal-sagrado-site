@@ -9,6 +9,7 @@ import { getFirestore, collection, query, where, getDocs } from "https://www.gst
 import { firebaseConfig } from "../../admin/config.js";
 import { normalizeService, compareServicesForPublic } from "./service-helpers.js";
 import { wireViewMore } from "./service-interactions.js";
+import { seoServices } from "../../src/data/seo-services.js";
 
 // -------------------------
 // BLOQUE: Inicialización Firebase
@@ -111,6 +112,15 @@ function createServiceCard(service) {
 
   if (service.descriptionShort) {
     li.appendChild(createTextElement("p", "serv-desc clamp-3", service.descriptionShort));
+  }
+
+  if (seoServices.some((entry) => entry.id === service.id)) {
+    const link = createTextElement("a", "serv-detail-link", "Conocer este trabajo");
+    const base = document.documentElement.dataset.basePath || "/";
+    link.href = `${base.replace(/\/$/, "")}/magia-${service.category}/${service.slug}/`;
+    link.dataset.ctaLocation = "service_landing";
+    link.dataset.category = service.category;
+    li.appendChild(link);
   }
 
   appendIntentChips(li, service.intent);

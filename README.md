@@ -30,11 +30,11 @@ GitHub Actions publica dist/ en la rama gh-pages al hacer push a main. Las previ
 
 ## Estructura principal
 
-- src/pages/: Home, cuatro categorías, Tarot, FAQ y Cómo trabajamos.
-- src/components/: layout común, header, footer, video, hero, formulario, CTA y contenido compartido.
+- src/pages/: Home, cuatro categorías, Tarot, FAQ, Cómo trabajamos, guías y landings SEO.
+- src/components/: layout común, header, footer, hero, formulario, CTA y contenido compartido.
 - src/lib/: constantes públicas, metadata SEO y datos compartidos.
 - src/styles/: tokens, base global y estilos de componentes mobile-first.
-- public/: admin independiente, assets, multimedia y puentes .html.
+- public/: admin independiente, assets activos y puentes .html para URLs históricas.
 - assets/js/: render cliente de servicios Firebase y helpers existentes.
 - tests/: suites Node para helpers del administrador, WhatsApp y modelo público.
 
@@ -44,6 +44,6 @@ GitHub Actions publica dist/ en la rama gh-pages al hacer push a main. Las previ
 - Solo las cuatro páginas de categoría inicializan Firebase público y consultan Firestore; el orden, normalización y render seguro actuales se conservan.
 - Los CTA públicos abren el panel obligatorio de caso y generan la URL de WhatsApp solo tras validar el texto. Sin JavaScript llevan al formulario de Home.
 - El único formulario Formspree está en Home.
-- /admin/ se copia sin bundling desde admin/; validar login con credenciales autorizadas y el proyecto Firebase habitual.
+- /admin/ se sirve desde public/admin/ sin bundling. admin/ mantiene una copia idéntica usada por scripts y tests; su consolidación requiere una migración separada. Validar login con credenciales autorizadas y el proyecto Firebase habitual.
 - Los .html existentes se sirven como puentes porque el hosting actual es GitHub Pages. Las rutas limpias son canónicas.
-- El video y demás binarios se sirven desde public/ sin reprocesarlos.
+- Los assets del Hero y los posters activos se sirven desde public/ sin reprocesarlos. El video legacy fue retirado.
