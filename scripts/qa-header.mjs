@@ -85,7 +85,7 @@ for (const [width, height] of sizes) {
         if (width === 320 && route === "/" && fraction === 0 && !smoke) {
           await call("Emulation.setDeviceMetricsOverride", { width, height: 320, deviceScaleFactor: 1, mobile: true });
           await pause(80);
-          const shortMenu = await evaluate(`(() => { const menu=document.querySelector('.mobile-menu'); menu.scrollTop=menu.scrollHeight; return { scrollTop:menu.scrollTop, lastBottom:menu.querySelector('a[data-whatsapp-trigger]').getBoundingClientRect().bottom, viewport:innerHeight }; })()`);
+          const shortMenu = await evaluate(`(() => { const menu=document.querySelector('.mobile-menu'); menu.scrollTop=menu.scrollHeight; return { scrollTop:menu.scrollTop, lastBottom:menu.querySelector('[data-whatsapp-trigger]').getBoundingClientRect().bottom, viewport:innerHeight }; })()`);
           if (shortMenu.scrollTop <= 0 || shortMenu.lastBottom > shortMenu.viewport + 1) failures.push({width,route,shortMenu});
           await call("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: true });
         }

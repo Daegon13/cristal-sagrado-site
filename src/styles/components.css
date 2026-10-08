@@ -14,13 +14,13 @@
 .category-nav__list a:hover { border-color: var(--border-strong); background: var(--glass-low); }
 
 /* Acciones y lenguaje visual compartido. */
-.button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: .7rem 1.1rem; border: 1px solid transparent; border-radius: 999px; text-decoration: none; font-weight: 700; text-align: center; cursor: pointer; }
-.button--header { flex: none; padding: .55rem .9rem; border-color: var(--gold); color: var(--gold-soft); font-size: .9rem; }
+.button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: .7rem 1.1rem; border: 1px solid transparent; border-radius: 999px; text-decoration: none; font: inherit; font-weight: 700; text-align: center; cursor: pointer; }
+.button--header { flex: none; padding: .55rem .9rem; border-color: var(--gold); background: var(--bg-deep); color: var(--gold-soft); font-size: .9rem; }
 .button--primary { background: var(--gold); color: var(--bg-deep); }
 .button--whatsapp { background: var(--green); color: var(--green-ink); }
 .surface { background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
 .eyebrow { display: block; margin-bottom: .9rem; color: var(--gold-soft); font-size: .75rem; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-.text-link { display: inline-flex; min-height: 44px; align-items: center; gap: .35rem; color: var(--gold-soft); font-weight: 700; text-underline-offset: .25em; }
+.text-link { display: inline-flex; min-height: 44px; align-items: center; gap: .35rem; color: var(--gold-soft); font-weight: 700; text-decoration: underline; text-underline-offset: .25em; }
 .section { padding-block: clamp(3.25rem, 6vw, 4.75rem); }
 .section-intro { margin-bottom: 1.7rem; }
 .section-intro h2 { max-width: 18ch; margin: .1rem 0 .7rem; }
@@ -50,7 +50,7 @@
 .intent-card:nth-child(4) { --intent-accent: var(--wine); }
 .intent-card h3 { margin: 0 0 .25rem; font-size: 1.3rem; }
 .intent-card p { margin: .15rem 0 .35rem; color: var(--muted); font-size: .94rem; }
-.intent-card a { display: inline-flex; min-height: 44px; align-items: center; color: var(--purple); font-weight: 700; text-underline-offset: .2em; }
+.intent-card [data-whatsapp-trigger] { display: inline-flex; min-height: 44px; align-items: center; padding: 0; border: 0; background: none; color: var(--purple); font: inherit; font-weight: 700; text-align: left; text-decoration: underline; text-underline-offset: .2em; cursor: pointer; }
 .intent-number, .step-number, .service-card__index { color: var(--gold-soft); font-size: .78rem; font-weight: 700; letter-spacing: .1em; }
 
 /* Destinos de servicio con la presencia de las antiguas tarjetas. */
@@ -119,7 +119,7 @@
 .serv-meta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: .7rem; color: var(--gold-soft); }
 .serv-toggle { min-height: 44px; margin-top: .4rem; padding: 0; border: 0; background: none; color: var(--purple); text-decoration: underline; cursor: pointer; }
 .clamp-3 { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
-.serv-cta { display: inline-flex; max-width: 100%; min-height: 44px; align-items: center; justify-content: center; margin-top: .8rem; padding: .65rem 1rem; border-radius: 99px; background: var(--green); color: var(--green-ink); font-weight: 700; text-decoration: none; text-align: center; }
+.serv-cta { display: inline-flex; max-width: 100%; min-height: 44px; align-items: center; justify-content: center; margin-top: .8rem; padding: .65rem 1rem; border: 0; border-radius: 99px; background: var(--green); color: var(--green-ink); font: inherit; font-weight: 700; text-align: center; cursor: pointer; }
 .serv-state, .service-state { padding: 1rem; border: 1px solid var(--border); border-radius: .5rem; background: var(--glass); }
 
 /* Footer, WhatsApp persistente y panel obligatorio. */
@@ -127,14 +127,15 @@
 .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .8rem; }
 .footer-inner p { margin: 0; }
 .social-links { display: flex; flex-wrap: wrap; gap: 1rem; margin: 0; padding: 0; list-style: none; }
-.social-links a { color: var(--purple); text-decoration: none; }
+.social-links a, .social-links [data-whatsapp-trigger] { color: var(--purple); text-decoration: none; }
+.social-links [data-whatsapp-trigger], .contact-panel [data-whatsapp-trigger] { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }
 .footer-categories { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem 1rem; padding-bottom: 1.15rem; border-bottom: 1px solid var(--border); }
 .footer-categories strong { color: var(--gold-soft); font-size: .9rem; }
 .footer-categories ul { display: flex; flex-wrap: wrap; gap: .15rem .9rem; margin: 0; padding: 0; list-style: none; }
 .footer-categories a { display: inline-flex; min-height: 44px; align-items: center; color: var(--muted); font-size: .9rem; text-decoration: none; }
 .footer-inner { padding-top: 1rem; }
 .whatsapp-sticky { position: fixed; inset: auto 0 0; z-index: 19; padding: .55rem max(1rem, env(safe-area-inset-left, 0px)) calc(.55rem + env(safe-area-inset-bottom, 0px)); background: var(--bg-deep); border-top: 1px solid var(--border); }
-.whatsapp-sticky__button { display: flex; min-height: 44px; align-items: center; justify-content: center; border-radius: 999px; background: var(--green); color: var(--green-ink); font-weight: 700; text-align: center; text-decoration: none; }
+.whatsapp-sticky__button { display: flex; min-height: 44px; align-items: center; justify-content: center; border: 0; border-radius: 999px; background: var(--green); color: var(--green-ink); font: inherit; font-weight: 700; text-align: center; cursor: pointer; }
 .contact-open .whatsapp-sticky, .inline-cta-visible .whatsapp-sticky { display: none; }
 .contact-dialog__actions .btn { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: .6rem .9rem; border-radius: 999px; font-weight: 700; }
 .contact-dialog__actions .btn--ghost { border: 1px solid var(--border); background: transparent; color: var(--fg); }

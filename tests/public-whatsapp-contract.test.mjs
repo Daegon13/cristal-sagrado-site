@@ -12,7 +12,10 @@ test("los CTA públicos no ofrecen salida directa sin caso", () => {
   assert.match(data, /dataset\.whatsappTrigger/);
   const trigger = read("../src/components/WhatsAppCTA.astro");
   assert.match(trigger, /data-whatsapp-trigger/);
-  assert.match(trigger, /#formulario/);
+  assert.match(trigger, /<button type="button"/);
+  assert.doesNotMatch(trigger, /#formulario|href=/);
+  assert.match(data, /createTextElement\("button", "serv-cta"/);
+  assert.doesNotMatch(data, /#formulario/);
 });
 
 test("la salida pública se construye solo después de validar y conserva contexto", () => {

@@ -57,8 +57,8 @@ function createTextElement(tag, className, text) {
 
 
 function createWhatsappCta(text, ariaLabel) {
-  const cta = createTextElement("a", "serv-cta", text);
-  cta.href = `${import.meta.env.BASE_URL || "/"}#formulario`;
+  const cta = createTextElement("button", "serv-cta", text);
+  cta.type = "button";
   cta.dataset.whatsappTrigger = "";
   cta.setAttribute("aria-label", ariaLabel);
   return cta;
