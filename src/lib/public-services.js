@@ -1,6 +1,6 @@
 import { normalizeService, compareServicesForPublic } from "../../assets/js/service-helpers.js";
 
-export const PUBLIC_FIELDS = ["id", "name", "category", "descriptionShort", "descriptionLong", "price", "duration", "order", "active", "slug", "intent", "benefits", "idealFor", "notFor", "featured", "ctaText", "updatedAt"];
+export const PUBLIC_FIELDS = ["id", "name", "category", "descriptionShort", "descriptionLong", "price", "order", "active", "slug", "intent", "benefits", "idealFor", "notFor", "featured", "ctaText", "updatedAt"];
 export const SERVICE_CATEGORIES = ["blanca", "roja", "negra", "verde"];
 
 export function sanitizePublicServices(documents) {

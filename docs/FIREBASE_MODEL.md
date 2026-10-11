@@ -16,7 +16,7 @@ Los documentos existentes pueden seguir usando únicamente estos campos:
 - `category` (`string`): `roja`, `blanca`, `negra` o `verde`.
 - `description` (`string`): descripción pública principal.
 - `price` (`number|string|null`): precio opcional. El frontend público lo normaliza a número válido o `null`.
-- `duration` (`number|string|null`): duración opcional en días. El frontend público la normaliza a número válido o `null`.
+- `duration` (`number|string|null`): duración opcional en días conservada en Firestore y en el administrador. No se incluye en la snapshot pública ni se muestra en las páginas de servicios.
 - `order` (`number|string`): orden manual dentro de la categoría.
 - `active` (`boolean`): si aparece en el sitio público.
 

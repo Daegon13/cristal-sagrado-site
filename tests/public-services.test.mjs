@@ -7,7 +7,7 @@ import { sanitizePublicServices, validatePublicSnapshot, getServicesByCategory, 
 import { decodeFirestoreValue, fetchPublicServices, syncPublicServices } from "../scripts/sync-public-services.mjs";
 
 const documents = [
-  { id: "second", data: { name: "Zeta", category: "blanca", description: "Descripción Z", order: 2, active: true, privateNote: "NO PUBLICAR" } },
+  { id: "second", data: { name: "Zeta", category: "blanca", description: "Descripción Z", duration: 7, order: 2, active: true, privateNote: "NO PUBLICAR" } },
   { id: "first", data: { name: "Ámbar", category: "blanca", descriptionShort: "Descripción A", order: 1, active: true, featured: true } },
   { id: "hidden", data: { name: "Oculto", category: "roja", description: "Privado", active: false } }
 ];
@@ -18,6 +18,7 @@ test("normaliza, filtra, ordena y limita los campos públicos", () => {
   assert.deepEqual(Object.keys(services[0]), PUBLIC_FIELDS);
   assert.equal(services[1].descriptionShort, "Descripción Z");
   assert.ok(!JSON.stringify(services).includes("NO PUBLICAR"));
+  assert.ok(services.every((service) => !("duration" in service)));
   const snapshot = validatePublicSnapshot({ version: 1, services });
   assert.equal(getServicesByCategory(snapshot, "blanca").length, 2);
   assert.equal(getServicesByCategory(snapshot, "roja").length, 0);
@@ -33,6 +34,7 @@ test("decodifica respuesta REST y consulta solo servicios activos", async () => 
     assert.equal(query.from[0].collectionId, "services");
     assert.equal(query.where.fieldFilter.value.booleanValue, true);
     assert.ok(!query.select.fields.some((field) => field.fieldPath === "privateNote"));
+    assert.ok(!query.select.fields.some((field) => field.fieldPath === "duration"));
     return { ok: true, json: async () => [{ document: { name: "projects/x/databases/(default)/documents/services/first", fields: { name: { stringValue: "Ámbar" }, category: { stringValue: "blanca" }, descriptionShort: { stringValue: "Descripción A" }, active: { booleanValue: true } } } }] };
   };
   assert.equal((await fetchPublicServices(mock))[0].slug, "ambar");

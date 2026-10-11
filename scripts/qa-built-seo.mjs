@@ -10,6 +10,7 @@ for (const category of ["blanca", "roja", "negra", "verde"]) {
   const services = getServicesByCategory(snapshot, category);
   assert.ok(services.length, `Sin servicios activos: ${category}`);
   assert.equal((html.match(/class="serv-card"/g) || []).length, services.length, `Cantidad de fichas: ${category}`);
+  assert.ok(!html.includes("serv-duration"), `Sin duración publicada: ${category}`);
   assert.ok(!html.includes("Los trabajos se están cargando."));
   for (const service of services) {
     assert.ok(html.includes(`data-id="${service.id}"`), `Falta ${service.id}`);
@@ -58,6 +59,7 @@ for (const path of expected) {
 }
 for (const entry of entries) {
   const html = await readFile(new URL(`../dist${entry.path}index.html`, import.meta.url), "utf8");
+  assert.ok(!html.includes("Duración indicada en el catálogo"), `Sin duración publicada: ${entry.path}`);
   assert.ok(html.includes(`data-cta-location="seo_service_page"`));
   assert.ok(html.includes(`data-service-slug="${entry.service.slug}"`));
   assert.ok(html.includes("data-cta-text="));

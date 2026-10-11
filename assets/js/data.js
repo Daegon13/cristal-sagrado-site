@@ -136,9 +136,6 @@ function createServiceCard(service) {
   if (service.price !== null) {
     meta.appendChild(createTextElement("span", "serv-price", `$${service.price}`));
   }
-  if (service.duration !== null) {
-    meta.appendChild(createTextElement("span", "serv-duration", `${service.duration} días`));
-  }
   if (meta.childElementCount) li.appendChild(meta);
 
   if (service.descriptionShort) {

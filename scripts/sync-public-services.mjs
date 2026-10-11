@@ -5,7 +5,7 @@ import { firebaseConfig } from "../admin/config.js";
 import { sanitizePublicServices, validatePublicSnapshot } from "../src/lib/public-services.js";
 
 const snapshotPath = resolve(dirname(fileURLToPath(import.meta.url)), "../src/data/generated/services.public.json");
-const remoteFields = ["name", "title", "category", "description", "descriptionShort", "descriptionLong", "price", "duration", "order", "active", "slug", "intent", "benefits", "idealFor", "notFor", "featured", "ctaText", "updatedAt"];
+const remoteFields = ["name", "title", "category", "description", "descriptionShort", "descriptionLong", "price", "order", "active", "slug", "intent", "benefits", "idealFor", "notFor", "featured", "ctaText", "updatedAt"];
 
 export function decodeFirestoreValue(value) {
   if ("stringValue" in value) return value.stringValue;

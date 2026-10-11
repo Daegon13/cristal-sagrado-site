@@ -2,7 +2,7 @@
 
 ## Fuente y auditoría
 
-Firestore (`services`) sigue siendo la fuente de verdad. `npm run build` ejecuta `sync:services`, consulta documentos activos y guarda la snapshot pública en `src/data/generated/services.public.json`. Si Firestore no responde, el build usa la snapshot válida existente y avisa. Antes de publicar, revisá cualquier cambio en esa snapshot. El catálogo auditado el 8 de octubre de 2026 tenía **52 servicios activos**: 20 de magia blanca, 18 de roja, 9 de verde y 5 de negra. Los 52 tenían `featured: false`, `intent: []`, `idealFor: []` y `benefits: []`; todos tenían descripción, precio y duración. `node scripts/seo-service-audit.mjs` produce una tabla completa con `name`, `slug`, `category`, `featured`, `intent`, `description`, `price`, `duration`, `idealFor` y `benefits` desde la snapshot.
+Firestore (`services`) sigue siendo la fuente de verdad. `npm run build` ejecuta `sync:services`, consulta documentos activos y guarda la snapshot pública en `src/data/generated/services.public.json`. Si Firestore no responde, el build usa la snapshot válida existente y avisa. Antes de publicar, revisá cualquier cambio en esa snapshot. El catálogo auditado el 8 de octubre de 2026 tenía **52 servicios activos**: 20 de magia blanca, 18 de roja, 9 de verde y 5 de negra. Los 52 tenían `featured: false`, `intent: []`, `idealFor: []` y `benefits: []`; todos tenían descripción y precio. La duración no se publica en la snapshot. `node scripts/seo-service-audit.mjs` produce una tabla completa con `name`, `slug`, `category`, `featured`, `intent`, `description`, `price`, `idealFor` y `benefits` desde la snapshot.
 
 La primera ola selecciona **10 servicios** por intención de consulta, nombre plausible de búsqueda, descripción disponible y diferencia frente a otros trabajos. La selección es explícita en `src/data/seo-services.js`. Un servicio nuevo o inactivo no crea una URL. Se evita el par casi duplicado Abrecaminos Verde / Ritual de Apertura de Caminos. No hay un servicio llamado «retorno de pareja» en la snapshot: la guía de reencuentro enlaza Encuentro & Reencuentro. Tarot existe como página del sitio, pero no como servicio de esta snapshot.
 
@@ -19,7 +19,7 @@ La primera ola selecciona **10 servicios** por intención de consulta, nombre pl
 | Ritual de Apertura de Caminos | Blanca | Proyectos o cambios estancados | `/magia-blanca/ritual-de-apertura-de-caminos/` |
 | Trabajo de Prosperidad | Blanca | Proyectos y prosperidad espiritual | `/magia-blanca/trabajo-de-prosperidad/` |
 
-Las fichas originales contienen afirmaciones de efectos que no se pueden verificar. Las landings usan una descripción editorial completa de la **consulta y el enfoque**, construida desde la intención de cada ficha, sin repetir esas afirmaciones como hechos. Precio y duración salen de la snapshot; la duración no se presenta como plazo de resultados. `idealFor` y `benefits` aparecen solo si llegan con datos; hoy están vacíos.
+Las fichas originales contienen afirmaciones de efectos que no se pueden verificar. Las landings usan una descripción editorial completa de la **consulta y el enfoque**, construida desde la intención de cada ficha, sin repetir esas afirmaciones como hechos. El precio sale de la snapshot. `idealFor` y `benefits` aparecen solo si llegan con datos; hoy están vacíos.
 
 ## Páginas, enlaces y metadata
 
@@ -55,4 +55,4 @@ Ejecutar `npm test`, `npm run build`, `npm run test:build` y `git diff --check`.
 
 ## Agregar contenido futuro
 
-Para una landing: confirmar que el servicio está activo y tiene contenido suficiente; agregar **su ID real** y texto editorial único a `src/data/seo-services.js`; revisar diferencias con otras landings, precio, duración, CTA y enlaces; ejecutar pruebas y revisar sitemap. Para una guía: agregar una entrada a `src/data/seo-guides.js` con respuesta directa, secciones y slugs de servicios ya seleccionados; verificar hub, enlaces y sitemap. No ampliar la allowlist por sincronizar Firestore sin revisión editorial.
+Para una landing: confirmar que el servicio está activo y tiene contenido suficiente; agregar **su ID real** y texto editorial único a `src/data/seo-services.js`; revisar diferencias con otras landings, precio, CTA y enlaces; ejecutar pruebas y revisar sitemap. Para una guía: agregar una entrada a `src/data/seo-guides.js` con respuesta directa, secciones y slugs de servicios ya seleccionados; verificar hub, enlaces y sitemap. No ampliar la allowlist por sincronizar Firestore sin revisión editorial.
