@@ -1,9 +1,36 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
+import { runInNewContext } from "node:vm";
 import snapshot from "../src/data/generated/services.public.json" with { type: "json" };
 import { getServicesByCategory } from "../src/lib/public-services.js";
 import { selectedServices } from "../src/lib/seo-services.js";
 import { seoGuides } from "../src/data/seo-guides.js";
+
+const homeHtml = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
+if (homeHtml.includes("data-before-send=\"cristalUmamiBeforeSend\"")) {
+  const hookScript = [...homeHtml.matchAll(/<script>([\s\S]*?)<\/script>/g)]
+    .map((match) => match[1]).find((script) => script.includes("window.cristalUmamiBeforeSend"));
+  assert.ok(hookScript, "El build con Umami debe incluir before-send");
+  const window = {};
+  runInNewContext(hookScript, {
+    window, location: { pathname: "/", href: "https://cristal-sagrado.com/" },
+    URL, URLSearchParams
+  });
+  const pageview = window.cristalUmamiBeforeSend("event", { website: "qa-id", url: "/" });
+  const event = window.cristalUmamiBeforeSend("event", {
+    website: "qa-id", name: "diagnostic_test", url: "/",
+    data: { source: "qa", name: "Nombre privado", message: "Texto privado",
+      items: [{ name: "Otro nombre privado" }, { name: "Nombre privado 2" }] }
+  });
+  assert.equal(pageview.website, "qa-id");
+  assert.equal(event.website, "qa-id");
+  assert.equal(event.name, "diagnostic_test", "El build elimina el nombre de eventos Umami");
+  assert.equal(event.data.source, "qa");
+  assert.equal(event.data.name, undefined);
+  assert.equal(event.data.message, undefined);
+  assert.equal(event.data.items[0].name, undefined);
+  assert.equal(event.data.items[1].name, undefined);
+}
 
 for (const category of ["blanca", "roja", "negra", "verde"]) {
   const html = await readFile(new URL(`../dist/magia-${category}/index.html`, import.meta.url), "utf8");

@@ -38,6 +38,9 @@ jobs:
           PUBLIC_UMAMI_WEBSITE_ID: ${{ vars.PUBLIC_UMAMI_WEBSITE_ID }}
           PUBLIC_UMAMI_SCRIPT_URL: ${{ vars.PUBLIC_UMAMI_SCRIPT_URL }}
 
+      - name: Check built site
+        run: npm run test:build
+
       - name: Disable Jekyll processing
         run: touch dist/.nojekyll
 

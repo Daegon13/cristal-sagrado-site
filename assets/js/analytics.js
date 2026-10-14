@@ -26,17 +26,17 @@ export function sanitizeAnalyticsUrl(value, base = "https://cristal-sagrado.com"
   return `${preserveOrigin ? url.origin : ""}${url.pathname}${query.size ? `?${query.toString()}` : ""}`;
 }
 
-function stripPrivateKeys(value) {
+function stripPrivateKeys(value, preserveEventName = false) {
   if (!value || typeof value !== "object") return value;
-  if (Array.isArray(value)) return value.map(stripPrivateKeys);
+  if (Array.isArray(value)) return value.map((item) => stripPrivateKeys(item));
   return Object.fromEntries(Object.entries(value)
-    .filter(([key]) => !isPrivateKey(key))
+    .filter(([key]) => (preserveEventName && key === "name") || !isPrivateKey(key))
     .map(([key, item]) => [key, stripPrivateKeys(item)]));
 }
 
 export function sanitizeUmamiPayload(type, payload, currentUrl) {
   if (!payload || typeof payload !== "object") return payload;
-  const safe = stripPrivateKeys(payload);
+  const safe = stripPrivateKeys(payload, type === "event");
   if (typeof safe.url === "string") safe.url = sanitizeAnalyticsUrl(safe.url, currentUrl);
   if (typeof safe.referrer === "string" && safe.referrer) safe.referrer = sanitizeAnalyticsUrl(safe.referrer, currentUrl, true);
   if (typeof safe.url !== "string" && (type === "pageview" || type === "event") && currentUrl) safe.url = sanitizeAnalyticsUrl(currentUrl);
