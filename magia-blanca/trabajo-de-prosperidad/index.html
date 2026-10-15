@@ -2,15 +2,16 @@
       window.cristalUmamiBeforeSend = (type, payload) => {
         if (location.pathname.startsWith("/previews/") || location.pathname.includes("/previews/")) return false;
         const denied = new Set(["message", "mensaje", "case", "caso", "email", "phone", "telefono", "name", "nombre", "whatsapp_text"]);
-        const clean = (value) => {
+        const clean = (value, isPayload = false) => {
           if (!value || typeof value !== "object") return value;
-          if (Array.isArray(value)) return value.map(clean);
+          if (Array.isArray(value)) return value.map((item) => clean(item));
           return Object.fromEntries(Object.entries(value).filter(([key]) => {
             const normalized = key.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toLowerCase().replace(/[-\s]/g, "_");
-            return !denied.has(normalized) && !/^(message|mensaje|case|caso|email|phone|telefono)(_|$)/.test(normalized);
+            return (isPayload && type === "event" && key === "name") ||
+              (!denied.has(normalized) && !/^(message|mensaje|case|caso|email|phone|telefono)(_|$)/.test(normalized));
           }).map(([key, item]) => [key, clean(item)]));
         };
-        const safe = clean(payload);
+        const safe = clean(payload, true);
         const sanitizeUrl = (value, preserveOrigin = false) => {
           try {
             const url = new URL(value, location.href);
