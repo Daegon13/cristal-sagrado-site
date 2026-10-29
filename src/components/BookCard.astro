@@ -7,7 +7,7 @@ const statusLabel = book.status === "available" ? "Disponible" : book.status ===
 ---
 <article class="book-card">
   <a class="book-cover" href={`${base}libros/${book.slug}/`} aria-label={`Ver ficha de ${book.title}`}>
-    {book.cover ? <img src={`${base}${book.cover.replace(/^\//, "")}`} alt={`Portada de ${book.title}`} loading="lazy" /> : <span aria-hidden="true"><small>Presentación provisional</small><strong>{book.title}</strong><em>Lucía Mayada</em></span>}
+    {book.status === "available" && book.cover ? <img src={`${base}${book.cover.replace(/^\//, "")}`} alt={`Portada de ${book.title}`} loading="lazy" /> : <span aria-hidden="true"><small>{book.status === "available" ? "Portada pendiente" : "Biblioteca editorial"}</small><strong>{book.status === "available" ? book.title : "Próximamente"}</strong><em>{book.status === "available" ? book.author : book.title}</em></span>}
   </a>
-  <div class="book-card__body"><p class="eyebrow">Libro · {statusLabel}</p><h3><a href={`${base}libros/${book.slug}/`}>{book.title}</a></h3><p>{book.subtitle}</p><a class="text-link" href={`${base}libros/${book.slug}/`}>Conocer el libro →</a></div>
+  <div class="book-card__body"><p class="eyebrow">Libro · {statusLabel}</p><h3><a href={`${base}libros/${book.slug}/`}>{book.title}</a></h3><p>{book.subtitle}</p><a class="text-link" href={`${base}libros/${book.slug}/`}>Ver ficha →</a></div>
 </article>

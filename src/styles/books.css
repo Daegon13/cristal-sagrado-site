@@ -18,6 +18,10 @@
 .book-subtitle { font: 400 clamp(1.2rem, 3vw, 1.6rem)/1.4 "Playfair Display", Georgia, serif; }
 .book-status { margin-block: 2rem 1rem; color: var(--muted); }
 .book-note { max-width: 38rem; color: var(--muted); font-size: .9rem; }
+.book-coming-soon { position: relative; max-width: 48rem; min-height: min(60svh, 34rem); display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: clamp(1.5rem, 6vw, 4rem); border: 1px solid var(--border-strong); border-radius: var(--radius); background: radial-gradient(circle at 90% 10%, var(--ambient), transparent 40%), linear-gradient(145deg, var(--panel-soft), var(--bg-deep)); box-shadow: var(--shadow); }
+.book-coming-soon__status { display: inline-flex; margin: 0 0 1.3rem; padding: .35rem .8rem; border: 1px solid var(--gold); border-radius: 999px; color: var(--gold-soft); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.book-coming-soon h1 { margin: 0 0 1rem; }
+.book-coming-soon > p:not(.book-coming-soon__status):not(.book-subtitle) { max-width: 42ch; color: var(--muted); }
 .home-books { background: var(--panel); }
 .books-context .site-header [data-whatsapp-trigger], .books-context .site-footer [data-whatsapp-trigger], .books-context .whatsapp-sticky { display: none; }
 @media (min-width: 45rem) { .book-detail { grid-template-columns: minmax(15rem, 25rem) minmax(0, 1fr); } .book-cover--detail { width: min(100%, 25rem); margin-inline: 0; } }

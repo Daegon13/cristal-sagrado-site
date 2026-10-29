@@ -29,6 +29,18 @@ let context = {};
 let savedScroll = 0;
 let savedBodyStyle = "";
 let sending = false;
+let handoffTimer = null;
+let handoffStartedAt = 0;
+const HANDOFF_RECOVERY_MS = 2500;
+function resetHandoff() {
+  if (handoffTimer !== null) window.clearTimeout(handoffTimer);
+  handoffTimer = null;
+  sending = false;
+  submit.disabled = false;
+}
+function recoverOnReturn() {
+  if (sending && performance.now() - handoffStartedAt > 400) resetHandoff();
+}
 const exampleFor = ({ intent = "", category = "", serviceName = "" }) => {
   const topic = `${intent} ${category} ${serviceName}`.toLowerCase();
   if (/amor|pareja|roja|reencuentro/.test(topic)) return "Ejemplo: quiero orientación sobre un vínculo que me genera dudas.";
@@ -52,19 +64,21 @@ if ("IntersectionObserver" in window) {
   const services = document.querySelector("#lista-servicios");
   if (services) new MutationObserver(observe).observe(services, { childList: true, subtree: true });
 }
-window.addEventListener("pageshow", () => { sending = false; submit.disabled = false; });
+window.addEventListener("pageshow", resetHandoff);
+window.addEventListener("focus", recoverOnReturn);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) recoverOnReturn(); });
 
 function updateHeight() {
   overlay.style.height = `${window.visualViewport?.height || window.innerHeight}px`;
   overlay.style.top = `${window.visualViewport?.offsetTop || 0}px`;
-  document.body.classList.toggle("keyboard-open", Boolean(window.visualViewport && window.visualViewport.height < window.innerHeight * .7));
+  document.body.classList.toggle("keyboard-open", !overlay.hidden && Boolean(window.visualViewport && window.visualViewport.height < window.innerHeight * .7));
 }
 
 function closeDialog(cancelled = false) {
   if (overlay.hidden) return;
   if (cancelled) trackEvent("wa_cancel", { ...context, page: location.pathname, cta_location: context.ctaLocation });
   overlay.hidden = true;
-  document.body.classList.remove("contact-open");
+  document.body.classList.remove("contact-open", "keyboard-open");
   document.body.style.cssText = savedBodyStyle;
   window.scrollTo(0, savedScroll);
   opener?.focus();
@@ -110,7 +124,10 @@ form.addEventListener("submit", (event) => {
   trackEvent("wa_case_valid", properties);
   trackEvent("wa_outbound", properties);
   closeDialog();
-  window.location.assign(url);
+  handoffStartedAt = performance.now();
+  handoffTimer = window.setTimeout(resetHandoff, HANDOFF_RECOVERY_MS);
+  try { window.location.assign(url); }
+  catch { resetHandoff(); }
 });
 
 document.addEventListener("click", (event) => {

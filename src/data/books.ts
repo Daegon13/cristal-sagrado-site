@@ -21,7 +21,7 @@ export interface Book {
 }
 
 export const books: Book[] = [
-  { id: "habitar-lo-posible", slug: "habitar-lo-posible", title: "Habitar lo posible", subtitle: "Manifestación consciente entre la mente, el símbolo y la acción.", author: "Lucía Mayada", status: "draft", formats: [], distribution: "none", publicInquiry: true },
-  { id: "brujeria-para-principiantes", slug: "brujeria-para-principiantes", title: "Brujería para principiantes", subtitle: "El arte de despertar la magia, descubrir tu sendero y transformar lo cotidiano en sagrado.", author: "Lucía Mayada", status: "draft", formats: [], distribution: "none", publicInquiry: true },
-  { id: "el-umbral-de-cristal", slug: "el-umbral-de-cristal", title: "El Umbral de Cristal", subtitle: "Alquimia, intención y el arte de manifestar tu realidad.", author: "Lucía Mayada", status: "draft", formats: [], distribution: "none", publicInquiry: true }
+  { id: "habitar-lo-posible", slug: "habitar-lo-posible", title: "Habitar lo posible", subtitle: "Manifestación consciente entre la mente, el símbolo y la acción.", author: "Lucía Mayada", status: "upcoming", formats: [], distribution: "none", publicInquiry: false },
+  { id: "brujeria-para-principiantes", slug: "brujeria-para-principiantes", title: "Brujería para principiantes", subtitle: "El arte de despertar la magia, descubrir tu sendero y transformar lo cotidiano en sagrado.", author: "Lucía Mayada", status: "upcoming", formats: [], distribution: "none", publicInquiry: false },
+  { id: "el-umbral-de-cristal", slug: "el-umbral-de-cristal", title: "El Umbral de Cristal", subtitle: "Alquimia, intención y el arte de manifestar tu realidad.", author: "Lucía Mayada", status: "upcoming", formats: [], distribution: "none", publicInquiry: false }
 ];

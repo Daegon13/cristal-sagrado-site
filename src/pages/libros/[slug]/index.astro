@@ -3,17 +3,42 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { books, type Book } from "../../../data/books";
 import { bookInquiryUrl } from "../../../lib/book-contact";
 import { SITE } from "../../../lib/constants";
+
 export function getStaticPaths() { return books.map((book) => ({ params: { slug: book.slug }, props: { book } })); }
 interface Props { book: Book; }
 const { book } = Astro.props;
 const path = `/libros/${book.slug}/`;
 const base = import.meta.env.BASE_URL;
-const availability = book.status === "available" ? `Disponible${book.formats.length ? ` en ${book.formats.join(", ").toUpperCase()}` : ""}.` : book.status === "upcoming" ? "Próximamente. Formatos y condiciones por confirmar." : "Disponibilidad, formatos y condiciones de distribución por confirmar.";
+const available = book.status === "available";
 const schema = { "@context": "https://schema.org", "@graph": [
-  { "@type": "Book", name: book.title, alternativeHeadline: book.subtitle, author: { "@type": "Person", name: book.author }, url: `${SITE.origin}${path}`, ...(book.cover ? { image: `${SITE.origin}/${book.cover.replace(/^\//, "")}` } : {}) },
+  { "@type": "Book", name: book.title, alternativeHeadline: book.subtitle, author: { "@type": "Person", name: book.author }, url: `${SITE.origin}${path}`, ...(available && book.cover ? { image: `${SITE.origin}/${book.cover.replace(/^\//, "")}` } : {}) },
   { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Inicio", item: SITE.origin }, { "@type": "ListItem", position: 2, name: "Libros", item: `${SITE.origin}/libros/` }, { "@type": "ListItem", position: 3, name: book.title, item: `${SITE.origin}${path}` }] }
 ] };
 ---
-<BaseLayout title={`${book.title} | ${book.author} | Cristal Sagrado`} description={`${book.title}. ${book.subtitle} Obra de ${book.author}. Consultá novedades y disponibilidad.`} path={path} schema={schema} ogImage={book.cover ? `/${book.cover.replace(/^\//, "")}` : undefined}>
-  <main class="books-page" data-book-slug={book.slug}><section class="section"><div class="wrap"><nav aria-label="Ruta de navegación"><a href={base}>Inicio</a> / <a href={`${base}libros/`}>Libros</a> / {book.title}</nav><div class="book-detail"><div class="book-cover book-cover--detail">{book.cover ? <img src={`${base}${book.cover.replace(/^\//, "")}`} alt={`Portada de ${book.title}`} /> : <span aria-hidden="true"><small>Presentación provisional</small><strong>{book.title}</strong><em>{book.author}</em></span>}</div><div><span class="eyebrow">Obra de {book.author}</span><h1>{book.title}</h1><p class="book-subtitle">{book.subtitle}</p>{book.synopsis && <p>{book.synopsis}</p>}{book.highlights && <ul>{book.highlights.map((item) => <li>{item}</li>)}</ul>}<p class="book-status">{availability}{book.price && ` Precio: ${book.price}.`}</p>{book.sampleUrl && <a class="text-link" href={book.sampleUrl} download data-book-event="book_sample_download" data-book-slug={book.slug} data-cta-location="book_detail">Leer muestra autorizada</a>}{book.status === "available" && book.distribution === "free" && book.purchaseUrl && <a class="button button--primary" href={book.purchaseUrl} download>Descargar libro</a>}{book.status === "available" && book.distribution === "external" && book.purchaseUrl && <a class="button button--primary" href={book.purchaseUrl} data-book-event="book_purchase_click" data-book-slug={book.slug} data-cta-location="book_detail">Ir a compra</a>}{book.publicInquiry && <a class="button button--primary" href={bookInquiryUrl(book)} target="_blank" rel="noopener noreferrer" data-book-event="book_interest_wa" data-book-slug={book.slug} data-cta-location="book_detail">{book.status === "available" ? "Consultar por WhatsApp" : "Consultar novedades por WhatsApp"}</a>}<p class="book-note">La consulta abre un mensaje preparado. Enviarlo queda a tu cargo; no realiza una compra ni una reserva.</p></div></div></div></section></main>
+<BaseLayout title={`${book.title} | ${book.author} | Cristal Sagrado`} description={`${book.title}. ${book.subtitle} ${available ? "Conocé la obra y sus opciones de distribución." : "Próximamente en la biblioteca de Cristal Sagrado."}`} path={path} schema={schema} ogImage={available && book.cover ? `/${book.cover.replace(/^\//, "")}` : undefined}>
+  <main class="books-page" data-book-slug={book.slug}>
+    <section class="section"><div class="wrap">
+      <nav aria-label="Ruta de navegación"><a href={base}>Inicio</a> / <a href={`${base}libros/`}>Libros</a> / {book.title}</nav>
+      {available ? <div class="book-detail">
+        <div class="book-cover book-cover--detail">{book.cover ? <img src={`${base}${book.cover.replace(/^\//, "")}`} alt={`Portada de ${book.title}`} /> : <span aria-hidden="true"><small>Portada pendiente</small><strong>{book.title}</strong><em>{book.author}</em></span>}</div>
+        <div><span class="eyebrow">Obra de {book.author}</span><h1>{book.title}</h1><p class="book-subtitle">{book.subtitle}</p>
+          {book.synopsis && <p>{book.synopsis}</p>}
+          {book.highlights && <ul>{book.highlights.map((item) => <li>{item}</li>)}</ul>}
+          <p class="book-status">Disponible{book.formats.length ? ` en ${book.formats.join(", ").toUpperCase()}` : ""}.{book.price && ` Precio: ${book.price}.`}</p>
+          {book.sampleUrl && <a class="text-link" href={book.sampleUrl} download data-book-event="book_sample_download" data-book-slug={book.slug} data-cta-location="book_detail">Leer muestra autorizada</a>}
+          {book.distribution === "free" && book.purchaseUrl && <a class="button button--primary" href={book.purchaseUrl} download>Descargar libro</a>}
+          {book.distribution === "external" && book.purchaseUrl && <a class="button button--primary" href={book.purchaseUrl} data-book-event="book_purchase_click" data-book-slug={book.slug} data-cta-location="book_detail">Ir a compra</a>}
+          {book.publicInquiry && <a class="button button--primary" href={bookInquiryUrl(book)} target="_blank" rel="noopener noreferrer" data-book-event="book_interest_wa" data-book-slug={book.slug} data-cta-location="book_detail">Consultar por WhatsApp</a>}
+          <p class="book-note">Verificá las condiciones antes de solicitar el libro. Una consulta no realiza una compra ni una reserva.</p>
+        </div>
+      </div> : <div class="book-coming-soon">
+        <span class="eyebrow">Biblioteca editorial · {book.author}</span>
+        <p class="book-coming-soon__status">Próximamente</p>
+        <h1>{book.title}</h1>
+        <p class="book-subtitle">{book.subtitle}</p>
+        <p>Esta ficha está en preparación. La vista previa y los enlaces para conseguir el libro aparecerán aquí cuando estén listos.</p>
+        <a class="text-link" href={`${base}libros/`}>Volver a Libros →</a>
+      </div>}
+    </div></section>
+  </main>
 </BaseLayout>
