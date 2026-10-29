@@ -12,6 +12,8 @@ for (const value of ["", "   ", ".", "hola", ".................", "hola!!!!!!!!!
 assert.equal(validCase(`  ${caseText}  `), true);
 assert.equal(buildWhatsappMessage({ serviceName: "Tarot", caseText }), `Hola Luz, llego desde la web de Cristal Sagrado.\nQuiero consultar por Tarot.\n\nMi situación es:\n${caseText}`);
 assert.equal(buildWhatsappMessage({ caseText }), `Hola Luz, llego desde la web de Cristal Sagrado.\n\nMi situación es:\n${caseText}`);
+assert.match(buildWhatsappMessage({ intent: "Tarot", caseText }), /Quiero consultar por Tarot\./);
+assert.match(buildWhatsappMessage({ category: "verde", caseText }), /Quiero consultar por magia verde\./);
 assert.equal(buildWhatsappMessage({ serviceName: "Tarot", ctaText: "Hola especial", caseText }), `Hola especial\n\nMi situación es:\n${caseText}`);
 const special = "Tengo dudas sobre amor & trabajo\n¿Qué puedo hacer?";
 const url = buildWhatsappUrl(buildWhatsappMessage({ serviceName: "Tarot & amor", caseText: special }));

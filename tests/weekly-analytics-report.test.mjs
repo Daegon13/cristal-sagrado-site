@@ -84,6 +84,15 @@ test("zero events and visitors produce safe funnel ratios", () => {
   assert.equal(empty.noData, true);
 });
 
+test("editorial events stay separate and ig source is normalized", () => {
+  const period = buildPeriod({ visitors: 8 }, { events: [{ x: "book_view", y: 5 }, { x: "book_interest_wa", y: 2 }, { x: "wa_open", y: 1 }], utmSources: [{ utm: "ig", views: 3 }, { utm: "instagram", views: 2 }] });
+  assert.deepEqual(period.utmSources, [{ name: "instagram", count: 5 }]);
+  const report = buildTextReport(period, period, { current: { startDate: "2026-10-19", endDate: "2026-10-25" } });
+  assert.match(report, /Consultas hacia WhatsApp: 2 \(40\.0% de vistas de ficha\)/);
+  assert.match(report, /Caso válido: 0/);
+  assert.match(report, /no confirma mensaje enviado/);
+});
+
 test("funnel counts known events and labels remain aggregate", () => {
   const current = buildPeriod({ visitors: 10 }, { events: [{ x: "wa_open", y: 4 }, { x: "wa_case_valid", y: 2 }, { x: "wa_outbound", y: 1 }] });
   assert.equal(current.ratios.waOpenPerVisitor, 0.4);
@@ -91,8 +100,8 @@ test("funnel counts known events and labels remain aggregate", () => {
   assert.equal(current.ratios.outboundPerCaseValid, 0.5);
   const text = buildTextReport(current, current, { current: { startDate: "2026-09-28", endDate: "2026-10-04" } });
   assert.match(text, /eventos agregados, no personas únicas/);
-  assert.match(text, /Leads web WhatsApp/);
-  assert.doesNotMatch(text, /venta|cliente|compra|NaN|Infinity|undefined %/i);
+  assert.match(text, /Salidas intentadas a WhatsApp/);
+  assert.doesNotMatch(text, /venta confirmada: [1-9]|mensaje enviado: [1-9]|NaN|Infinity|undefined %/i);
 });
 
 test("small sample notice and deterministic observations", () => {

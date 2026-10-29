@@ -5,7 +5,10 @@
 .contact-dialog h2,.contact-dialog p{margin:0}
 .contact-dialog textarea{width:100%;min-height:6rem;resize:vertical;padding:.75rem;border:1px solid var(--border);border-radius:.5rem;background:var(--bg-deep);color:var(--fg);font:inherit}
 .contact-dialog__error{color:var(--error)}
+.contact-dialog__example{color:var(--muted);font-size:.9rem}
 .contact-dialog__actions{display:flex;justify-content:flex-end;gap:.75rem;flex-wrap:wrap}
 .contact-dialog button{cursor:pointer;font:inherit}
 @media(max-width:400px){.contact-dialog__actions button{width:100%}}
 @media(max-height:600px){.contact-overlay{align-items:flex-start}.contact-dialog textarea{min-height:4rem}}
+@media(max-width:600px){.contact-overlay{align-items:flex-start;padding:.5rem max(.5rem,env(safe-area-inset-right,0px)) calc(.5rem + env(safe-area-inset-bottom,0px))}.contact-dialog{border-radius:.75rem}.contact-dialog__actions{display:grid;grid-template-columns:1fr 1fr}.contact-dialog__actions button{width:100%}}
+@media(max-width:380px){.contact-dialog__actions{grid-template-columns:1fr}}

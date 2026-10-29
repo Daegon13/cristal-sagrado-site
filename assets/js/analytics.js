@@ -5,6 +5,12 @@ const EVENT_PROPERTIES = {
   wa_open: ["page", "cta_location", "category", "service", "intent"],
   wa_case_valid: ["page", "cta_location", "category", "service", "intent"],
   wa_outbound: ["page", "cta_location", "category", "service", "intent"],
+  wa_cancel: ["page", "cta_location", "category", "service", "intent"],
+  wa_validation_error: ["page", "cta_location", "category", "service", "intent"],
+  book_view: ["page", "book_slug"],
+  book_sample_download: ["page", "book_slug", "cta_location"],
+  book_interest_wa: ["page", "book_slug", "cta_location"],
+  book_purchase_click: ["page", "book_slug", "cta_location"],
   intent_click: ["intent", "page"],
   service_detail: ["service", "category"],
   service_wa: ["service", "category"],
@@ -52,6 +58,7 @@ export function trackEvent(name, properties = {}, umami = globalThis.umami) {
       const value = properties[key];
       if (value === undefined || value === null || typeof value === "object") continue;
       const clean = String(value).trim();
+      if (key === "book_slug" && !["habitar-lo-posible", "brujeria-para-principiantes", "el-umbral-de-cristal"].includes(clean)) continue;
       if (clean && !DENIED_KEYS.has(key)) data[key] = clean;
     }
     umami.track(name, data);

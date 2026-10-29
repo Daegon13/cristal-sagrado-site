@@ -23,8 +23,14 @@ Eventos existentes:
 | Evento | Significado |
 | --- | --- |
 | `wa_open` | Se abrió el diálogo de consulta. |
+| `wa_cancel` | Se cerró el diálogo sin continuar. |
+| `wa_validation_error` | Se intentó continuar con un caso inválido; puede repetirse en una apertura. |
 | `wa_case_valid` | Se validó el caso y se pulsó continuar. |
-| `wa_outbound` | Salida desde la web a WhatsApp; es un **lead web WhatsApp**, no una venta. |
+| `wa_outbound` | Intento de abrir WhatsApp tras validar el caso; no confirma mensaje enviado. |
+| `book_view` | Se cargó una ficha de libro. |
+| `book_interest_wa` | Se pulsó la consulta editorial hacia WhatsApp; no confirma mensaje enviado. |
+| `book_sample_download` | Se pulsó una muestra autorizada, si existe. |
+| `book_purchase_click` | Clic en compra real, solo si se configura; no confirma transacción. |
 | `intent_click` | Se eligió una intención. |
 | `service_detail` | Se expandió un servicio. |
 | `service_wa` | Se eligió el CTA de WhatsApp de un servicio. |
@@ -60,7 +66,9 @@ El funnel muestra conteos de eventos agregados:
 
 No son porcentajes de visitantes únicos convertidos: un visitante puede generar varios eventos. División por cero o falta de base se presenta como “Sin datos”. Los cambios de métricas de conteo son porcentajes relativos; los cambios de ratios se muestran en puntos porcentuales. No hay valores inventados. Menos de cinco `wa_outbound` muestra una advertencia de muestra pequeña.
 
-El email incluye tráfico, embudo, comparación semanal, fuentes/referrers, páginas, dispositivos, UTM, servicios, intenciones, CTA y observaciones deterministas. Campaign leads solo cuenta `wa_outbound` con UTM campaña disponible. No produce rankings vacíos. No contiene texto de caso, nombres, teléfonos, emails de clientes, mensajes Formspree, IP, user-agent individual, ID individual o datos privados de Firebase. “Lead web WhatsApp” significa salida a WhatsApp y no confirma conversación, venta, cliente ni compra.
+Desde 2.0 el informe agrega `wa_cancel / wa_open`, `wa_validation_error / wa_open` y una sección editorial separada (`book_interest_wa / book_view`). Son relaciones de conteos agregados, no tasas por persona. `wa_case_valid` y `wa_outbound` se emiten consecutivamente antes de navegar; el 100% entre ambos no equivale a una conversación. Para comparar antes y después, usar las mismas definiciones de evento y anotar la fecha de despliegue. `ig` e `instagram` se suman bajo `instagram` solo en la presentación del informe; los datos históricos de Umami no se reescriben.
+
+El email incluye tráfico, embudo, comparación semanal, fuentes/referrers, páginas, dispositivos, UTM, servicios, intenciones, CTA, libros y observaciones deterministas. La atribución de campañas solo cuenta `wa_outbound` con UTM campaña disponible. No produce rankings vacíos. No contiene texto de caso, nombres, teléfonos, emails de clientes, mensajes Formspree, IP, user-agent individual, ID individual o datos privados de Firebase. Una salida intentada a WhatsApp no confirma conversación, venta, cliente ni compra.
 
 ## Configurar GitHub Actions
 

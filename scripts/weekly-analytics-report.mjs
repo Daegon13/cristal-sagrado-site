@@ -2,7 +2,7 @@ import { pathToFileURL } from "node:url";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const TIMEZONE = "America/Montevideo";
-const EVENT_NAMES = ["wa_open", "wa_case_valid", "wa_outbound", "form_submit", "intent_click", "service_wa", "service_detail", "nav_cta"];
+const EVENT_NAMES = ["wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound", "form_submit", "intent_click", "service_wa", "service_detail", "nav_cta", "book_view", "book_sample_download", "book_interest_wa", "book_purchase_click"];
 const PRIVATE_KEY = /(?:message|mensaje|case|caso|email|phone|telefono|name|nombre|ip|user.?agent|distinct.?id|session.?id|visitor.?id|firebase)/i;
 const PRIVATE_VALUE = /(?:[\w.+-]+@[\w.-]+\.[a-z]{2,}|(?:\+?\d[\d().\s-]{7,}\d))/i;
 
@@ -73,6 +73,15 @@ const aggregate = (value, labelKey = "x", countKey = "y", allowedNames = []) => 
   .filter((row) => row.count > 0)
   .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
+function normalizeUtmSources(items) {
+  const totals = new Map();
+  for (const item of items) {
+    const name = ["ig", "instagram"].includes(item.name.toLowerCase()) ? "instagram" : item.name;
+    totals.set(name, (totals.get(name) || 0) + item.count);
+  }
+  return [...totals].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
 export function buildPeriod(stats = {}, metrics = {}, properties = {}) {
   const eventRows = aggregate(metrics.events, "x", "y", EVENT_NAMES);
   const eventCounts = Object.fromEntries(EVENT_NAMES.map((name) => [name, eventRows.find((row) => row.name === name)?.count ?? 0]));
@@ -85,7 +94,7 @@ export function buildPeriod(stats = {}, metrics = {}, properties = {}) {
   return {
     visitors: num(stats.visitors), visits: num(stats.visits), pageviews: num(stats.pageviews), eventCounts, ratios,
     referrers: aggregate(metrics.referrers), pages: aggregate(metrics.pages), landingPages: aggregate(metrics.landingPages), devices: aggregate(metrics.devices),
-    utmSources: aggregate(metrics.utmSources, "utm", "views"), campaigns: aggregate(metrics.campaigns, "utm", "views"),
+    utmSources: normalizeUtmSources(aggregate(metrics.utmSources, "utm", "views")), campaigns: aggregate(metrics.campaigns, "utm", "views"),
     contents: aggregate(metrics.contents, "utm", "views"), campaignLeads: aggregate(metrics.campaignLeads, "utm", "views"),
     services: aggregate(properties.services, "value", "total"), categories: aggregate(properties.categories, "value", "total"),
     intents: aggregate(properties.intents, "value", "total"), ctas: aggregate(properties.ctas, "value", "total"),
@@ -123,17 +132,27 @@ export function buildTextReport(current, previous, ranges) {
     `Visitantes: ${current.visitors} (${formatDelta(percentChange(current.visitors, previous.visitors))})`,
     `Visitas/sesiones: ${current.visits}`,
     `Pageviews: ${current.pageviews} (${formatDelta(percentChange(current.pageviews, previous.pageviews))})`,
-    `Leads web WhatsApp (wa_outbound): ${current.eventCounts.wa_outbound}`,
+    `Salidas intentadas a WhatsApp (wa_outbound): ${current.eventCounts.wa_outbound}`,
     `Salidas a WhatsApp / visitantes: ${formatPercent(current.ratios.outboundPerVisitor)}`,
     "",
     "EMBUDO (eventos agregados, no personas únicas)",
     `Visitantes: ${current.visitors}`,
     `→ Abrieron consulta: ${current.eventCounts.wa_open} (${formatPercent(current.ratios.waOpenPerVisitor)} de visitantes)`,
+    `→ Cancelaron el diálogo: ${current.eventCounts.wa_cancel} (${formatPercent(safeDivide(current.eventCounts.wa_cancel, current.eventCounts.wa_open))} de aperturas)`,
+    `→ Errores de validación: ${current.eventCounts.wa_validation_error} (${formatPercent(safeDivide(current.eventCounts.wa_validation_error, current.eventCounts.wa_open))} de aperturas; puede haber varios intentos por apertura)`,
     `→ Caso válido: ${current.eventCounts.wa_case_valid} (${formatPercent(current.ratios.caseValidPerOpen)} de aperturas)`,
-    `→ Salieron a WhatsApp: ${current.eventCounts.wa_outbound} (${formatPercent(current.ratios.outboundPerCaseValid)} de casos válidos)`,
+    `→ Intentaron abrir WhatsApp: ${current.eventCounts.wa_outbound} (${formatPercent(current.ratios.outboundPerCaseValid)} de casos válidos; no confirma mensaje enviado)`,
+    "",
+    "LIBROS (eventos de interés; no ventas confirmadas)",
+    ...(current.eventCounts.book_view || current.eventCounts.book_interest_wa || current.eventCounts.book_sample_download || current.eventCounts.book_purchase_click ? [
+      `Vistas de fichas: ${current.eventCounts.book_view}`,
+      `Consultas hacia WhatsApp: ${current.eventCounts.book_interest_wa} (${formatPercent(safeDivide(current.eventCounts.book_interest_wa, current.eventCounts.book_view))} de vistas de ficha)`,
+      `Descargas de muestra intentadas: ${current.eventCounts.book_sample_download}`,
+      `Clics de compra: ${current.eventCounts.book_purchase_click} (no confirma transacción)`
+    ] : ["Sin datos editoriales en este período."]),
     "",
     "SEMANA ACTUAL VS ANTERIOR",
-    ...[["visitantes", current.visitors, previous.visitors], ["visitas/sesiones", current.visits, previous.visits], ["pageviews", current.pageviews, previous.pageviews], ...["wa_open", "wa_case_valid", "wa_outbound", "form_submit"].map((event) => [event, current.eventCounts[event], previous.eventCounts[event]])].map(([label, value, prior]) => `${label}: ${value} vs ${prior} (${formatDelta(percentChange(value, prior))})`),
+    ...[["visitantes", current.visitors, previous.visitors], ["visitas/sesiones", current.visits, previous.visits], ["pageviews", current.pageviews, previous.pageviews], ...["wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound", "form_submit", "book_view", "book_interest_wa"].map((event) => [event, current.eventCounts[event], previous.eventCounts[event]])].map(([label, value, prior]) => `${label}: ${value} vs ${prior} (${formatDelta(percentChange(value, prior))})`),
     ...[["wa_open / visitantes", "waOpenPerVisitor"], ["wa_case_valid / wa_open", "caseValidPerOpen"], ["wa_outbound / wa_case_valid", "outboundPerCaseValid"]].map(([label, key]) => `${label}: ${formatPercent(current.ratios[key])} vs ${formatPercent(previous.ratios[key])} (${formatPoints(percentagePoints(current.ratios[key], previous.ratios[key]))})`),
     `Salidas a WhatsApp / visitantes: ${formatPercent(current.ratios.outboundPerVisitor)} vs ${formatPercent(previous.ratios.outboundPerVisitor)} (${formatPoints(percentagePoints(current.ratios.outboundPerVisitor, previous.ratios.outboundPerVisitor) ?? NaN)})`,
     "",
@@ -157,7 +176,7 @@ export function buildTextReport(current, previous, ranges) {
     "OBSERVACIONES",
     ...(observations.length ? observations.map((item) => `• ${item}`) : ["Sin observaciones deterministas para este período."]),
     "",
-    "Las métricas del embudo cuentan eventos agregados; no representan conversiones únicas por visitante ni confirman una operación comercial."
+    "Las métricas del embudo cuentan eventos agregados; un mismo visitante puede repetirlos. wa_case_valid y wa_outbound ocurren seguidos antes de navegar: su relación no mide mensajes efectivamente enviados ni operaciones comerciales."
   ];
   return lines.join("\n");
 }
@@ -166,7 +185,7 @@ export function buildHtmlReport(current, previous, ranges) {
   const text = buildTextReport(current, previous, ranges);
   const metric = (label, value) => `<td style="padding:14px;background:#292426;border:1px solid #49343a;border-radius:10px;color:#f6f0e8;width:50%;"><div style="font-size:12px;color:#d2ad68;">${safeText(label)}</div><div style="font-size:24px;font-weight:bold;margin-top:6px;">${safeText(value)}</div></td>`;
   const body = text.split("\n").map((line) => line ? `<p style="margin:0 0 8px;line-height:1.5;">${safeText(line)}</p>` : '<div style="height:10px;"></div>').join("");
-  return `<!doctype html><html lang="es"><body style="margin:0;background:#171517;color:#f6f0e8;font-family:Arial,Helvetica,sans-serif;"><div style="max-width:620px;margin:0 auto;padding:18px 12px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:separate;background:#211d1f;border:1px solid #49343a;border-radius:14px;overflow:hidden;"><tr><td style="padding:24px 20px;background:#4b1727;color:#f6f0e8;"><div style="font-size:13px;letter-spacing:2px;color:#e0bd68;">CRISTAL SAGRADO</div><h1 style="font-size:25px;margin:8px 0 4px;">Reporte semanal</h1><div style="font-size:13px;">${safeText(ranges.current.startDate)} al ${safeText(ranges.current.endDate)} · ${TIMEZONE}</div></td></tr><tr><td style="padding:18px 14px;"><table role="presentation" width="100%" cellspacing="6" cellpadding="0"><tr>${metric("Visitantes", String(current.visitors))}${metric("Pageviews", String(current.pageviews))}</tr><tr>${metric("Leads web WhatsApp", String(current.eventCounts.wa_outbound))}${metric("Salidas / visitantes", formatPercent(current.ratios.outboundPerVisitor))}</tr></table><div style="padding:4px 6px 10px;color:#f6f0e8;">${body}</div></td></tr><tr><td style="padding:14px 20px;background:#171517;color:#c9beb8;font-size:11px;line-height:1.5;">Informe generado con estadísticas agregadas de Umami. Los leads web WhatsApp son salidas al canal y no confirman una operación comercial.</td></tr></table></div></body></html>`;
+  return `<!doctype html><html lang="es"><body style="margin:0;background:#171517;color:#f6f0e8;font-family:Arial,Helvetica,sans-serif;"><div style="max-width:620px;margin:0 auto;padding:18px 12px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:separate;background:#211d1f;border:1px solid #49343a;border-radius:14px;overflow:hidden;"><tr><td style="padding:24px 20px;background:#4b1727;color:#f6f0e8;"><div style="font-size:13px;letter-spacing:2px;color:#e0bd68;">CRISTAL SAGRADO</div><h1 style="font-size:25px;margin:8px 0 4px;">Reporte semanal</h1><div style="font-size:13px;">${safeText(ranges.current.startDate)} al ${safeText(ranges.current.endDate)} · ${TIMEZONE}</div></td></tr><tr><td style="padding:18px 14px;"><table role="presentation" width="100%" cellspacing="6" cellpadding="0"><tr>${metric("Visitantes", String(current.visitors))}${metric("Pageviews", String(current.pageviews))}</tr><tr>${metric("Salidas WhatsApp intentadas", String(current.eventCounts.wa_outbound))}${metric("Salidas / visitantes", formatPercent(current.ratios.outboundPerVisitor))}</tr></table><div style="padding:4px 6px 10px;color:#f6f0e8;">${body}</div></td></tr><tr><td style="padding:14px 20px;background:#171517;color:#c9beb8;font-size:11px;line-height:1.5;">Informe generado con estadísticas agregadas de Umami. Las salidas intentadas no confirman un mensaje enviado ni una operación comercial.</td></tr></table></div></body></html>`;
 }
 
 function apiUrl(base, route, params) {
@@ -232,7 +251,7 @@ async function main() {
   const dryRun = process.env.DRY_RUN === "true";
   if (dryRun) {
     console.log(`Dry run: ${report.subject}`);
-    console.log(`Visitantes: ${report.current.visitors}; pageviews: ${report.current.pageviews}; leads web WhatsApp: ${report.current.eventCounts.wa_outbound}; salidas/visitantes: ${formatPercent(report.current.ratios.outboundPerVisitor)}`);
+    console.log(`Visitantes: ${report.current.visitors}; pageviews: ${report.current.pageviews}; salidas WhatsApp intentadas: ${report.current.eventCounts.wa_outbound}; salidas/visitantes: ${formatPercent(report.current.ratios.outboundPerVisitor)}`);
     console.log("No se envió ningún correo.");
     return;
   }
