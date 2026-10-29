@@ -47,3 +47,7 @@ GitHub Actions publica dist/ en la rama gh-pages al hacer push a main. Las previ
 - /admin/ se sirve desde public/admin/ sin bundling. admin/ mantiene una copia idéntica usada por scripts y tests; su consolidación requiere una migración separada. Validar login con credenciales autorizadas y el proyecto Firebase habitual.
 - Los .html existentes se sirven como puentes porque el hosting actual es GitHub Pages. Las rutas limpias son canónicas.
 - Los assets del Hero y los posters activos se sirven desde public/ sin reprocesarlos. El video legacy fue retirado.
+
+# Cristal Sagrado 2.0
+
+La evolución del contacto público y la biblioteca editorial se documentan en [docs/CRISTAL_2_0.md](docs/CRISTAL_2_0.md).

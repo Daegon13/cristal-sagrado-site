@@ -8,10 +8,11 @@ overlay.hidden = true;
 overlay.innerHTML = `<section class="contact-dialog" role="dialog" aria-modal="true" aria-labelledby="contact-title" aria-describedby="contact-description" tabindex="-1">
   <form class="contact-dialog__form" novalidate>
     <h2 id="contact-title">Contame brevemente tu situación</h2>
-    <p id="contact-description">Con unas líneas alcanza. Así puedo entender mejor tu situación antes de seguir por WhatsApp.</p>
+    <p id="contact-description">Con una o dos frases alcanza. Tu texto va en el mensaje de WhatsApp; no se envía a las estadísticas.</p>
+    <p id="contact-example" class="contact-dialog__example"></p>
     <label for="contact-case">¿Qué estás viviendo?</label>
-    <textarea id="contact-case" rows="5" required placeholder="Contame brevemente qué está pasando y qué te gustaría trabajar…" aria-describedby="contact-description contact-error"></textarea>
-    <p id="contact-error" class="contact-dialog__error" role="alert" hidden>Contame un poco más sobre tu situación (al menos 18 caracteres).</p>
+    <textarea id="contact-case" rows="4" required minlength="12" enterkeyhint="done" autocomplete="off" placeholder="Por ejemplo: quiero orientación sobre una situación que me preocupa…" aria-describedby="contact-description contact-example contact-error"></textarea>
+    <p id="contact-error" class="contact-dialog__error" role="alert" hidden></p>
     <div class="contact-dialog__actions"><button type="button" class="btn btn--ghost" data-contact-cancel>Cancelar</button><button type="submit" class="btn btn--whatsapp">Continuar a WhatsApp</button></div>
   </form>
 </section>`;
@@ -21,12 +22,21 @@ const panel = overlay.querySelector(".contact-dialog");
 const form = overlay.querySelector("form");
 const textarea = overlay.querySelector("textarea");
 const error = overlay.querySelector("#contact-error");
+const example = overlay.querySelector("#contact-example");
 const submit = overlay.querySelector('[type="submit"]');
 let opener = null;
 let context = {};
 let savedScroll = 0;
 let savedBodyStyle = "";
 let sending = false;
+const exampleFor = ({ intent = "", category = "", serviceName = "" }) => {
+  const topic = `${intent} ${category} ${serviceName}`.toLowerCase();
+  if (/amor|pareja|roja|reencuentro/.test(topic)) return "Ejemplo: quiero orientación sobre un vínculo que me genera dudas.";
+  if (/limpieza|protecci|blanca/.test(topic)) return "Ejemplo: me siento cargada y quisiera saber qué opciones hay.";
+  if (/tarot/.test(topic)) return "Ejemplo: quiero explorar una decisión que tengo que tomar.";
+  if (/trabajo|dinero|camino|verde/.test(topic)) return "Ejemplo: quiero claridad sobre un cambio de trabajo.";
+  return "Ejemplo: estoy atravesando un cambio y quisiera saber por dónde empezar.";
+};
 if ("IntersectionObserver" in window) {
   const visibleInline = new Set();
   const observer = new IntersectionObserver((entries) => {
@@ -47,10 +57,12 @@ window.addEventListener("pageshow", () => { sending = false; submit.disabled = f
 function updateHeight() {
   overlay.style.height = `${window.visualViewport?.height || window.innerHeight}px`;
   overlay.style.top = `${window.visualViewport?.offsetTop || 0}px`;
+  document.body.classList.toggle("keyboard-open", Boolean(window.visualViewport && window.visualViewport.height < window.innerHeight * .7));
 }
 
-function closeDialog() {
+function closeDialog(cancelled = false) {
   if (overlay.hidden) return;
+  if (cancelled) trackEvent("wa_cancel", { ...context, page: location.pathname, cta_location: context.ctaLocation });
   overlay.hidden = true;
   document.body.classList.remove("contact-open");
   document.body.style.cssText = savedBodyStyle;
@@ -62,11 +74,10 @@ function focusable() {
   return [...panel.querySelectorAll("textarea, button")].filter((item) => !item.disabled && item.getClientRects().length);
 }
 
-overlay.querySelector("[data-contact-cancel]").addEventListener("click", closeDialog);
-overlay.addEventListener("click", (event) => { if (event.target === overlay) closeDialog(); });
+overlay.querySelector("[data-contact-cancel]").addEventListener("click", () => closeDialog(true));
 document.addEventListener("keydown", (event) => {
   if (overlay.hidden) return;
-  if (event.key === "Escape") { event.preventDefault(); closeDialog(); return; }
+  if (event.key === "Escape") { event.preventDefault(); closeDialog(true); return; }
   if (event.key !== "Tab") return;
   const controls = focusable();
   const first = controls[0], last = controls[controls.length - 1];
@@ -85,9 +96,11 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   if (sending) return;
   if (!validCase(textarea.value)) {
+    error.textContent = textarea.value.trim() ? "Contame tu situación en una frase breve, con al menos 12 caracteres y algunas palabras." : "Contame brevemente qué está pasando antes de continuar.";
     error.hidden = false;
     textarea.setAttribute("aria-invalid", "true");
     textarea.focus();
+    trackEvent("wa_validation_error", { ...context, page: location.pathname, cta_location: context.ctaLocation });
     return;
   }
   sending = true;
@@ -98,7 +111,6 @@ form.addEventListener("submit", (event) => {
   trackEvent("wa_outbound", properties);
   closeDialog();
   window.location.assign(url);
-  window.setTimeout(() => { sending = false; submit.disabled = false; }, 3000);
 });
 
 document.addEventListener("click", (event) => {
@@ -116,6 +128,7 @@ document.addEventListener("click", (event) => {
     ctaLocation: trigger.dataset.ctaLocation || "contact_section"
   };
   textarea.value = "";
+  example.textContent = exampleFor(context);
   error.hidden = true;
   textarea.removeAttribute("aria-invalid");
   savedScroll = window.scrollY;

@@ -22,9 +22,9 @@ const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL :
       {service.price !== null && <div class="serv-meta"><span class="serv-price">${service.price}</span></div>}
       {service.descriptionShort && <button type="button" class="serv-toggle">Ver descripción completa</button>}
       {seoPaths.has(service.id) && <a class="serv-detail-link" href={`${base}${seoPaths.get(service.id).slice(1)}`} data-cta-location="service_landing" data-category={category}>Conocer este trabajo</a>}
-      <button type="button" class="serv-cta" data-whatsapp-trigger data-service-name={service.name} data-service-slug={service.slug} data-category={service.category} data-cta-location="service_card" data-cta-text={service.ctaText || undefined} aria-label={`Consultar por WhatsApp sobre ${service.name}`}>Consultar este trabajo</button>
+      <a href={`${base}#formulario`} class="serv-cta" data-whatsapp-trigger data-service-name={service.name} data-service-slug={service.slug} data-category={service.category} data-cta-location="service_card" data-cta-text={service.ctaText || undefined} aria-label={`Consultar por WhatsApp sobre ${service.name}`}>Consultar este trabajo</a>
     </li>)}
-    {services.length === 0 && <li class="service-state"><p>Por ahora no hay trabajos publicados en esta categoría. Podés contarme tu situación por WhatsApp.</p><button type="button" class="serv-cta" data-whatsapp-trigger data-category={category} data-cta-location="contact_section">Consultar por WhatsApp</button></li>}
+    {services.length === 0 && <li class="service-state"><p>Por ahora no hay trabajos publicados en esta categoría. Podés contarme tu situación por WhatsApp.</p><a href={`${base}#formulario`} class="serv-cta" data-whatsapp-trigger data-category={category} data-cta-location="contact_section">Consultar por WhatsApp</a></li>}
   </ul>
 </main>
 <style>.serv-card[hidden], .serv-search-empty[hidden] { display: none !important; }</style>

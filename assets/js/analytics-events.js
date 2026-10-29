@@ -11,6 +11,7 @@ const contextFor = (link) => ({
 
 document.addEventListener("click", (event) => {
   const target = event.target instanceof Element ? event.target : null;
+  if (document.body.classList.contains("contact-open")) return;
   const intentLink = target?.closest(".intent-card [data-whatsapp-trigger]");
   if (intentLink) trackEvent("intent_click", { intent: intentLink.dataset.intent, page: page() });
 

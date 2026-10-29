@@ -79,8 +79,8 @@ test("el hook publicado conserva el nombre de todos los eventos y elimina PII", 
       url: "https://cristal-sagrado.com/?token=privado"
     }));
   } };
-  const names = ["nav_cta", "wa_open", "wa_case_valid", "wa_outbound",
-    "intent_click", "service_wa", "service_detail", "form_submit"];
+  const names = ["nav_cta", "wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound",
+    "intent_click", "service_wa", "service_detail", "form_submit", "book_view", "book_interest_wa", "book_sample_download"];
   for (const name of names) assert.equal(trackEvent(name, { page: "/", service: "tarot" }, umami), true);
   assert.deepEqual(sent.map((payload) => payload.name), names);
   for (const payload of sent) {

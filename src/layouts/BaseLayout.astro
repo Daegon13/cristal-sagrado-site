@@ -1,9 +1,9 @@
 ---
 import Header from "../components/Header.astro"; import Footer from "../components/Footer.astro"; import WhatsAppButton from "../components/WhatsAppButton.astro";
-import "../styles/tokens.css"; import "../styles/global.css"; import "../styles/components.css"; import "../styles/whatsapp-contact.css";
+import "../styles/tokens.css"; import "../styles/global.css"; import "../styles/components.css"; import "../styles/whatsapp-contact.css"; import "../styles/books.css";
 import { canonical } from "../lib/seo"; import { SITE } from "../lib/constants";
-interface Props { title: string; description: string; path: string; schema?: Record<string, unknown>; }
-const { title, description, path, schema } = Astro.props; const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+interface Props { title: string; description: string; path: string; schema?: Record<string, unknown>; ogImage?: string; }
+const { title, description, path, schema, ogImage } = Astro.props; const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const robots = base === "/" ? "index,follow" : "noindex,follow";
 const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
 const umamiScriptUrl = import.meta.env.PUBLIC_UMAMI_SCRIPT_URL;
@@ -13,6 +13,7 @@ const productionHost = new URL(SITE.origin).hostname;
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content={description} /><meta name="robots" content={robots} /><title>{title}</title><link rel="canonical" href={canonical(path)} />
   <meta property="og:type" content="website" /><meta property="og:site_name" content={SITE.name} /><meta property="og:title" content={title} /><meta property="og:description" content={description} /><meta property="og:url" content={canonical(path)} /><meta name="twitter:card" content="summary" />
+  {ogImage && <meta property="og:image" content={new URL(ogImage, SITE.origin).toString()} />}
   <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" /><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="icon" type="image/png" sizes="32x32" href={`${base}favicon_io/favicon-32x32.png`} /><link rel="icon" type="image/png" sizes="16x16" href={`${base}favicon_io/favicon-16x16.png`} /><link rel="apple-touch-icon" sizes="180x180" href={`${base}favicon_io/apple-touch-icon.png`} /><link rel="manifest" href={`${base}favicon_io/site.webmanifest`} />
   {schema && <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, "\\u003c")} />}
@@ -50,5 +51,6 @@ const productionHost = new URL(SITE.origin).hostname;
   <script>
     import "../../assets/js/analytics-events.js";
     import "../../assets/js/whatsapp-contact.js";
+    import "../../assets/js/book-events.js";
   </script>
-</head><body style={`--poster-url:url("${base}images/video-poster.svg")`}><Header /><slot /><Footer /><WhatsAppButton /></body></html>
+</head><body class:list={[{ "books-context": path.startsWith("/libros/") }]} style={`--poster-url:url("${base}images/video-poster.svg")`}><Header /><slot /><Footer /><WhatsAppButton /></body></html>

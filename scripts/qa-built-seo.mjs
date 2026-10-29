@@ -51,7 +51,7 @@ for (const category of ["blanca", "roja", "negra", "verde"]) {
   console.log(`magia-${category}: ${services.length} fichas HTML`);
 }
 const sitemap = await readFile(new URL("../dist/sitemap.xml", import.meta.url), "utf8");
-const staticPaths = ["/", "/magia-blanca/", "/magia-roja/", "/magia-negra/", "/magia-verde/", "/tarot/", "/faq/", "/como-trabajamos/"];
+const staticPaths = ["/", "/magia-blanca/", "/magia-roja/", "/magia-negra/", "/magia-verde/", "/tarot/", "/faq/", "/como-trabajamos/", "/libros/"];
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 const robots = await readFile(new URL("../dist/robots.txt", import.meta.url), "utf8");
 const cname = await readFile(new URL("../dist/CNAME", import.meta.url), "utf8");
@@ -69,8 +69,17 @@ for (const category of ["blanca", "roja", "negra", "verde"]) {
 }
 assert.deepEqual(actualServicePaths.sort(), entries.map((entry) => entry.path).sort(), "Solo se generan rutas de servicios allowlisted");
 const guidePaths = seoGuides.map((guide) => `/guias/${guide.slug}/`);
-const expectedUrls = [...staticPaths, "/guias/", ...guidePaths, ...entries.map((entry) => entry.path)].map((path) => `https://cristal-sagrado.com${path}`);
+const bookPaths = ["habitar-lo-posible", "brujeria-para-principiantes", "el-umbral-de-cristal"].map((slug) => `/libros/${slug}/`);
+const expectedUrls = [...staticPaths, "/guias/", ...guidePaths, ...bookPaths, ...entries.map((entry) => entry.path)].map((path) => `https://cristal-sagrado.com${path}`);
 assert.deepEqual(urls.slice().sort(), expectedUrls.slice().sort(), "Sitemap contiene exactamente las páginas públicas actuales");
+for (const path of bookPaths) {
+  const html = await readFile(new URL(`../dist${path}index.html`, import.meta.url), "utf8");
+  assert.ok(html.includes(`rel="canonical" href="https://cristal-sagrado.com${path}"`), `Canonical: ${path}`);
+  assert.ok(html.includes("BreadcrumbList") && html.includes('"@type":"Book"'), `Book schema: ${path}`);
+  assert.ok(html.includes("Presentación provisional") && /Disponibilidad, formatos y condiciones de distribución por confirmar/.test(html), `Estado honesto: ${path}`);
+  assert.ok(html.includes("data-book-event="), `Interés editorial: ${path}`);
+  assert.ok(!html.includes(".pdf") && !html.includes(".epub"), `Sin manuscritos públicos: ${path}`);
+}
 const expected = [...entries.map((entry) => entry.path), "/guias/", ...guidePaths];
 for (const path of expected) {
   const html = await readFile(new URL(`../dist${path}index.html`, import.meta.url), "utf8");
@@ -116,4 +125,4 @@ for (const path of ["admin/index.html", "admin/app.js", "admin/config.js", "admi
 }
 const allDistPaths = await readdir(new URL("../dist/", import.meta.url), { recursive: true });
 assert.ok(!allDistPaths.some((path) => /Eclipse_small|\.mp4$|^css[\\/]|^scripts[\\/]|^assets[\\/]js[\\/](data|whatsapp-contact)\.js$/.test(path)), "Sin assets legacy en dist");
-console.log(`${urls.length} URLs únicas: ${staticPaths.length} estáticas, 1 hub, ${seoGuides.length} guías y ${entries.length} landings SEO`);
+console.log(`${urls.length} URLs únicas: ${staticPaths.length} estáticas, ${bookPaths.length} fichas de libro, 1 hub de guías, ${seoGuides.length} guías y ${entries.length} landings SEO`);
