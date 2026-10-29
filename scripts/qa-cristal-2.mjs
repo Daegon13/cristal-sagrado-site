@@ -22,7 +22,7 @@ ws.addEventListener("message", ({ data }) => {
 const call = (method, params = {}) => new Promise((resolve, reject) => { const key = ++id; pending.set(key, { resolve, reject }); ws.send(JSON.stringify({ id: key, method, params })); });
 const evaluate = async (expression) => {
   const result = await call("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
-  if (result.exceptionDetails) throw new Error(result.exceptionDetails.text);
+  if (result.exceptionDetails) throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text);
   return result.result.value;
 };
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -36,36 +36,39 @@ await call("Page.enable");
 await call("Runtime.enable");
 await call("Network.enable");
 await call("Network.setBlockedURLs", { urls: ["*://wa.me/*"] });
-const routes = ["/", "/libros/", "/libros/habitar-lo-posible/", "/magia-blanca/"];
+const bookRoutes = ["/libros/habitar-lo-posible/", "/libros/brujeria-para-principiantes/", "/libros/el-umbral-de-cristal/"];
+const routes = ["/", "/libros/", ...bookRoutes, "/magia-blanca/"];
 for (const [width, height] of [[320, 568], [390, 844], [1440, 900]]) {
   await call("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: width < 768 });
   for (const route of routes) {
     await call("Page.navigate", { url: `${origin}${route}` });
     await pause(route.includes("magia-") ? 1200 : 350);
-    const state = await evaluate(`(() => ({ title: document.title, h1: document.querySelectorAll('h1').length, overflow: document.documentElement.scrollWidth > innerWidth + 2, navBooks: [...document.querySelectorAll('header a')].some(a => a.pathname === '/libros/'), modalTrigger: [...document.querySelectorAll('[data-whatsapp-trigger]')].some(a => a.getClientRects().length > 0), bookInquiry: Boolean(document.querySelector('[data-book-event="book_interest_wa"]')) }))()`);
+    const state = await evaluate(`(() => ({ title: document.title, h1: document.querySelectorAll('h1').length, overflow: document.documentElement.scrollWidth > innerWidth + 2, navBooks: [...document.querySelectorAll('header a')].some(a => a.pathname === '/libros/'), modalTrigger: [...document.querySelectorAll('[data-whatsapp-trigger]')].some(a => a.getClientRects().length > 0), comingSoon: document.querySelector('.book-coming-soon__status')?.textContent.trim(), bookActions: document.querySelectorAll('main [data-book-event], main a[download], main a[href*="wa.me"], main a[href*=".pdf"]').length }))()`);
     assert.equal(state.h1, 1, `${width} ${route}: h1`);
     assert.equal(state.overflow, false, `${width} ${route}: scroll horizontal`);
     assert.equal(state.navBooks, true, `${width} ${route}: acceso a Libros`);
     assert.equal(state.modalTrigger, !route.startsWith("/libros/"), `${width} ${route}: flujo de contacto correspondiente`);
-    if (route.includes("habitar")) assert.equal(state.bookInquiry, true, "Consulta editorial visible");
+    if (bookRoutes.includes(route)) { assert.equal(state.comingSoon, "Próximamente", `${route}: estado`); assert.equal(state.bookActions, 0, `${route}: sin compra, descarga ni consulta`); }
     if (width === 390 && ["/", "/libros/", "/libros/habitar-lo-posible/"].includes(route)) await screenshot(route === "/" ? "home-390" : route === "/libros/" ? "libros-390" : "habitar-390");
     if (width === 1440 && route === "/libros/habitar-lo-posible/") await screenshot("habitar-1440");
   }
 }
-await call("Page.navigate", { url: `${origin}/libros/habitar-lo-posible/` });
-await pause(300);
-const editorial = await evaluate(`(() => { const link = document.querySelector('[data-book-event="book_interest_wa"]'); const url = new URL(link.href); return { host: url.host, text: url.searchParams.get('text'), spiritualDialog: Boolean(document.querySelector('.contact-overlay:not([hidden])')) }; })()`);
-assert.equal(editorial.host, "wa.me");
-assert.match(editorial.text, /Habitar lo posible de Lucía Mayada/);
-assert.doesNotMatch(editorial.text, /Mi situación es/);
-assert.equal(editorial.spiritualDialog, false);
 await call("Page.navigate", { url: `${origin}/` });
 await pause(400);
-const spiritual = await evaluate(`(() => { window.__qaEvents = []; window.umami = { track: (name, data) => window.__qaEvents.push({ name, data }) }; const trigger = document.querySelector('.hero [data-whatsapp-trigger]'); trigger.click(); const area = document.querySelector('#contact-case'); const opened = !document.querySelector('.contact-overlay').hidden; document.querySelector('.contact-dialog form').requestSubmit(); const error = !document.querySelector('#contact-error').hidden; area.value = 'Necesito orientación sobre mi situación laboral.'; document.querySelector('.contact-dialog form').requestSubmit(); return { opened, error, events: window.__qaEvents.map(x => x.name), leaks: window.__qaEvents.some(x => JSON.stringify(x.data).includes('Necesito orientación')) }; })()`);
+const spiritual = await evaluate(`(() => { window.__qaEvents = []; window.umami = { track: (name, data) => window.__qaEvents.push({ name, data }) }; const trigger = document.querySelector('.hero [data-whatsapp-trigger]'); trigger.click(); const area = document.querySelector('#contact-case'); const opened = !document.querySelector('.contact-overlay').hidden; document.querySelector('.contact-dialog form').requestSubmit(); const error = !document.querySelector('#contact-error').hidden; area.value = 'Necesito orientación sobre mi situación laboral.'; document.querySelector('.contact-dialog form').requestSubmit(); document.querySelector('.contact-dialog form').requestSubmit(); window.stop(); return { opened, error, events: window.__qaEvents.map(x => x.name), leaks: window.__qaEvents.some(x => JSON.stringify(x.data).includes('Necesito orientación')), disabled: document.querySelector('.contact-dialog [type="submit"]').disabled }; })()`);
 assert.equal(spiritual.opened, true);
 assert.equal(spiritual.error, true);
 assert.equal(spiritual.leaks, false);
+assert.equal(spiritual.disabled, true, "evita envío duplicado durante el intento");
 assert.deepEqual(spiritual.events, ["nav_cta", "wa_open", "wa_validation_error", "wa_case_valid", "wa_outbound"]);
+await pause(2700);
+const timerRecovery = await evaluate(`(() => { const trigger = document.querySelector('.hero [data-whatsapp-trigger]'); const enabled = !document.querySelector('.contact-dialog [type="submit"]').disabled; trigger.click(); const reopened = !document.querySelector('.contact-overlay').hidden; document.body.classList.add('keyboard-open'); document.querySelector('[data-contact-cancel]').click(); window.dispatchEvent(new Event('resize')); return { enabled, reopened, closed: document.querySelector('.contact-overlay').hidden, keyboardClassCleared: !document.body.classList.contains('keyboard-open') }; })()`);
+assert.deepEqual(timerRecovery, { enabled: true, reopened: true, closed: true, keyboardClassCleared: true });
+const focusAttempt = await evaluate(`(() => { const trigger = document.querySelector('.hero [data-whatsapp-trigger]'); trigger.click(); const area = document.querySelector('#contact-case'); area.value = 'Necesito orientación sobre mi situación laboral.'; document.querySelector('.contact-dialog form').requestSubmit(); window.stop(); return document.querySelector('.contact-dialog [type="submit"]').disabled; })()`);
+assert.equal(focusAttempt, true);
+await pause(500);
+const focusRecovery = await evaluate(`(() => { window.dispatchEvent(new Event('focus')); const enabled = !document.querySelector('.contact-dialog [type="submit"]').disabled; document.querySelector('.hero [data-whatsapp-trigger]').click(); const reopened = !document.querySelector('.contact-overlay').hidden; document.querySelector('[data-contact-cancel]').click(); return { enabled, reopened, keyboardClassCleared: !document.body.classList.contains('keyboard-open') }; })()`);
+assert.deepEqual(focusRecovery, { enabled: true, reopened: true, keyboardClassCleared: true });
 await call("Emulation.setScriptExecutionDisabled", { value: true });
 await call("Page.navigate", { url: `${origin}/faq/` });
 await pause(300);
@@ -78,4 +81,4 @@ const noJsForm = await evaluate(`(() => ({ form: Boolean(document.querySelector(
 assert.deepEqual(noJsForm, { form: true, caseRequired: true, contactRequired: true });
 await call("Emulation.setScriptExecutionDisabled", { value: false });
 ws.close();
-console.log(JSON.stringify({ viewports: 3, routes: routes.length, spiritual, editorial, fallback, noJsForm, screenshots: process.env.QA_SCREENSHOT_DIR || null }, null, 2));
+console.log(JSON.stringify({ viewports: 3, routes: routes.length, spiritual, timerRecovery, focusRecovery, fallback, noJsForm, screenshots: process.env.QA_SCREENSHOT_DIR || null }, null, 2));

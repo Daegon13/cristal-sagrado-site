@@ -76,8 +76,8 @@ for (const path of bookPaths) {
   const html = await readFile(new URL(`../dist${path}index.html`, import.meta.url), "utf8");
   assert.ok(html.includes(`rel="canonical" href="https://cristal-sagrado.com${path}"`), `Canonical: ${path}`);
   assert.ok(html.includes("BreadcrumbList") && html.includes('"@type":"Book"'), `Book schema: ${path}`);
-  assert.ok(html.includes("Presentación provisional") && /Disponibilidad, formatos y condiciones de distribución por confirmar/.test(html), `Estado honesto: ${path}`);
-  assert.ok(html.includes("data-book-event="), `Interés editorial: ${path}`);
+  assert.ok(html.includes("Próximamente") && html.includes("book-coming-soon"), `Estado honesto: ${path}`);
+  assert.ok(!html.includes("data-book-event="), `Sin acciones editoriales prematuras: ${path}`);
   assert.ok(!html.includes(".pdf") && !html.includes(".epub"), `Sin manuscritos públicos: ${path}`);
 }
 const expected = [...entries.map((entry) => entry.path), "/guias/", ...guidePaths];
