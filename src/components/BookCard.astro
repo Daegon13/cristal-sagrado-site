@@ -2,12 +2,12 @@
 import type { Book } from "../data/books";
 interface Props { book: Book; }
 const { book } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const statusLabel = book.status === "available" ? "Disponible" : book.status === "upcoming" ? "Próximamente" : "Disponibilidad por confirmar";
 ---
 <article class="book-card">
-  <a class="book-cover" href={`${base}libros/${book.slug}/`} aria-label={`Ver ficha de ${book.title}`}>
-    {book.status === "available" && book.cover ? <img src={`${base}${book.cover.replace(/^\//, "")}`} alt={`Portada de ${book.title}`} loading="lazy" /> : <span aria-hidden="true"><small>{book.status === "available" ? "Portada pendiente" : "Biblioteca editorial"}</small><strong>{book.status === "available" ? book.title : "Próximamente"}</strong><em>{book.status === "available" ? book.author : book.title}</em></span>}
+  <a class:list={["book-cover", { "book-cover--image": Boolean(book.cover) }]} href={`${base}libros/${book.slug}/`} aria-label={`Conocer el libro ${book.title}`}>
+    {book.cover ? <img src={`${base}${book.cover.replace(/^\//, "")}`} alt={`Portada de ${book.title}`} loading="lazy" /> : <span aria-hidden="true"><small>Portada pendiente</small><strong>{book.title}</strong><em>{book.author}</em></span>}
   </a>
-  <div class="book-card__body"><p class="eyebrow">Libro · {statusLabel}</p><h3><a href={`${base}libros/${book.slug}/`}>{book.title}</a></h3><p>{book.subtitle}</p><a class="text-link" href={`${base}libros/${book.slug}/`}>Ver ficha →</a></div>
+  <div class="book-card__body"><span class="book-pill">{statusLabel}</span><p class="book-card__category">{book.primaryCategory}</p><h3><a href={`${base}libros/${book.slug}/`}>{book.title}</a></h3><p class="book-card__author">{book.author}</p><p>{book.shortSynopsis}</p><a class="button button--primary book-card__link" href={`${base}libros/${book.slug}/`}>Conocer el libro</a></div>
 </article>

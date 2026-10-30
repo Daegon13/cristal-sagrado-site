@@ -1,0 +1,53 @@
+[
+  {
+    "title": "Habitar lo posible",
+    "slug": "habitar-lo-posible",
+    "full_original_name": "Habitar lo Posible 1.pdf",
+    "original_pages": 176,
+    "preview_pages": 4,
+    "source_pdf_pages_one_based": [
+      1,
+      6,
+      7,
+      10
+    ],
+    "cover": "public/images/libros/habitar-lo-posible-portada.webp",
+    "sample": "public/muestras/habitar-lo-posible-muestra.pdf",
+    "cover_bytes": 54922,
+    "sample_bytes": 2701991
+  },
+  {
+    "title": "Brujería para principiantes",
+    "slug": "brujeria-para-principiantes",
+    "full_original_name": "Brujeria_para_principiantes_Lucia_Mayada (2).pdf",
+    "original_pages": 225,
+    "preview_pages": 4,
+    "source_pdf_pages_one_based": [
+      1,
+      6,
+      7,
+      8
+    ],
+    "cover": "public/images/libros/brujeria-para-principiantes-portada.webp",
+    "sample": "public/muestras/brujeria-para-principiantes-muestra.pdf",
+    "cover_bytes": 143528,
+    "sample_bytes": 4656256
+  },
+  {
+    "title": "El Umbral de Cristal",
+    "slug": "el-umbral-de-cristal",
+    "full_original_name": "Cristal_Sagrado_El_Umbral_de_Cristal_COMPLETO.pdf",
+    "original_pages": 52,
+    "preview_pages": 4,
+    "source_pdf_pages_one_based": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "cover": "public/images/libros/el-umbral-de-cristal-portada.webp",
+    "sample": "public/muestras/el-umbral-de-cristal-muestra.pdf",
+    "cover_bytes": 60342,
+    "sample_bytes": 783368
+  }
+]

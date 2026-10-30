@@ -57,6 +57,9 @@ jobs:
         env:
           BASE_PATH: ${{ env.PREVIEW_DIR }}
 
+      - name: Verify editorial assets under preview path
+        run: node scripts/qa-preview-base.mjs
+
       - name: Prepare preview output
         run: |
           set -euxo pipefail
