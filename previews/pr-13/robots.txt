@@ -1,6 +1,0 @@
-User-agent: *
-Disallow: /admin/
-Disallow: /previews/
-Allow: /
-
-Sitemap: https://cristal-sagrado.com/sitemap.xml
