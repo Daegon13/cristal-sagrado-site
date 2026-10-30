@@ -35,6 +35,7 @@ const screenshot = async (name) => {
 await call("Page.enable");
 await call("Runtime.enable");
 await call("Network.enable");
+await call("Page.addScriptToEvaluateOnNewDocument", { source: "window.__qaEvents = []; window.umami = { track: (name, data) => window.__qaEvents.push({ name, data }) };" });
 await call("Network.setBlockedURLs", { urls: ["*://wa.me/*"] });
 const bookRoutes = ["/libros/habitar-lo-posible/", "/libros/brujeria-para-principiantes/", "/libros/el-umbral-de-cristal/"];
 const routes = ["/", "/libros/", ...bookRoutes, "/magia-blanca/"];
@@ -43,15 +44,34 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]]) {
   for (const route of routes) {
     await call("Page.navigate", { url: `${origin}${route}` });
     await pause(route.includes("magia-") ? 1200 : 350);
-    const state = await evaluate(`(() => ({ title: document.title, h1: document.querySelectorAll('h1').length, overflow: document.documentElement.scrollWidth > innerWidth + 2, navBooks: [...document.querySelectorAll('header a')].some(a => a.pathname === '/libros/'), modalTrigger: [...document.querySelectorAll('[data-whatsapp-trigger]')].some(a => a.getClientRects().length > 0), comingSoon: document.querySelector('.book-coming-soon__status')?.textContent.trim(), bookActions: document.querySelectorAll('main [data-book-event], main a[download], main a[href*="wa.me"], main a[href*=".pdf"]').length }))()`);
+    const state = await evaluate(`(() => ({ title: document.title, h1: document.querySelectorAll('h1').length, overflow: document.documentElement.scrollWidth > innerWidth + 2, navBooks: [...document.querySelectorAll('header a')].some(a => a.pathname === '/libros/'), modalTrigger: [...document.querySelectorAll('[data-whatsapp-trigger]')].some(a => a.getClientRects().length > 0), comingSoon: document.querySelector('.book-detail__intro .book-pill')?.textContent.trim(), coverPath: document.querySelector('.book-cover--detail img')?.getAttribute('src'), samplePath: document.querySelector('[data-book-event="book_sample_download"]')?.getAttribute('href'), inquiry: document.querySelector('[data-book-event="book_interest_wa"]')?.href, purchaseCount: document.querySelectorAll('main [data-book-event="book_purchase_click"], main a[download]').length, sections: document.querySelectorAll('.book-editorial-section').length, events: window.__qaEvents?.map(item => item.name) || [] }))()`);
     assert.equal(state.h1, 1, `${width} ${route}: h1`);
     assert.equal(state.overflow, false, `${width} ${route}: scroll horizontal`);
     assert.equal(state.navBooks, true, `${width} ${route}: acceso a Libros`);
     assert.equal(state.modalTrigger, !route.startsWith("/libros/"), `${width} ${route}: flujo de contacto correspondiente`);
-    if (bookRoutes.includes(route)) { assert.equal(state.comingSoon, "Próximamente", `${route}: estado`); assert.equal(state.bookActions, 0, `${route}: sin compra, descarga ni consulta`); }
-    if (width === 390 && ["/", "/libros/", "/libros/habitar-lo-posible/"].includes(route)) await screenshot(route === "/" ? "home-390" : route === "/libros/" ? "libros-390" : "habitar-390");
+    if (bookRoutes.includes(route)) {
+      const slug = route.split("/")[2];
+      assert.equal(state.comingSoon, "PRÓXIMAMENTE", `${route}: estado`);
+      assert.equal(state.coverPath, `/images/libros/${slug}-portada.webp`, `${route}: portada`);
+      assert.equal(state.samplePath, `/muestras/${slug}-muestra.pdf`, `${route}: muestra`);
+      assert.match(state.inquiry, /https:\/\/wa\.me\/59896106373\?text=/, `${route}: consulta editorial`);
+      assert.equal(state.purchaseCount, 0, `${route}: sin pago u original`);
+      assert.equal(state.sections, 2, `${route}: contenido editorial e índice`);
+      assert.deepEqual(state.events, ["book_view"], `${route}: vista editorial`);
+      if (width === 390) {
+        const clicks = await evaluate(`(() => { for (const eventName of ['book_sample_download', 'book_interest_wa']) { const link = document.querySelector('[data-book-event="' + eventName + '"]'); link.addEventListener('click', e => e.preventDefault(), { capture: true, once: true }); link.click(); } return window.__qaEvents.map(item => item.name); })()`);
+        assert.deepEqual(clicks.filter((name) => name.startsWith("book_")), ["book_view", "book_sample_download", "book_interest_wa"], `${route}: eventos editoriales`);
+      }
+    }
+    if (width === 390 && ["/", "/libros/", ...bookRoutes].includes(route)) await screenshot(route === "/" ? "home-390" : route === "/libros/" ? "libros-390" : `${route.split("/")[2]}-390`);
     if (width === 1440 && route === "/libros/habitar-lo-posible/") await screenshot("habitar-1440");
   }
+}
+for (const route of bookRoutes) {
+  const slug = route.split("/")[2];
+  const response = await fetch(`${origin}/muestras/${slug}-muestra.pdf`, { method: "HEAD" });
+  assert.equal(response.status, 200, `${slug}: HTTP de muestra`);
+  assert.match(response.headers.get("content-type") || "", /application\/pdf/i, `${slug}: tipo MIME`);
 }
 await call("Page.navigate", { url: `${origin}/` });
 await pause(400);

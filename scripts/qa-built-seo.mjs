@@ -5,6 +5,7 @@ import snapshot from "../src/data/generated/services.public.json" with { type: "
 import { getServicesByCategory } from "../src/lib/public-services.js";
 import { selectedServices } from "../src/lib/seo-services.js";
 import { seoGuides } from "../src/data/seo-guides.js";
+import editorialManifest from "../docs/editorial/manifest.json" with { type: "json" };
 
 const homeHtml = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
 if (homeHtml.includes("data-before-send=\"cristalUmamiBeforeSend\"")) {
@@ -69,17 +70,26 @@ for (const category of ["blanca", "roja", "negra", "verde"]) {
 }
 assert.deepEqual(actualServicePaths.sort(), entries.map((entry) => entry.path).sort(), "Solo se generan rutas de servicios allowlisted");
 const guidePaths = seoGuides.map((guide) => `/guias/${guide.slug}/`);
-const bookPaths = ["habitar-lo-posible", "brujeria-para-principiantes", "el-umbral-de-cristal"].map((slug) => `/libros/${slug}/`);
+const bookPaths = editorialManifest.map((item) => `/libros/${item.slug}/`);
 const expectedUrls = [...staticPaths, "/guias/", ...guidePaths, ...bookPaths, ...entries.map((entry) => entry.path)].map((path) => `https://cristal-sagrado.com${path}`);
 assert.deepEqual(urls.slice().sort(), expectedUrls.slice().sort(), "Sitemap contiene exactamente las páginas públicas actuales");
-for (const path of bookPaths) {
+for (const item of editorialManifest) {
+  const path = `/libros/${item.slug}/`;
   const html = await readFile(new URL(`../dist${path}index.html`, import.meta.url), "utf8");
   assert.ok(html.includes(`rel="canonical" href="https://cristal-sagrado.com${path}"`), `Canonical: ${path}`);
   assert.ok(html.includes("BreadcrumbList") && html.includes('"@type":"Book"'), `Book schema: ${path}`);
-  assert.ok(html.includes("Próximamente") && html.includes("book-coming-soon"), `Estado honesto: ${path}`);
-  assert.ok(!html.includes("data-book-event="), `Sin acciones editoriales prematuras: ${path}`);
-  assert.ok(!html.includes(".pdf") && !html.includes(".epub"), `Sin manuscritos públicos: ${path}`);
+  assert.ok(html.includes("PRÓXIMAMENTE") && html.includes("Qué vas a encontrar en este libro") && html.includes("Selección del índice"), `Presentación editorial: ${path}`);
+  assert.ok(html.includes(`src="/${item.cover.replace(/^public\//, "")}"`), `Portada: ${path}`);
+  assert.ok(html.includes(`href="/${item.sample.replace(/^public\//, "")}"`), `Muestra: ${path}`);
+  assert.ok(html.includes('data-book-event="book_sample_download"') && html.includes('data-book-event="book_interest_wa"'), `Eventos editoriales: ${path}`);
+  assert.ok(!html.includes('data-book-event="book_purchase_click"') && !html.includes("Ir a compra") && !html.includes("Descargar libro"), `Sin venta prematura: ${path}`);
+  assert.ok(!html.includes(item.full_original_name), `Original privado ausente: ${path}`);
+  const publicSample = await readFile(new URL(`../${item.sample}`, import.meta.url));
+  const builtSample = await readFile(new URL(`../dist/${item.sample.replace(/^public\//, "")}`, import.meta.url));
+  assert.ok(publicSample.equals(builtSample), `Muestra copiada sin cambios: ${path}`);
 }
+const catalogHtml = await readFile(new URL("../dist/libros/index.html", import.meta.url), "utf8");
+for (const item of editorialManifest) assert.ok(catalogHtml.includes(`src="/${item.cover.replace(/^public\//, "")}"`), `Catálogo muestra portada: ${item.slug}`);
 const expected = [...entries.map((entry) => entry.path), "/guias/", ...guidePaths];
 for (const path of expected) {
   const html = await readFile(new URL(`../dist${path}index.html`, import.meta.url), "utf8");
@@ -124,5 +134,10 @@ for (const path of ["admin/index.html", "admin/app.js", "admin/config.js", "admi
   assert.ok((await readFile(new URL(`../dist/${path}`, import.meta.url))).length > 0, `Asset requerido: ${path}`);
 }
 const allDistPaths = await readdir(new URL("../dist/", import.meta.url), { recursive: true });
+assert.deepEqual(
+  allDistPaths.filter((path) => path.toLowerCase().endsWith(".pdf")).map((path) => path.replaceAll("\\", "/")).sort(),
+  editorialManifest.map((item) => item.sample.replace(/^public\//, "")).sort(),
+  "dist solo contiene las tres muestras autorizadas"
+);
 assert.ok(!allDistPaths.some((path) => /Eclipse_small|\.mp4$|^css[\\/]|^scripts[\\/]|^assets[\\/]js[\\/](data|whatsapp-contact)\.js$/.test(path)), "Sin assets legacy en dist");
 console.log(`${urls.length} URLs únicas: ${staticPaths.length} estáticas, ${bookPaths.length} fichas de libro, 1 hub de guías, ${seoGuides.length} guías y ${entries.length} landings SEO`);
