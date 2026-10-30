@@ -5,6 +5,7 @@
 .book-catalog-intro { max-width: 52rem; }
 .book-catalog-intro h1 { max-width: none; }
 .book-catalog-intro p { max-width: 52ch; }
+.book-catalog-hero__art { display: none; }
 .book-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1.5rem; }
 .book-card { min-width: 0; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel); overflow: hidden; box-shadow: var(--shadow); }
 .book-card__body { display: flex; flex: 1; flex-direction: column; align-items: flex-start; padding: 1.25rem; }
@@ -45,3 +46,27 @@
 .home-books { background: var(--panel); }
 .books-context .site-header [data-whatsapp-trigger], .books-context .site-footer [data-whatsapp-trigger], .books-context .whatsapp-sticky { display: none; }
 @media (min-width: 45rem) { .book-detail { grid-template-columns: minmax(15rem, 25rem) minmax(0, 1fr); } .book-cover--detail { width: min(100%, 25rem); margin-inline: 0; } }
+@media (min-width: 64rem) {
+  .books-page { background: radial-gradient(ellipse 42rem 28rem at 92% 8%, rgba(111, 54, 95, .2), transparent 80%), radial-gradient(ellipse 45rem 34rem at 8% 62%, rgba(91, 36, 62, .13), transparent 80%), var(--bg-deep); }
+  .books-page .wrap { max-width: 85rem; }
+  .books-page .section { padding-block: clamp(4rem, 5vw, 6rem) clamp(5rem, 7vw, 7rem); }
+  .book-catalog-hero { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(19rem, .82fr); gap: clamp(2rem, 5vw, 5.5rem); align-items: center; min-height: 25rem; margin-bottom: clamp(2.5rem, 4vw, 4.5rem); }
+  .book-catalog-hero__copy { padding-block: 1rem; }
+  .book-catalog-hero nav[aria-label="Ruta de navegación"] { margin-bottom: clamp(2rem, 3vw, 3.25rem); }
+  .book-catalog-intro { max-width: none; margin-bottom: 0; }
+  .book-catalog-intro h1 { margin-block: .6rem 1.5rem; font-size: clamp(3.6rem, 5vw, 5.4rem); }
+  .book-catalog-intro p { max-width: 58ch; }
+  .book-catalog-intro p + p { margin-top: .8rem; }
+  .book-catalog-hero__art { position: relative; display: block; min-height: 24rem; overflow: hidden; border: 1px solid rgba(217, 182, 76, .25); border-radius: 1.5rem; background: radial-gradient(circle at 53% 46%, rgba(154, 88, 110, .31), transparent 32%), radial-gradient(circle at 75% 15%, rgba(217, 182, 76, .12), transparent 36%), linear-gradient(145deg, #291322, #160f23 55%, #0d0a17); box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, .28), inset 0 0 4rem rgba(15, 8, 21, .35); }
+  .book-catalog-hero__art::before { position: absolute; inset: 1.1rem; border: 1px solid rgba(217, 182, 76, .22); border-radius: 1rem; content: ""; }
+  .book-catalog-hero__art::after { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(241, 217, 129, .55) 1px, transparent 1.5px); background-size: 4.5rem 4.5rem; background-position: 1.5rem 1rem; opacity: .38; content: ""; }
+  .book-catalog-hero__moon { position: absolute; top: 21%; left: 50%; width: 10rem; aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(circle at 30% 26%, #f4d8a0, #b98578 72%); box-shadow: 0 0 3rem rgba(217, 182, 76, .25); }
+  .book-catalog-hero__moon::after { position: absolute; inset: -3% -19% 8% 19%; border-radius: 50%; background: #211329; content: ""; }
+  .book-catalog-hero__orbit { position: absolute; top: 50%; left: 50%; width: min(76%, 23rem); aspect-ratio: 1; transform: translate(-50%, -50%); border: 1px solid rgba(241, 217, 129, .38); border-radius: 50%; box-shadow: 0 0 0 1.2rem rgba(217, 182, 76, .035), 0 0 0 2.3rem rgba(217, 182, 76, .025); }
+  .book-catalog-hero__diamond { position: absolute; bottom: 10%; left: 50%; width: 2.2rem; height: 2.2rem; transform: translateX(-50%) rotate(45deg); border: 1px solid rgba(241, 217, 129, .68); background: rgba(217, 182, 76, .14); }
+  .book-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1.5rem, 2.5vw, 2.25rem); }
+  .book-card__body { padding: clamp(1.4rem, 2vw, 1.9rem); }
+  .book-detail { max-width: none; grid-template-columns: minmax(21rem, 28rem) minmax(0, 1fr); gap: clamp(3rem, 5vw, 6rem); align-items: center; }
+  .book-cover--detail { width: min(100%, 28rem); }
+  .book-editorial-section { max-width: none; }
+}

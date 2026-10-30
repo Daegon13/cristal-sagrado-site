@@ -26,10 +26,10 @@ const evaluate = async (expression) => {
   return result.result.value;
 };
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const screenshot = async (name) => {
+const screenshot = async (name, fullPage = false) => {
   if (!process.env.QA_SCREENSHOT_DIR) return;
   await mkdir(process.env.QA_SCREENSHOT_DIR, { recursive: true });
-  const image = await call("Page.captureScreenshot", { format: "png", captureBeyondViewport: false });
+  const image = await call("Page.captureScreenshot", { format: "png", captureBeyondViewport: fullPage });
   await writeFile(`${process.env.QA_SCREENSHOT_DIR}/${name}.png`, Buffer.from(image.data, "base64"));
 };
 await call("Page.enable");
@@ -39,7 +39,7 @@ await call("Page.addScriptToEvaluateOnNewDocument", { source: "window.__qaEvents
 await call("Network.setBlockedURLs", { urls: ["*://wa.me/*"] });
 const bookRoutes = ["/libros/habitar-lo-posible/", "/libros/brujeria-para-principiantes/", "/libros/el-umbral-de-cristal/"];
 const routes = ["/", "/libros/", ...bookRoutes, "/magia-blanca/"];
-for (const [width, height] of [[320, 568], [390, 844], [1440, 900]]) {
+for (const [width, height] of [[320, 568], [390, 844], [1280, 800], [1440, 900], [1680, 900], [1920, 1080]]) {
   await call("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: width < 768 });
   for (const route of routes) {
     await call("Page.navigate", { url: `${origin}${route}` });
@@ -49,6 +49,17 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]]) {
     assert.equal(state.overflow, false, `${width} ${route}: scroll horizontal`);
     assert.equal(state.navBooks, true, `${width} ${route}: acceso a Libros`);
     assert.equal(state.modalTrigger, !route.startsWith("/libros/"), `${width} ${route}: flujo de contacto correspondiente`);
+    if (route === "/libros/") {
+      const layout = await evaluate(`(() => { const wrap = document.querySelector('.books-page .wrap'); const art = document.querySelector('.book-catalog-hero__art'); const cards = [...document.querySelectorAll('.book-card')]; const footer = document.querySelector('.site-footer'); return { viewportWidth: document.documentElement.clientWidth, wrapWidth: wrap.getBoundingClientRect().width, artVisible: getComputedStyle(art).display !== 'none', artRightOfCopy: art.getBoundingClientRect().left > document.querySelector('.book-catalog-hero__copy').getBoundingClientRect().right, cardWidths: cards.map(card => card.getBoundingClientRect().width), cardsInRow: cards.every(card => Math.abs(card.getBoundingClientRect().top - cards[0].getBoundingClientRect().top) < 2), footerGap: footer.getBoundingClientRect().top - cards[0].getBoundingClientRect().bottom }; })()`);
+      assert.equal(layout.artVisible, width >= 1024, `${width}: arte solo en desktop`);
+      if (width >= 1024) {
+        assert.ok(layout.wrapWidth >= Math.min(layout.viewportWidth - 32, 1300), `${width}: marco editorial amplio`);
+        assert.equal(layout.artRightOfCopy, true, `${width}: cabecera en dos columnas`);
+        assert.equal(layout.cardsInRow, true, `${width}: tres libros en una fila`);
+        assert.ok(layout.cardWidths.every((cardWidth) => cardWidth >= 350), `${width}: portadas destacadas`);
+        assert.ok(layout.footerGap >= 40 && layout.footerGap <= 200, `${width}: separación del footer`);
+      }
+    }
     if (bookRoutes.includes(route)) {
       const slug = route.split("/")[2];
       assert.equal(state.comingSoon, "PRÓXIMAMENTE", `${route}: estado`);
@@ -58,13 +69,18 @@ for (const [width, height] of [[320, 568], [390, 844], [1440, 900]]) {
       assert.equal(state.purchaseCount, 0, `${route}: sin pago u original`);
       assert.equal(state.sections, 2, `${route}: contenido editorial e índice`);
       assert.deepEqual(state.events, ["book_view"], `${route}: vista editorial`);
+      if (width >= 1280) {
+        const detailWidth = await evaluate("document.querySelector('.book-detail').getBoundingClientRect().width");
+        assert.ok(detailWidth >= Math.min(width - 48, 1300), `${width} ${route}: ficha con marco amplio`);
+      }
       if (width === 390) {
         const clicks = await evaluate(`(() => { for (const eventName of ['book_sample_download', 'book_interest_wa']) { const link = document.querySelector('[data-book-event="' + eventName + '"]'); link.addEventListener('click', e => e.preventDefault(), { capture: true, once: true }); link.click(); } return window.__qaEvents.map(item => item.name); })()`);
         assert.deepEqual(clicks.filter((name) => name.startsWith("book_")), ["book_view", "book_sample_download", "book_interest_wa"], `${route}: eventos editoriales`);
       }
     }
     if (width === 390 && ["/", "/libros/", ...bookRoutes].includes(route)) await screenshot(route === "/" ? "home-390" : route === "/libros/" ? "libros-390" : `${route.split("/")[2]}-390`);
-    if (width === 1440 && route === "/libros/habitar-lo-posible/") await screenshot("habitar-1440");
+    if (width >= 1280 && route === "/libros/") await screenshot(`libros-${width}`, true);
+    if ([1440, 1920].includes(width) && route === "/libros/habitar-lo-posible/") await screenshot(`habitar-${width}`, true);
   }
 }
 for (const route of bookRoutes) {
@@ -101,4 +117,4 @@ const noJsForm = await evaluate(`(() => ({ form: Boolean(document.querySelector(
 assert.deepEqual(noJsForm, { form: true, caseRequired: true, contactRequired: true });
 await call("Emulation.setScriptExecutionDisabled", { value: false });
 ws.close();
-console.log(JSON.stringify({ viewports: 3, routes: routes.length, spiritual, timerRecovery, focusRecovery, fallback, noJsForm, screenshots: process.env.QA_SCREENSHOT_DIR || null }, null, 2));
+console.log(JSON.stringify({ viewports: 6, routes: routes.length, spiritual, timerRecovery, focusRecovery, fallback, noJsForm, screenshots: process.env.QA_SCREENSHOT_DIR || null }, null, 2));
