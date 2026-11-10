@@ -18,6 +18,7 @@ test("trackEvent filtra propiedades vacías, desconocidas y prohibidas", () => {
 test("sanitiza search params y conserva solo UTM conocidos", () => {
   assert.equal(sanitizeAnalyticsUrl("https://cristal-sagrado.com/?utm_source=instagram&fbclid=secret&email=a%40b.com&utm_campaign=story"), "/?utm_source=instagram&utm_campaign=story");
   assert.equal(sanitizeAnalyticsUrl("/tarot/?case=secreto&utm_term=cartas", "https://cristal-sagrado.com"), "/tarot/?utm_term=cartas");
+  assert.equal(sanitizeAnalyticsUrl("/?utm_campaign=persona%40example.com&utm_content=1234567890&utm_source=instagram"), "/?utm_source=instagram");
 });
 
 test("elimina claves privadas anidadas y limpia URL y referrer", () => {
@@ -79,7 +80,7 @@ test("el hook publicado conserva el nombre de todos los eventos y elimina PII", 
       url: "https://cristal-sagrado.com/?token=privado"
     }));
   } };
-  const names = ["nav_cta", "wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound",
+  const names = ["nav_cta", "wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound", "wa_direct_outbound", "wa_guided_outbound",
     "intent_click", "service_wa", "service_detail", "form_submit", "book_view", "book_interest_wa", "book_sample_download"];
   for (const name of names) assert.equal(trackEvent(name, { page: "/", service: "tarot" }, umami), true);
   assert.deepEqual(sent.map((payload) => payload.name), names);

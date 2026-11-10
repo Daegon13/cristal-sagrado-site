@@ -6,6 +6,13 @@ const basePath = String(process.env.BASE_PATH || "").replace(/^\/+|\/+$/g, "");
 assert.ok(basePath, "BASE_PATH requerido para validar la preview");
 const base = `/${basePath}/`;
 const catalog = await readFile(new URL("../dist/libros/index.html", import.meta.url), "utf8");
+const service = await readFile(new URL("../dist/magia-verde/encuentro-reencuentro/index.html", import.meta.url), "utf8");
+const home = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
+const tarot = await readFile(new URL("../dist/tarot/index.html", import.meta.url), "utf8");
+assert.ok(service.includes('href="https://wa.me/59896106373?text='), "CTA directo mantiene URL externa bajo BASE_PATH");
+assert.ok(service.includes(`href="${base}#formulario"`), "CTA guiado conserva fallback bajo BASE_PATH");
+assert.ok(home.includes(`href="${base}libros/"`), "Home enlaza biblioteca bajo BASE_PATH");
+assert.ok(tarot.includes(`href="${base}guias/que-trabajo-consultar/"`), "Tarot enlaza guía bajo BASE_PATH");
 
 for (const item of manifest) {
   const cover = item.cover.replace(/^public\//, "");

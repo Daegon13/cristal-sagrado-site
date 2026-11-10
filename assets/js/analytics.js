@@ -5,6 +5,8 @@ const EVENT_PROPERTIES = {
   wa_open: ["page", "cta_location", "category", "service", "intent"],
   wa_case_valid: ["page", "cta_location", "category", "service", "intent"],
   wa_outbound: ["page", "cta_location", "category", "service", "intent"],
+  wa_direct_outbound: ["page", "cta_location", "category", "service"],
+  wa_guided_outbound: ["page", "cta_location", "category", "service", "intent"],
   wa_cancel: ["page", "cta_location", "category", "service", "intent"],
   wa_validation_error: ["page", "cta_location", "category", "service", "intent"],
   book_view: ["page", "book_slug"],
@@ -28,7 +30,7 @@ export function sanitizeAnalyticsUrl(value, base = "https://cristal-sagrado.com"
   let url;
   try { url = new URL(value, base); } catch { return "/"; }
   const query = new URLSearchParams();
-  for (const [key, val] of url.searchParams) if (ALLOWED_UTM.has(key.toLowerCase())) query.append(key.toLowerCase(), val);
+  for (const [key, val] of url.searchParams) if (ALLOWED_UTM.has(key.toLowerCase()) && val.length <= 40 && /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/.test(val) && !/\d{7,}/.test(val)) query.append(key.toLowerCase(), val);
   return `${preserveOrigin ? url.origin : ""}${url.pathname}${query.size ? `?${query.toString()}` : ""}`;
 }
 

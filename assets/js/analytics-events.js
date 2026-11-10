@@ -1,5 +1,9 @@
 import { trackEvent } from "./analytics.js";
 import { isValidContactForm } from "./contact-validation.js";
+import { preserveCampaignOnInternalLinks } from "./campaign-context.js";
+
+preserveCampaignOnInternalLinks();
+const directAttempts = new WeakMap();
 
 const page = () => `${location.pathname}`;
 const categoryFromPath = () => location.pathname.match(/magia-(roja|blanca|negra|verde)/)?.[1] || "";
@@ -15,13 +19,21 @@ document.addEventListener("click", (event) => {
   const intentLink = target?.closest(".intent-card [data-whatsapp-trigger]");
   if (intentLink) trackEvent("intent_click", { intent: intentLink.dataset.intent, page: page() });
 
-  const link = target?.closest("[data-whatsapp-trigger]");
+  const link = target?.closest("[data-whatsapp-trigger], [data-whatsapp-direct]");
   if (!link) {
     const cta = target?.closest("a[data-cta-location]");
     if (cta) trackEvent("nav_cta", { page: page(), cta_location: cta.dataset.ctaLocation, category: cta.dataset.category });
     return;
   }
   const context = contextFor(link);
+  if (link.hasAttribute("data-whatsapp-direct")) {
+    if (!(link instanceof HTMLAnchorElement) || !/^https:\/\/wa\.me\/\d+\?text=/.test(link.href)) return;
+    const now = performance.now();
+    if (now - (directAttempts.get(link) ?? -Infinity) < 1200) { event.preventDefault(); return; }
+    directAttempts.set(link, now);
+    trackEvent("wa_direct_outbound", context);
+    trackEvent("wa_outbound", context);
+  }
   trackEvent("nav_cta", { page: context.page, cta_location: context.cta_location });
   if (link.dataset.serviceName || link.dataset.serviceSlug) {
     trackEvent("service_wa", { service: link.dataset.serviceSlug || link.dataset.serviceName, category: context.category });

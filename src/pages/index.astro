@@ -10,16 +10,18 @@ import Testimonials from "../components/Testimonials.astro";
 import ContactForm from "../components/ContactForm.astro";
 import FinalCTA from "../components/FinalCTA.astro";
 import { pageMetadata } from "../lib/seo";
+const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 <BaseLayout {...pageMetadata.home} path="/"><main>
   <Hero ritualImage title="Rituales, tarot y trabajos personalizados para tu situación" subtitle="Contame qué estás viviendo y te oriento sobre las opciones que pueden tener sentido para vos. No necesitás saber qué ritual elegir." action="Consultar por WhatsApp" />
+  <section class="section journey-choice" aria-labelledby="journey-title"><div class="wrap"><div class="section-intro"><span class="eyebrow">Elegí cómo empezar</span><h2 id="journey-title">Dos formas de consultar</h2></div><div class="journey-choice__grid"><article><h3>Ya sé qué trabajo quiero</h3><p>Explorá los servicios publicados, revisá el precio mostrado y consultá por el trabajo elegido directamente en WhatsApp.</p><a class="button button--primary" href="#servicios" data-cta-location="decided_journey">Ver trabajos y lecturas</a></article><article><h3>Necesito orientación</h3><p>Elegí el tema que más se acerca a tu situación y contame brevemente qué te preocupa antes de abrir WhatsApp.</p><a class="text-link" href="#orientacion" data-cta-location="guided_journey">Elegir una situación ↗</a></article></div></div></section>
   <CategoryNav />
   <TrustSection />
   <IntentCards />
-  <section class="section home-books"><div class="wrap"><span class="eyebrow">Biblioteca editorial</span><h2>Libros de Lucía Mayada</h2><p>Conocé los títulos que llegarán próximamente.</p><a class="text-link" href={`${import.meta.env.BASE_URL}libros/`}>Explorar libros →</a></div></section>
   <ServiceGrid />
   <ProcessSection />
   <Testimonials />
   <ContactForm />
   <FinalCTA />
+  <section class="section home-books"><div class="wrap"><span class="eyebrow">Biblioteca editorial</span><h2>Libros de Lucía Mayada</h2><p>Conocé los títulos que llegarán próximamente.</p><a class="text-link" href={`${base}libros/`}>Explorar libros →</a></div></section>
 </main></BaseLayout>

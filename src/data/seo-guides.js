@@ -14,7 +14,7 @@ export const seoGuides = [
     sections: [
       { heading: "Qué situaciones aparecen en el catálogo", paragraphs: ["La ficha de Encuentro & Reencuentro menciona malos entendidos, distancia por cambios de rutina y conversaciones pendientes con una expareja. El punto de partida es explicar si hoy hay contacto y qué conversación quisieras tener.", "Si la relación ya terminó y tu objetivo es seguir adelante, Cierre de Ciclo Amoroso puede expresar mejor la consulta. Si siguen juntos pero hay tensión, Armonización de Pareja trata otra situación."] },
       { heading: "Qué puede aclarar una orientación", paragraphs: ["Antes de elegir un trabajo, podemos conversar sobre el contexto del vínculo, tus expectativas y las diferencias entre las opciones publicadas. La consulta no asegura contacto, reconciliación ni una decisión de otra persona."] },
-      { heading: "Qué contar al escribir", paragraphs: ["Al abrir WhatsApp desde el sitio, primero se te pide una breve descripción del caso. Podés decir si hubo separación, cuándo fue el último contacto y qué necesitás aclarar; compartí solo lo que quieras contar."] }
+      { heading: "Qué contar al escribir", paragraphs: ["Si elegiste Encuentro & Reencuentro, el enlace abre WhatsApp con el nombre del trabajo. Si preferís orientación, el sitio te pide una breve descripción antes de continuar. Compartí solo lo que quieras contar."] }
     ], faq: [{ q: "¿Reencuentro significa reconciliación garantizada?", a: "No. Se trata de una consulta sobre el vínculo y sus opciones, sin garantizar la respuesta de otra persona." }]
   },
   {
@@ -41,7 +41,7 @@ export const seoGuides = [
     sections: [
       { heading: "Empezá por la situación, no por el nombre", paragraphs: ["Si tu consulta es sobre una conversación afectiva pendiente, Encuentro & Reencuentro puede ser relevante. Si sentís una carga tras un cambio de etapa, podés leer sobre Limpieza Energética Personal. Si pensás en un proyecto estancado, existe Ritual de Apertura de Caminos.", "Son enfoques distintos y ninguno permite asegurar un resultado. El catálogo muestra el precio de cada trabajo, pero conviene confirmarlo al consultar."] },
       { heading: "Tres datos que ayudan", paragraphs: ["Podés contar brevemente qué pasó, qué te preocupa ahora y qué te gustaría preguntar. No hace falta compartir datos de terceros ni información que prefieras mantener privada."] },
-      { heading: "Qué pasa después", paragraphs: ["El botón de WhatsApp abre primero un espacio para escribir tu caso. Luego prepara el mensaje y te lleva a WhatsApp. Allí conversamos sobre la opción que tenga sentido y sus límites antes de cualquier decisión."] }
+      { heading: "Qué pasa después", paragraphs: ["En el recorrido guiado, escribís brevemente tu caso antes de ir a WhatsApp. Allí conversamos sobre la opción que tenga sentido y sus límites antes de cualquier decisión."] }
     ], faq: [{ q: "¿Puedo consultar aunque no compre ningún trabajo?", a: "Sí. La orientación empieza por entender tu pregunta y explicar las opciones." }]
   },
   {

@@ -1,5 +1,7 @@
 # Diseño de conversión — Cristal Sagrado
 
+Diseño histórico previo a 3.0. Para el recorrido vigente y la posición de libros, ver [CRISTAL_3_0.md](CRISTAL_3_0.md).
+
 ## Criterio de diseño
 
 La Home se diseña primero para 390 px y se revisa desde 320 px. La navegación móvil es HTML visible en dos filas: marca y **Consultar** arriba; Trabajos, Tarot, Cómo funciona y FAQ debajo. No hay menú hamburguesa, overlay ni dependencia de JavaScript para navegar. En móvil el header no es sticky; el CTA inferior conserva el acceso persistente a WhatsApp.

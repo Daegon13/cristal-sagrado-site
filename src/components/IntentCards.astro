@@ -8,7 +8,7 @@ const intents = [
   ["No sé qué necesito", "Contame qué está pasando y vemos por dónde empezar.", "Pedir orientación por WhatsApp"]
 ];
 ---
-<section class="section intentions" aria-labelledby="intent-title"><div class="wrap">
+<section class="section intentions" id="orientacion" aria-labelledby="intent-title"><div class="wrap">
   <div class="section-intro"><span class="eyebrow">Empezá por vos</span><h2 id="intent-title">¿Qué estás viviendo?</h2><p>No necesitás conocer el nombre de un ritual. Elegí lo que más se acerca a tu situación.</p></div>
   <ul class="intent-grid">{intents.map(([title, description, action], index) => <li class="intent-card"><span class="intent-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><div><h3>{title}</h3><p>{description}</p><WhatsAppCTA label={`${action} ↗`} ctaLocation="intent" intent={title} /></div></li>)}</ul>
 </div></section>

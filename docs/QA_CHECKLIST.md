@@ -1,6 +1,6 @@
 # QA Checklist — Cristal Sagrado
 
-Status: Historical. Algunos pasos describen el video y el HTML legacy; usar las pruebas actuales y `LEGACY_AUDIT.md` para validar el build Astro.
+Status: Historical. Algunos pasos describen el video, el HTML legacy y el panel obligatorio para todos los servicios. Para 3.0 usar [CRISTAL_3_0.md](CRISTAL_3_0.md) y los scripts `qa-cristal-2.mjs`, `qa-copy.mjs` y `qa-preview-base.mjs` actualizados.
 
 ## SEO técnico básico
 

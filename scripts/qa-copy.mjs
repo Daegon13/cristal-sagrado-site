@@ -44,12 +44,13 @@ for (const width of widths) {
       }).map(el => el.textContent.trim());
       const sticky = document.querySelector('.whatsapp-sticky__button')?.getBoundingClientRect();
       return { h1: document.querySelectorAll('h1').length, overflow: document.documentElement.scrollWidth - viewport,
-        wrapped, stickyHeight: sticky?.height || 0, directWhatsApp: document.querySelectorAll('a[href^="https://wa.me/"],a[href^="https://api.whatsapp.com/"]').length,
+        wrapped, stickyHeight: sticky?.height || 0, directWhatsApp: document.querySelectorAll('a[data-whatsapp-direct][href^="https://wa.me/"]').length,
+        unexpectedDirect: document.querySelectorAll('a[href^="https://wa.me/"]:not([data-whatsapp-direct]),a[href^="https://api.whatsapp.com/"]:not([data-whatsapp-direct])').length,
         triggers: document.querySelectorAll('[data-whatsapp-trigger]').length };
     })()` });
     if (result.exceptionDetails) throw Error(result.exceptionDetails.text);
     const state = result.result.value;
-    if (state.h1 !== 1 || state.overflow > 1 || state.wrapped.length || state.stickyHeight > 70 || state.directWhatsApp || !state.triggers) failures.push({ width, route, ...state });
+    if (state.h1 !== 1 || state.overflow > 1 || state.wrapped.length || state.stickyHeight > 70 || state.unexpectedDirect || (route.includes("magia-") ? state.directWhatsApp === 0 : state.directWhatsApp !== 0) || !state.triggers) failures.push({ width, route, ...state });
   }
 }
 await call("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });

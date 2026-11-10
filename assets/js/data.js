@@ -10,6 +10,7 @@ import { firebaseConfig } from "../../admin/config.js";
 import { normalizeService, compareServicesForPublic } from "./service-helpers.js";
 import { wireViewMore } from "./service-interactions.js";
 import { seoServices } from "../../src/data/seo-services.js";
+import { buildDirectServiceUrl } from "./whatsapp.js";
 
 // -------------------------
 // BLOQUE: Inicialización Firebase
@@ -152,7 +153,12 @@ function createServiceCard(service) {
   serviceCta.dataset.serviceSlug = service.slug || "";
   serviceCta.dataset.category = service.category;
   serviceCta.dataset.ctaLocation = "service_card";
-  if (service.ctaText) serviceCta.dataset.ctaText = service.ctaText;
+  const directHref = buildDirectServiceUrl(service.name);
+  if (directHref) {
+    serviceCta.href = directHref;
+    delete serviceCta.dataset.whatsappTrigger;
+    serviceCta.dataset.whatsappDirect = "";
+  }
   li.appendChild(serviceCta);
 
   return li;

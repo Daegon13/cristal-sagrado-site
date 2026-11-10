@@ -108,10 +108,12 @@ for (const entry of entries) {
   assert.ok(!html.includes("Duración indicada en el catálogo"), `Sin duración publicada: ${entry.path}`);
   assert.ok(html.includes(`data-cta-location="seo_service_page"`));
   assert.ok(html.includes(`data-service-slug="${entry.service.slug}"`));
-  assert.ok(html.includes("data-cta-text="));
+  assert.ok(html.includes('data-whatsapp-direct="true"'), `CTA directo: ${entry.path}`);
+  assert.ok(html.includes(`href="https://wa.me/59896106373?text=`), `Fallback sin JS: ${entry.path}`);
   assert.ok(html.includes(`data-service-name="${entry.service.name.replaceAll("&", "&amp;").replaceAll('"', '&quot;')}"`));
   const category = await readFile(new URL(`../dist/magia-${entry.service.category}/index.html`, import.meta.url), "utf8");
   assert.ok(category.includes(`href="${entry.path}"`), `Categoría enlaza ${entry.path}`);
+  assert.ok(category.includes(`data-service-slug="${entry.service.slug}"`), `Categoría conserva servicio ${entry.path}`);
 }
 for (const guide of seoGuides) {
   const html = await readFile(new URL(`../dist/guias/${guide.slug}/index.html`, import.meta.url), "utf8");

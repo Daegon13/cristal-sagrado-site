@@ -71,7 +71,7 @@ assert.equal(home.direct, 0);
 const conversion = await evaluate(`(() => { window.__qaEvents=[]; window.umami={track:(name,data)=>window.__qaEvents.push({name,data})}; const cta=document.querySelector('.hero [data-whatsapp-trigger]'); cta.click(); const area=document.querySelector('#contact-case'); area.value='Quiero orientación sobre mi situación actual.'; document.querySelector('.contact-dialog form').requestSubmit(); return window.__qaEvents; })()`);
 await pause(250);
 assert.ok(outbound.at(-1)?.includes("wa.me/"), "Salida WhatsApp tras caso válido");
-assert.deepEqual(conversion.map((item) => item.name), ["nav_cta", "wa_open", "wa_case_valid", "wa_outbound"]);
+assert.deepEqual(conversion.map((item) => item.name), ["nav_cta", "wa_open", "wa_case_valid", "wa_guided_outbound", "wa_outbound"]);
 assert.ok(!JSON.stringify(conversion).includes("Quiero orientación"), "Caso fuera de analytics");
 
 await call("Page.navigate", { url: `${origin}/magia-verde/` });
