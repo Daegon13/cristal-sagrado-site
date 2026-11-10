@@ -2,7 +2,7 @@ import { pathToFileURL } from "node:url";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const TIMEZONE = "America/Montevideo";
-const EVENT_NAMES = ["wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound", "form_submit", "intent_click", "service_wa", "service_detail", "nav_cta", "book_view", "book_sample_download", "book_interest_wa", "book_purchase_click"];
+const EVENT_NAMES = ["wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound", "wa_direct_outbound", "wa_guided_outbound", "form_submit", "intent_click", "service_wa", "service_detail", "nav_cta", "book_view", "book_sample_download", "book_interest_wa", "book_purchase_click"];
 const PRIVATE_KEY = /(?:message|mensaje|case|caso|email|phone|telefono|name|nombre|ip|user.?agent|distinct.?id|session.?id|visitor.?id|firebase)/i;
 const PRIVATE_VALUE = /(?:[\w.+-]+@[\w.-]+\.[a-z]{2,}|(?:\+?\d[\d().\s-]{7,}\d))/i;
 
@@ -85,20 +85,22 @@ function normalizeUtmSources(items) {
 export function buildPeriod(stats = {}, metrics = {}, properties = {}) {
   const eventRows = aggregate(metrics.events, "x", "y", EVENT_NAMES);
   const eventCounts = Object.fromEntries(EVENT_NAMES.map((name) => [name, eventRows.find((row) => row.name === name)?.count ?? 0]));
+  const segmented = eventCounts.wa_direct_outbound + eventCounts.wa_guided_outbound > 0;
   const ratios = {
     waOpenPerVisitor: safeDivide(eventCounts.wa_open, num(stats.visitors)),
     caseValidPerOpen: safeDivide(eventCounts.wa_case_valid, eventCounts.wa_open),
-    outboundPerCaseValid: safeDivide(eventCounts.wa_outbound, eventCounts.wa_case_valid),
+    outboundPerCaseValid: safeDivide(segmented ? eventCounts.wa_guided_outbound : eventCounts.wa_outbound, eventCounts.wa_case_valid),
     outboundPerVisitor: safeDivide(eventCounts.wa_outbound, num(stats.visitors))
   };
   return {
-    visitors: num(stats.visitors), visits: num(stats.visits), pageviews: num(stats.pageviews), eventCounts, ratios,
+    visitors: num(stats.visitors), visits: num(stats.visits), pageviews: num(stats.pageviews), eventCounts, ratios, segmented,
     referrers: aggregate(metrics.referrers), pages: aggregate(metrics.pages), landingPages: aggregate(metrics.landingPages), devices: aggregate(metrics.devices),
     utmSources: normalizeUtmSources(aggregate(metrics.utmSources, "utm", "views")), campaigns: aggregate(metrics.campaigns, "utm", "views"),
     contents: aggregate(metrics.contents, "utm", "views"), campaignLeads: aggregate(metrics.campaignLeads, "utm", "views"),
+    originLeads: normalizeUtmSources(aggregate(metrics.originLeads, "utm", "views")),
     services: aggregate(properties.services, "value", "total"), categories: aggregate(properties.categories, "value", "total"),
     intents: aggregate(properties.intents, "value", "total"), ctas: aggregate(properties.ctas, "value", "total"),
-    outboundServices: aggregate(properties.outboundServices, "value", "total"),
+    outboundServices: aggregate(properties.outboundServices, "value", "total"), outboundPages: aggregate(properties.outboundPages, "value", "total"),
     noData: num(stats.visitors) === 0 && num(stats.pageviews) === 0 && eventRows.length === 0
   };
 }
@@ -111,7 +113,7 @@ const topList = (items, limit = 5) => items.slice(0, limit);
 
 export function buildObservations(current, previous) {
   const result = [];
-  if (current.eventCounts.wa_open > previous.eventCounts.wa_open && current.eventCounts.wa_outbound < previous.eventCounts.wa_outbound) result.push("Aumentaron las aperturas del diálogo y bajaron las salidas a WhatsApp: el abandono dentro del flujo fue mayor.");
+  if (current.segmented === previous.segmented && current.eventCounts.wa_open > previous.eventCounts.wa_open && (current.segmented ? current.eventCounts.wa_guided_outbound < previous.eventCounts.wa_guided_outbound : current.eventCounts.wa_outbound < previous.eventCounts.wa_outbound)) result.push("Aumentaron las aperturas del diálogo y bajaron las salidas guiadas a WhatsApp: el abandono dentro del flujo fue mayor.");
   const visitorGrowth = percentChange(current.visitors, previous.visitors);
   if (visitorGrowth !== null && visitorGrowth > 20 && current.ratios.outboundPerVisitor !== null && previous.ratios.outboundPerVisitor !== null && current.ratios.outboundPerVisitor < previous.ratios.outboundPerVisitor) result.push("Los visitantes aumentaron más de 20% y las salidas a WhatsApp por visitante bajaron.");
   const campaignLeadTotal = current.campaignLeads.reduce((total, item) => total + item.count, 0);
@@ -133,6 +135,8 @@ export function buildTextReport(current, previous, ranges) {
     `Visitas/sesiones: ${current.visits}`,
     `Pageviews: ${current.pageviews} (${formatDelta(percentChange(current.pageviews, previous.pageviews))})`,
     `Salidas intentadas a WhatsApp (wa_outbound): ${current.eventCounts.wa_outbound}`,
+    `Salidas directas intentadas: ${current.eventCounts.wa_direct_outbound}`,
+    `Salidas guiadas intentadas: ${current.eventCounts.wa_guided_outbound}`,
     `Salidas a WhatsApp / visitantes: ${formatPercent(current.ratios.outboundPerVisitor)}`,
     "",
     "EMBUDO (eventos agregados, no personas únicas)",
@@ -141,7 +145,10 @@ export function buildTextReport(current, previous, ranges) {
     `→ Cancelaron el diálogo: ${current.eventCounts.wa_cancel} (${formatPercent(safeDivide(current.eventCounts.wa_cancel, current.eventCounts.wa_open))} de aperturas)`,
     `→ Errores de validación: ${current.eventCounts.wa_validation_error} (${formatPercent(safeDivide(current.eventCounts.wa_validation_error, current.eventCounts.wa_open))} de aperturas; puede haber varios intentos por apertura)`,
     `→ Caso válido: ${current.eventCounts.wa_case_valid} (${formatPercent(current.ratios.caseValidPerOpen)} de aperturas)`,
-    `→ Intentaron abrir WhatsApp: ${current.eventCounts.wa_outbound} (${formatPercent(current.ratios.outboundPerCaseValid)} de casos válidos; no confirma mensaje enviado)`,
+    `→ Intentaron abrir WhatsApp desde el diálogo: ${current.segmented ? current.eventCounts.wa_guided_outbound : current.eventCounts.wa_outbound} (${formatPercent(current.ratios.outboundPerCaseValid)} de casos válidos; no confirma mensaje enviado)`,
+    `→ Intentaron abrir WhatsApp directamente: ${current.eventCounts.wa_direct_outbound}`,
+    `→ Intentos totales por visitante: ${formatPercent(current.ratios.outboundPerVisitor)} (eventos, no personas únicas)`,
+    !current.segmented && current.eventCounts.wa_outbound ? "Período sin eventos separados: la salida global histórica se presenta como guiada solo para este cálculo. Una semana que cruce el despliegue no es comparable por recorrido." : "",
     "",
     "LIBROS (eventos de interés; no ventas confirmadas)",
     ...(current.eventCounts.book_view || current.eventCounts.book_interest_wa || current.eventCounts.book_sample_download || current.eventCounts.book_purchase_click ? [
@@ -152,8 +159,8 @@ export function buildTextReport(current, previous, ranges) {
     ] : ["Sin datos editoriales en este período."]),
     "",
     "SEMANA ACTUAL VS ANTERIOR",
-    ...[["visitantes", current.visitors, previous.visitors], ["visitas/sesiones", current.visits, previous.visits], ["pageviews", current.pageviews, previous.pageviews], ...["wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound", "form_submit", "book_view", "book_interest_wa"].map((event) => [event, current.eventCounts[event], previous.eventCounts[event]])].map(([label, value, prior]) => `${label}: ${value} vs ${prior} (${formatDelta(percentChange(value, prior))})`),
-    ...[["wa_open / visitantes", "waOpenPerVisitor"], ["wa_case_valid / wa_open", "caseValidPerOpen"], ["wa_outbound / wa_case_valid", "outboundPerCaseValid"]].map(([label, key]) => `${label}: ${formatPercent(current.ratios[key])} vs ${formatPercent(previous.ratios[key])} (${formatPoints(percentagePoints(current.ratios[key], previous.ratios[key]))})`),
+    ...[["visitantes", current.visitors, previous.visitors], ["visitas/sesiones", current.visits, previous.visits], ["pageviews", current.pageviews, previous.pageviews], ...["wa_open", "wa_cancel", "wa_validation_error", "wa_case_valid", "wa_outbound", "wa_direct_outbound", "wa_guided_outbound", "form_submit", "book_view", "book_interest_wa"].map((event) => [event, current.eventCounts[event], previous.eventCounts[event]])].map(([label, value, prior]) => `${label}: ${value} vs ${prior} (${formatDelta(percentChange(value, prior))})`),
+    ...[["wa_open / visitantes", "waOpenPerVisitor"], ["wa_case_valid / wa_open", "caseValidPerOpen"], ["salidas guiadas / casos válidos", "outboundPerCaseValid"]].map(([label, key]) => `${label}: ${formatPercent(current.ratios[key])} vs ${formatPercent(previous.ratios[key])} (${current.segmented === previous.segmented ? formatPoints(percentagePoints(current.ratios[key], previous.ratios[key])) : "No comparable entre definiciones"})`),
     `Salidas a WhatsApp / visitantes: ${formatPercent(current.ratios.outboundPerVisitor)} vs ${formatPercent(previous.ratios.outboundPerVisitor)} (${formatPoints(percentagePoints(current.ratios.outboundPerVisitor, previous.ratios.outboundPerVisitor) ?? NaN)})`,
     "",
     "ORIGEN Y CONTENIDO",
@@ -162,6 +169,7 @@ export function buildTextReport(current, previous, ranges) {
     `Campañas (pageviews): ${topList(current.campaigns).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `Contenido (pageviews): ${topList(current.contents).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `Campañas en eventos wa_outbound: ${topList(current.campaignLeads).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
+    `Orígenes en eventos wa_outbound: ${topList(current.originLeads).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `Páginas: ${topList(current.pages).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `Landing pages: ${topList(current.landingPages).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `Dispositivos: ${topList(current.devices).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
@@ -172,11 +180,13 @@ export function buildTextReport(current, previous, ranges) {
     `Intenciones: ${topList(current.intents).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `CTA de wa_outbound: ${topList(current.ctas).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `Servicios atribuibles a wa_outbound: ${topList(current.outboundServices).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
+    `Páginas con wa_outbound: ${topList(current.outboundPages).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
+    `Intentos por pageview de página con CTA: ${topList(current.outboundPages).map((item) => `${item.name} (${formatPercent(safeDivide(item.count, current.pages.find((page) => page.name === item.name)?.count ?? 0))})`).join(", ") || "Sin datos"}`,
     "",
     "OBSERVACIONES",
     ...(observations.length ? observations.map((item) => `• ${item}`) : ["Sin observaciones deterministas para este período."]),
     "",
-    "Las métricas del embudo cuentan eventos agregados; un mismo visitante puede repetirlos. wa_case_valid y wa_outbound ocurren seguidos antes de navegar: su relación no mide mensajes efectivamente enviados ni operaciones comerciales."
+    "Las métricas del embudo cuentan eventos agregados; un mismo visitante puede repetirlos. Una salida intentada no confirma mensaje recibido ni venta. La recepción y el importe cobrado requieren registro manual privado."
   ];
   return lines.join("\n");
 }
@@ -210,16 +220,17 @@ async function fetchPeriod(base, websiteId, key, range, fetchImpl, knownStats) {
   const website = `websites/${encodeURIComponent(websiteId)}`;
   const getMetrics = (type, extra = {}) => apiGet(base, `${website}/metrics`, { ...common, type, limit: 100, ...extra }, key, fetchImpl);
   const getValues = (event, propertyName) => apiGet(base, `${website}/event-data/values`, { ...common, event, propertyName }, key, fetchImpl);
-  const [stats, events, referrers, pages, landingPages, devices, utmSources, campaigns, contents, campaignLeads, services, categories, intents, ctas, outboundServices] = await Promise.all([
+  const [stats, events, referrers, pages, landingPages, devices, utmSources, campaigns, contents, campaignLeads, originLeads, services, categories, intents, ctas, outboundServices, outboundPages] = await Promise.all([
     knownStats ?? apiGet(base, `${website}/stats`, common, key, fetchImpl), getMetrics("event"), getMetrics("referrer"), getMetrics("path"), getMetrics("entry"), getMetrics("device"),
     apiGet(base, `${website}/utm/metrics`, { ...common, type: "utm_source" }, key, fetchImpl),
     apiGet(base, `${website}/utm/metrics`, { ...common, type: "utm_campaign" }, key, fetchImpl),
     apiGet(base, `${website}/utm/metrics`, { ...common, type: "utm_content" }, key, fetchImpl),
     apiGet(base, `${website}/utm/metrics`, { ...common, type: "utm_campaign", event: "wa_outbound", eventType: 2 }, key, fetchImpl),
+    apiGet(base, `${website}/utm/metrics`, { ...common, type: "utm_source", event: "wa_outbound", eventType: 2 }, key, fetchImpl),
     getValues("service_wa", "service"), getValues("service_wa", "category"), getValues("intent_click", "intent"),
-    getValues("wa_outbound", "cta_location"), getValues("wa_outbound", "service")
+    getValues("wa_outbound", "cta_location"), getValues("wa_outbound", "service"), getValues("wa_outbound", "page")
   ]);
-  return buildPeriod(stats ?? {}, { events, referrers, pages, landingPages, devices, utmSources, campaigns, contents, campaignLeads }, { services, categories, intents, ctas, outboundServices });
+  return buildPeriod(stats ?? {}, { events, referrers, pages, landingPages, devices, utmSources, campaigns, contents, campaignLeads, originLeads }, { services, categories, intents, ctas, outboundServices, outboundPages });
 }
 
 export async function buildReportData({ base, websiteId, apiKey, now = new Date(), fetchImpl = fetch }) {

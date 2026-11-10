@@ -9,7 +9,7 @@ Usá un enlace directo al contenido que promete la publicación. Un post o story
 - `utm_campaign`: tema corto, en minúsculas y con guiones bajos, por ejemplo `educacion_amor`.
 - `utm_content`: variante de la publicación, por ejemplo `amarre_vs_endulzamiento` o `story_01`.
 
-No incluyas nombres, teléfonos, correos, texto de casos ni identificadores personales. La herramienta normaliza minúsculas, acentos y espacios; rechaza rutas no publicadas y etiquetas de aspecto privado. La ruta debe ser Home, `/guias/`, una guía publicada o una landing de la allowlist.
+No incluyas nombres, teléfonos, correos, texto de casos ni identificadores personales. La herramienta normaliza minúsculas, acentos y espacios; rechaza rutas no publicadas y etiquetas de aspecto privado. La ruta debe ser Home, `/tarot/`, `/guias/`, una guía publicada o una landing de la allowlist. Hay tres ejemplos temáticos en [CAMPANAS_INSTAGRAM_3_0.md](CAMPANAS_INSTAGRAM_3_0.md).
 
 Desde PowerShell:
 
@@ -29,4 +29,4 @@ Otro ejemplo para una story sobre limpieza:
 npm run campaign-link -- --path /magia-verde/limpieza-energetica-personal/ --source instagram --medium story --campaign limpieza_octubre --content story_01
 ```
 
-El flujo del reel es: Instagram → guía de diferencia entre amarre y endulzamiento → landing de un servicio real → CTA de WhatsApp → descripción obligatoria del caso → WhatsApp. La salida se mide como **lead web WhatsApp**, no como venta. Revisá visitas y eventos por ruta y UTM en Umami y contrastá búsquedas orgánicas en Search Console después del deploy.
+El flujo de un reel puede ser: Instagram → guía de diferencia entre amarre y endulzamiento → landing de un servicio publicado → CTA directo de WhatsApp con el nombre del trabajo. Si la persona busca orientación, conserva el diálogo breve. La salida se mide como **intento de abrir WhatsApp**, no como mensaje recibido ni venta. Revisá visitas y eventos por ruta y UTM en Umami y contrastá búsquedas orgánicas en Search Console después del deploy.
