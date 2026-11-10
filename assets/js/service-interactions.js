@@ -1,6 +1,12 @@
 export function wireViewMore(list) {
   list.querySelectorAll(".serv-toggle").forEach((button) => {
     button.addEventListener("click", () => {
+      const long = button.closest("li")?.querySelector(".serv-long");
+      if (long) {
+        long.hidden = !long.hidden;
+        button.textContent = long.hidden ? "Ver descripción completa" : "Mostrar menos";
+        return;
+      }
       const description = button.closest("li")?.querySelector(".serv-desc");
       if (!description) return;
       description.classList.toggle("clamp-3");

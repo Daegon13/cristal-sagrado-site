@@ -8,7 +8,9 @@
   "scripts": {
     "dev": "astro dev",
     "sync:services": "node scripts/sync-public-services.mjs",
-    "prebuild": "npm run sync:services",
+    "prebuild": "npm run sync:services && npm run check:approved-copy",
+    "prepare:copy": "node scripts/prepare-approved-copy.mjs --write",
+    "check:approved-copy": "node scripts/prepare-approved-copy.mjs",
     "build": "astro build",
     "test:build": "node scripts/qa-built-seo.mjs",
     "preview": "astro preview",

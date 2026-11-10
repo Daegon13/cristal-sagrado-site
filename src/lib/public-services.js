@@ -1,4 +1,5 @@
 import { normalizeService, compareServicesForPublic } from "../../assets/js/service-helpers.js";
+import { applyApprovedServiceCopy } from "../../assets/js/approved-copy.js";
 
 export const PUBLIC_FIELDS = ["id", "name", "category", "descriptionShort", "descriptionLong", "price", "order", "active", "slug", "intent", "benefits", "idealFor", "notFor", "featured", "ctaText", "updatedAt"];
 export const SERVICE_CATEGORIES = ["blanca", "roja", "negra", "verde"];
@@ -22,7 +23,7 @@ export function validatePublicSnapshot(snapshot) {
   return snapshot;
 }
 
-export function getPublicServices(snapshot) { return validatePublicSnapshot(snapshot).services; }
+export function getPublicServices(snapshot) { return validatePublicSnapshot(snapshot).services.map(applyApprovedServiceCopy); }
 export function getServicesByCategory(snapshot, category) { return getPublicServices(snapshot).filter((service) => service.category === category); }
 export function getServiceBySlug(snapshot, category, slug) { return getServicesByCategory(snapshot, category).find((service) => service.slug === slug); }
 export function getServiceById(snapshot, id) { return getPublicServices(snapshot).find((service) => service.id === id); }

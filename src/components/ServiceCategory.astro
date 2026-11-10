@@ -16,12 +16,14 @@ const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL :
   <ul id="lista-servicios" class="serv-list" aria-label={title}>
     {services.map((service) => <li class="serv-card" data-id={service.id} data-slug={service.slug} data-category={service.category}>
       <div class="serv-card-header"><h3 class="serv-title">{seoPaths.has(service.id) ? <a href={`${base}${seoPaths.get(service.id).slice(1)}`}>{service.name}</a> : service.name}</h3>{service.featured && <span class="serv-featured-badge">Destacado</span>}</div>
-      {service.descriptionShort && <p class="serv-desc clamp-3">{service.descriptionShort}</p>}
+      {service.descriptionShort && <p class="serv-desc">{service.descriptionShort}</p>}
+      {service.descriptionLong && <p class="serv-long" hidden>{service.descriptionLong}</p>}
       {service.intent.length > 0 && <ul class="serv-intents" aria-label="Intenciones del servicio">{service.intent.map((intent) => <li class="serv-intent-chip">{intent}</li>)}</ul>}
       {service.idealFor.length > 0 && <div class="serv-detail serv-ideal-for"><h4 class="serv-detail-title">Ideal para</h4><ul class="serv-detail-list">{service.idealFor.map((item) => <li class="serv-detail-item">{item}</li>)}</ul></div>}
-      {service.benefits.length > 0 && <div class="serv-detail serv-benefits"><h4 class="serv-detail-title">Beneficios</h4><ul class="serv-detail-list">{service.benefits.map((item) => <li class="serv-detail-item">{item}</li>)}</ul></div>}
+      {service.benefits.length > 0 && <div class="serv-detail serv-benefits"><h4 class="serv-detail-title">Características y finalidades simbólicas</h4><ul class="serv-detail-list">{service.benefits.map((item) => <li class="serv-detail-item">{item}</li>)}</ul></div>}
+      {service.notFor.length > 0 && <div class="serv-detail serv-not-for"><h4 class="serv-detail-title">No orientado a</h4><ul class="serv-detail-list">{service.notFor.map((item) => <li class="serv-detail-item">{item}</li>)}</ul></div>}
       {service.price !== null && <div class="serv-meta"><span class="serv-price">${service.price}</span></div>}
-      {service.descriptionShort && <button type="button" class="serv-toggle">Ver descripción completa</button>}
+      {service.descriptionLong && <button type="button" class="serv-toggle">Ver descripción completa</button>}
       {seoPaths.has(service.id) && <a class="serv-detail-link" href={`${base}${seoPaths.get(service.id).slice(1)}`} data-cta-location="service_landing" data-category={category}>Conocer este trabajo</a>}
       <WhatsAppCTA label="Consultar este trabajo" className="serv-cta" ctaLocation="service_card" serviceName={service.name} serviceSlug={service.slug} category={service.category} ariaLabel={`Consultar por WhatsApp sobre ${service.name}`} direct />
     </li>)}

@@ -11,6 +11,7 @@ import { normalizeService, compareServicesForPublic } from "./service-helpers.js
 import { wireViewMore } from "./service-interactions.js";
 import { seoServices } from "../../src/data/seo-services.js";
 import { buildDirectServiceUrl } from "./whatsapp.js";
+import { applyApprovedServiceCopy } from "./approved-copy.js";
 
 // -------------------------
 // BLOQUE: Inicialización Firebase
@@ -45,7 +46,7 @@ function detectCategory(explicitCategory) {
 
 function normalizeItems(snap) {
   const arr = [];
-  snap.forEach(d => arr.push(normalizeService(d.data(), d.id)));
+  snap.forEach(d => arr.push(applyApprovedServiceCopy(normalizeService(d.data(), d.id))));
   arr.sort(compareServicesForPublic);
   return arr;
 }
@@ -112,7 +113,12 @@ function createServiceCard(service) {
   li.appendChild(header);
 
   if (service.descriptionShort) {
-    li.appendChild(createTextElement("p", "serv-desc clamp-3", service.descriptionShort));
+    li.appendChild(createTextElement("p", "serv-desc", service.descriptionShort));
+  }
+  if (service.descriptionLong) {
+    const long = createTextElement("p", "serv-long", service.descriptionLong);
+    long.hidden = true;
+    li.appendChild(long);
   }
 
   if (seoServices.some((entry) => entry.id === service.id)) {
@@ -129,8 +135,10 @@ function createServiceCard(service) {
   const idealFor = createServiceSection("Ideal para", service.idealFor, "serv-ideal-for");
   if (idealFor) li.appendChild(idealFor);
 
-  const benefits = createServiceSection("Beneficios", service.benefits, "serv-benefits");
+  const benefits = createServiceSection("Características y finalidades simbólicas", service.benefits, "serv-benefits");
   if (benefits) li.appendChild(benefits);
+  const notFor = createServiceSection("No orientado a", service.notFor, "serv-not-for");
+  if (notFor) li.appendChild(notFor);
 
   const meta = document.createElement("div");
   meta.className = "serv-meta";
@@ -139,7 +147,7 @@ function createServiceCard(service) {
   }
   if (meta.childElementCount) li.appendChild(meta);
 
-  if (service.descriptionShort) {
+  if (service.descriptionLong) {
     const btn = createTextElement("button", "serv-toggle", "Ver descripción completa");
     btn.type = "button";
     li.appendChild(btn);

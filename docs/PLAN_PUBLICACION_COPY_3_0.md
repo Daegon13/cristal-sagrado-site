@@ -1,5 +1,7 @@
 # Plan de publicación futura del copy 3.0
 
+> Documento histórico de la fase de auditoría. La aprobación posterior y la integración preparada para el PR #14 se registran en [APPROVED_COPY_RELEASE_3_0.md](APPROVED_COPY_RELEASE_3_0.md).
+
 **Diseño, no ejecución.** Las 52 propuestas están `PENDIENTE_APROBACION`; esta rama no escribe en Firestore, no sincroniza el snapshot ni despliega la web. La aplicación requiere una autorización posterior que identifique exactamente los IDs y campos aprobados. La aprobación de un texto no implica aprobar automáticamente las demás propuestas de ese registro.
 
 ## Contrato de entrada de la herramienta futura
