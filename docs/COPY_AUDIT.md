@@ -1,5 +1,7 @@
 # Auditoría de copy público — 2026-10-08
 
+Registro histórico de la versión previa. El flujo vigente de servicios directos y orientación guiada se describe en [CRISTAL_3_0.md](CRISTAL_3_0.md).
+
 Alcance: páginas Astro públicas, componentes compartidos, textos generados por `assets/js`, estados de categorías y redirects HTML legacy. La prioridad de contacto es WhatsApp con descripción obligatoria de la situación; el formulario Formspree es una alternativa. No se modificaron datos remotos de Firestore ni testimonios.
 
 | Ubicación / función | Antes | Después | Motivo |

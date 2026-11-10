@@ -122,6 +122,7 @@ form.addEventListener("submit", (event) => {
   const url = buildWhatsappUrl(buildWhatsappMessage({ ...context, caseText: textarea.value }));
   const properties = { ...context, page: location.pathname, cta_location: context.ctaLocation };
   trackEvent("wa_case_valid", properties);
+  trackEvent("wa_guided_outbound", properties);
   trackEvent("wa_outbound", properties);
   closeDialog();
   handoffStartedAt = performance.now();

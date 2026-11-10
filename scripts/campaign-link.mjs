@@ -4,7 +4,7 @@ import snapshot from "../src/data/generated/services.public.json" with { type: "
 import { selectedServicePaths } from "../src/lib/seo-services.js";
 import { seoGuides } from "../src/data/seo-guides.js";
 
-const allowedPaths = new Set(["/", "/guias/", ...selectedServicePaths(snapshot), ...seoGuides.map((guide) => `/guias/${guide.slug}/`)]);
+const allowedPaths = new Set(["/", "/tarot/", "/guias/", ...selectedServicePaths(snapshot), ...seoGuides.map((guide) => `/guias/${guide.slug}/`)]);
 const allowedKeys = new Set(["path", "source", "medium", "campaign", "content", "term"]);
 const allowedMediums = new Set(["bio", "story", "reel", "post"]);
 

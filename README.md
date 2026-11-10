@@ -42,7 +42,7 @@ GitHub Actions publica dist/ en la rama gh-pages al hacer push a main. Las previ
 
 - Home, Tarot, FAQ y Cómo trabajamos son HTML estático y no cargan Firebase.
 - Solo las cuatro páginas de categoría inicializan Firebase público y consultan Firestore; el orden, normalización y render seguro actuales se conservan.
-- Los CTA públicos abren el panel obligatorio de caso y generan la URL de WhatsApp solo tras validar el texto. Sin JavaScript llevan al formulario de Home.
+- Los CTA de servicios con nombre publicado enlazan directamente a WhatsApp con el trabajo identificado. Los CTA de orientación abren el diálogo de caso; sin JavaScript llevan al formulario de Home.
 - El único formulario Formspree está en Home.
 - /admin/ se sirve desde public/admin/ sin bundling. admin/ mantiene una copia idéntica usada por scripts y tests; su consolidación requiere una migración separada. Validar login con credenciales autorizadas y el proyecto Firebase habitual.
 - Los .html existentes se sirven como puentes porque el hosting actual es GitHub Pages. Las rutas limpias son canónicas.
@@ -51,3 +51,7 @@ GitHub Actions publica dist/ en la rama gh-pages al hacer push a main. Las previ
 # Cristal Sagrado 2.0
 
 La evolución del contacto público y la biblioteca editorial se documentan en [docs/CRISTAL_2_0.md](docs/CRISTAL_2_0.md).
+
+# Cristal Sagrado 3.0
+
+La auditoría, los recorridos y los límites comerciales se documentan en [docs/CRISTAL_3_0.md](docs/CRISTAL_3_0.md).

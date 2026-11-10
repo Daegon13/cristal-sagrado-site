@@ -1,0 +1,7 @@
+# Registro comercial privado
+
+Copiar `docs/templates/commercial-attribution.tsv` a `.local/commercial-attribution.tsv`. `.local/` está excluido de Git. Una fila representa una consulta recibida, no un clic. Usar fecha `AAAA-MM-DD`, servicio con el nombre publicado (o `Tarot`), origen entre `instagram`, `google`, `facebook`, `tiktok`, `web`, `directo`, `referido` y `desconocido`, campaña como etiqueta corta si se conoce, `si` o `no` en consulta/venta e importe efectivamente cobrado como número sin símbolo. Dejar importe vacío si no hubo cobro. No guardar nombres, teléfonos, direcciones, conversaciones ni texto libre del caso. No cargar datos ficticios.
+
+En una consulta por WhatsApp, Lucía puede preguntar de dónde llegó la persona y anotarlo solo si lo sabe. Una UTM no confirma que esa persona haya enviado el mensaje. Si no se conoce el origen, usar `desconocido`; no atribuirlo por inferencia. Mantener el archivo en un dispositivo privado con acceso restringido, fuera del repositorio. El reporte Umami y este registro no se suman como si midieran el mismo hecho.
+
+Para resumir el archivo local: `node scripts/summarize-commercial.mjs .local/commercial-attribution.tsv`. El script imprime conteos e importes agregados por servicio y origen; no modifica datos ni envía nada. Lucía sigue teniendo que registrar manualmente consultas efectivamente recibidas, ventas confirmadas e importes cobrados. La tasa de cierre requiere esas confirmaciones y una definición estable del período.

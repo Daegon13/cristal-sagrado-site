@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { WHATSAPP_NUMBER, validCase, buildWhatsappMessage, buildWhatsappUrl } from "../assets/js/whatsapp.js";
+import { WHATSAPP_NUMBER, validCase, buildWhatsappMessage, buildWhatsappUrl, buildDirectServiceUrl } from "../assets/js/whatsapp.js";
 import { buildServiceWhatsappUrl } from "../assets/js/service-helpers.js";
 import { buildServiceWhatsappPreviewUrl } from "../admin/service-form-helpers.js";
 
@@ -26,4 +26,11 @@ assert.equal(new URL(url).searchParams.get("text"), buildWhatsappMessage({ servi
 assert.equal(new URL(buildServiceWhatsappUrl({ name: "Tarot", ctaText: "Hola especial" }, caseText)).searchParams.get("text"), `Hola especial\n\nMi situación es:\n${caseText}`);
 assert.equal(new URL(buildServiceWhatsappPreviewUrl({ name: "Tarot" })).pathname, `/${WHATSAPP_NUMBER}`);
 assert.equal(new URL(buildServiceWhatsappPreviewUrl({ name: "Tarot" })).searchParams.get("text"), "Hola Luz, llego desde la web de Cristal Sagrado. Quiero consultar por Tarot. Mi situación es:");
+assert.equal(buildDirectServiceUrl(""), null);
+assert.equal(buildDirectServiceUrl(" "), null);
+const direct = new URL(buildDirectServiceUrl("Encuentro & Reencuentro 💌"));
+assert.equal(direct.pathname, `/${WHATSAPP_NUMBER}`);
+assert.match(direct.searchParams.get("text"), /Quiero consultar por Encuentro & Reencuentro\./);
+assert.doesNotMatch(direct.searchParams.get("text"), /Mi situación es:|garantizado/i);
+assert.match(new URL(buildDirectServiceUrl("Limpieza\nprivada")).searchParams.get("text"), /Limpieza privada/);
 console.log("whatsapp flow ok");

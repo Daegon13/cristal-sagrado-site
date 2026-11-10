@@ -26,7 +26,9 @@ Eventos existentes:
 | `wa_cancel` | Se cerró el diálogo sin continuar. |
 | `wa_validation_error` | Se intentó continuar con un caso inválido; puede repetirse en una apertura. |
 | `wa_case_valid` | Se validó el caso y se pulsó continuar. |
-| `wa_outbound` | Intento de abrir WhatsApp tras validar el caso; no confirma mensaje enviado. |
+| `wa_outbound` | Intento global de abrir WhatsApp, directo o guiado; no confirma mensaje enviado. Antes de 3.0 solo correspondía al flujo guiado. |
+| `wa_direct_outbound` | Intento desde un CTA de servicio con enlace directo. No valida un caso. |
+| `wa_guided_outbound` | Intento desde el diálogo, después de validar la descripción. |
 | `book_view` | Se cargó una ficha de libro. |
 | `book_interest_wa` | Se pulsó la consulta editorial hacia WhatsApp; no confirma mensaje enviado. |
 | `book_sample_download` | Se pulsó una muestra autorizada, si existe. |
@@ -61,14 +63,16 @@ El funnel muestra conteos de eventos agregados:
 
 1. `wa_open / visitantes`.
 2. `wa_case_valid / wa_open`.
-3. `wa_outbound / wa_case_valid`.
+3. `wa_guided_outbound / wa_case_valid` tras 3.0; antes se usaba `wa_outbound / wa_case_valid`.
 4. `wa_outbound / visitantes` (rotulado “salidas a WhatsApp / visitantes”).
 
 No son porcentajes de visitantes únicos convertidos: un visitante puede generar varios eventos. División por cero o falta de base se presenta como “Sin datos”. Los cambios de métricas de conteo son porcentajes relativos; los cambios de ratios se muestran en puntos porcentuales. No hay valores inventados. Menos de cinco `wa_outbound` muestra una advertencia de muestra pequeña.
 
-Desde 2.0 el informe agrega `wa_cancel / wa_open`, `wa_validation_error / wa_open` y una sección editorial separada (`book_interest_wa / book_view`). Son relaciones de conteos agregados, no tasas por persona. `wa_case_valid` y `wa_outbound` se emiten consecutivamente antes de navegar; el 100% entre ambos no equivale a una conversación. Para comparar antes y después, usar las mismas definiciones de evento y anotar la fecha de despliegue. `ig` e `instagram` se suman bajo `instagram` solo en la presentación del informe; los datos históricos de Umami no se reescriben.
+Desde 2.0 el informe agrega `wa_cancel / wa_open`, `wa_validation_error / wa_open` y una sección editorial separada (`book_interest_wa / book_view`). Son relaciones de conteos agregados, no tasas por persona. Desde 3.0 suma salidas directas y guiadas, y muestra página, servicio, CTA, origen y campaña de `wa_outbound` cuando Umami dispone de esos datos. La relación salidas desde página / pageviews de esa página no vincula a una persona con su landing de entrada. `wa_case_valid` solo corresponde al diálogo. `wa_outbound` conserva su significado de intento global, pero su composición cambia desde el despliegue de 3.0: las tasas de abandono guiado no son directamente comparables con semanas que crucen esa fecha. El 100% entre caso válido y salida guiada no equivale a una conversación. `ig` e `instagram` se suman bajo `instagram` solo en la presentación del informe; los datos históricos de Umami no se reescriben.
 
 El email incluye tráfico, embudo, comparación semanal, fuentes/referrers, páginas, dispositivos, UTM, servicios, intenciones, CTA, libros y observaciones deterministas. La atribución de campañas solo cuenta `wa_outbound` con UTM campaña disponible. No produce rankings vacíos. No contiene texto de caso, nombres, teléfonos, emails de clientes, mensajes Formspree, IP, user-agent individual, ID individual o datos privados de Firebase. Una salida intentada a WhatsApp no confirma conversación, venta, cliente ni compra.
+
+Los enlaces etiquetados de Instagram se generan con `scripts/campaign-link.mjs`. La navegación interna conserva únicamente UTM válidas de Instagram durante hasta 30 minutos en `sessionStorage` del navegador; nunca añade parámetros a enlaces externos, Formspree o WhatsApp. El registro privado de consultas recibidas y ventas se describe en [ATRIBUCION_COMERCIAL_3_0.md](ATRIBUCION_COMERCIAL_3_0.md). Sus importes no se envían a Umami ni al reporte semanal.
 
 ## Configurar GitHub Actions
 

@@ -46,6 +46,11 @@ for (const category of ["blanca", "roja", "negra", "verde"]) {
     assert.ok(html.includes(`data-category="${category}"`));
     assert.ok(html.includes(service.name.replaceAll("&", "&amp;")), `Falta nombre de ${service.id}`);
     assert.ok(html.includes(service.descriptionShort.slice(0, 24).replaceAll("&", "&amp;")), `Falta descripción de ${service.id}`);
+    assert.ok(html.includes(service.descriptionLong.slice(0, 40).replaceAll("&", "&amp;")), `Falta descripción completa de ${service.id}`);
+    assert.ok(html.includes(`$${service.price}`), `Falta precio original de ${service.id}`);
+    for (const field of ["idealFor", "benefits", "intent", "notFor"]) {
+      for (const value of service[field]) assert.ok(html.includes(value.replaceAll("&", "&amp;")), `Falta ${field} de ${service.id}`);
+    }
   }
   assert.ok(html.includes("data-whatsapp-trigger"));
   assert.ok(html.includes(`rel="canonical" href="https://cristal-sagrado.com/magia-${category}/"`));
@@ -105,13 +110,17 @@ for (const path of expected) {
 }
 for (const entry of entries) {
   const html = await readFile(new URL(`../dist${entry.path}index.html`, import.meta.url), "utf8");
+  assert.ok(html.includes(entry.service.descriptionShort.slice(0, 30).replaceAll("&", "&amp;")), `Copy corto aprobado: ${entry.path}`);
+  assert.ok(html.includes(entry.service.descriptionLong.slice(0, 40).replaceAll("&", "&amp;")), `Copy largo aprobado: ${entry.path}`);
   assert.ok(!html.includes("Duración indicada en el catálogo"), `Sin duración publicada: ${entry.path}`);
   assert.ok(html.includes(`data-cta-location="seo_service_page"`));
   assert.ok(html.includes(`data-service-slug="${entry.service.slug}"`));
-  assert.ok(html.includes("data-cta-text="));
+  assert.ok(html.includes('data-whatsapp-direct="true"'), `CTA directo: ${entry.path}`);
+  assert.ok(html.includes(`href="https://wa.me/59896106373?text=`), `Fallback sin JS: ${entry.path}`);
   assert.ok(html.includes(`data-service-name="${entry.service.name.replaceAll("&", "&amp;").replaceAll('"', '&quot;')}"`));
   const category = await readFile(new URL(`../dist/magia-${entry.service.category}/index.html`, import.meta.url), "utf8");
   assert.ok(category.includes(`href="${entry.path}"`), `Categoría enlaza ${entry.path}`);
+  assert.ok(category.includes(`data-service-slug="${entry.service.slug}"`), `Categoría conserva servicio ${entry.path}`);
 }
 for (const guide of seoGuides) {
   const html = await readFile(new URL(`../dist/guias/${guide.slug}/index.html`, import.meta.url), "utf8");

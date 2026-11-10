@@ -37,7 +37,7 @@ const productionHost = new URL(SITE.origin).hostname;
             const url = new URL(value, location.href);
             const allowed = new Set(["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"]);
             const query = new URLSearchParams();
-            for (const [key, value] of url.searchParams) if (allowed.has(key.toLowerCase())) query.append(key.toLowerCase(), value);
+            for (const [key, value] of url.searchParams) if (allowed.has(key.toLowerCase()) && value.length <= 40 && /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/.test(value) && !/\d{7,}/.test(value)) query.append(key.toLowerCase(), value);
             return `${preserveOrigin ? url.origin : ""}${url.pathname}${query.size ? `?${query}` : ""}`;
           } catch { return location.pathname; }
         };

@@ -29,3 +29,9 @@ export function buildWhatsappMessage({ serviceName = "", ctaText = "", intent = 
 export function buildWhatsappUrl(message, number = WHATSAPP_NUMBER) {
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
+
+export function buildDirectServiceUrl(serviceName) {
+  const service = String(serviceName ?? "").replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu, "").replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim();
+  if (!service || service.length > 120) return null;
+  return buildWhatsappUrl(`${INTRO}\nQuiero consultar por ${service}. ¿Podés contarme el precio vigente, las condiciones y cómo se realiza?`);
+}

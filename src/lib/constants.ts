@@ -19,7 +19,7 @@ export const categories = [
 ] as const;
 export const faqItems = [
   { question: "¿Cómo sé qué trabajo necesito?", answer: "No tenés que elegirlo antes de consultar. Contame brevemente tu situación por WhatsApp y te oriento sobre las opciones que pueden tener sentido para vos." },
-  { question: "¿Qué tengo que enviar para consultar?", answer: "Al tocar un botón de WhatsApp, primero aparece un espacio para contarme brevemente qué estás viviendo. Después se abre WhatsApp con tu mensaje preparado." },
+  { question: "¿Qué tengo que enviar para consultar?", answer: "Si ya elegiste un trabajo, el enlace abre WhatsApp con su nombre y podés contar tu situación allí. Si necesitás orientación, primero aparece un espacio para escribir brevemente qué estás viviendo. También podés usar el formulario de contacto." },
   { question: "¿Cómo reservo un turno?", answer: "Escribime por WhatsApp y coordinamos día y hora. Si es online, te envío el enlace de la videollamada." },
   { question: "¿Atendés online?", answer: "Sí, por videollamada. Podés pedir un resumen escrito o un registro del tiraje o trabajo cuando corresponda." },
   { question: "¿Cuánto dura una sesión?", answer: "La lectura completa dura 45 minutos a una hora; la consulta express, 30 minutos." },
@@ -31,7 +31,7 @@ export const faqSchemaItems = faqItems;
 export const processSteps = [
   { title: "Me contás tu situación", text: "Escribime brevemente por WhatsApp. Si preferís, usá el formulario de contacto." },
   { title: "Vemos las opciones", text: "Te oriento sobre la lectura o el trabajo que puede tener sentido para vos." },
-  { title: "Te explico antes de avanzar", text: "Conversamos sobre el enfoque, los tiempos y tus dudas." },
+  { title: "Te explico antes de avanzar", text: "Conversamos sobre el enfoque, los tiempos, el precio vigente y las condiciones. Si corresponde un registro o informe, te lo explico." },
   { title: "Hacemos la lectura o el trabajo", text: "Te acompaño durante el proceso y, cuando corresponde, podés pedir un registro." }
 ] as const;
 export const aboutSteps = [

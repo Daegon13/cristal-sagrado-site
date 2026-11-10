@@ -33,6 +33,13 @@
 .hero h1 { max-width: 17ch; margin: 0 0 1rem; }
 .hero p { max-width: 43ch; margin: 0; color: var(--fg); font-size: clamp(1.05rem, 2vw, 1.25rem); }
 .hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem 1.5rem; margin-top: 1.5rem; }
+  .journey-choice { background: var(--bg-deep); }
+  .journey-choice__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .journey-choice__grid article { min-width: 0; padding: clamp(1.2rem, 3vw, 2rem); border: 1px solid var(--border); border-radius: var(--radius); background: var(--panel-soft); }
+  .journey-choice__grid h3 { margin-top: 0; }
+  .journey-choice__grid p { max-width: 45ch; }
+  .journey-choice__grid a { display: inline-flex; margin-top: .5rem; }
+  #orientacion, #servicios { scroll-margin-top: 5rem; }
 
 /* Confianza conectada al Hero, con dos filas legibles en escritorio. */
 .trust-strip { background: linear-gradient(135deg, var(--panel-soft), var(--panel)); border-bottom: 1px solid var(--border); }
@@ -116,6 +123,9 @@
 .serv-detail { margin-top: .7rem; }
 .serv-detail-title { margin-bottom: .3rem; }
 .serv-detail-list { display: grid; gap: .25rem; margin: 0; padding-left: 1.2rem; }
+.serv-desc, .serv-long { white-space: pre-line; overflow-wrap: anywhere; }
+.serv-long[hidden] { display: none; }
+.seo-service-copy { white-space: pre-line; overflow-wrap: anywhere; }
 .serv-meta { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: .7rem; color: var(--gold-soft); }
 .serv-toggle { min-height: 44px; margin-top: .4rem; padding: 0; border: 0; background: none; color: var(--purple); text-decoration: underline; cursor: pointer; }
 .clamp-3 { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
@@ -175,8 +185,9 @@
   .desktop-nav { display: flex; }
   .mobile-consult, .mobile-nav { display: none; }
   .hero { align-items: center; min-height: 38rem; padding-block: 3rem; background-image: linear-gradient(90deg, var(--hero-dark), var(--hero-mid) 55%, var(--hero-edge)), var(--hero-image); background-position: center; background-size: cover; }
-  .hero--ritual { background-image: linear-gradient(90deg, var(--hero-dark), var(--hero-mid) 55%, var(--hero-edge)), var(--hero-desktop); }
+  .hero--ritual { background-image: linear-gradient(90deg, var(--hero-dark), var(--hero-mid) 55%, var(--hero-edge)), var(--hero-desktop); background-position: center top; }
   .hero__content { margin-left: max(1rem, calc((100vw - 75rem)/2)); }
+    .journey-choice__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hero h1 { max-width: 20ch; font-size: clamp(3rem, 4.8vw, 4rem); }
   .intent-grid { gap: 1rem; }
   .intent-card:last-child { grid-column: 1 / -1; }

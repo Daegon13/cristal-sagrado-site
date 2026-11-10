@@ -104,6 +104,21 @@ test("funnel counts known events and labels remain aggregate", () => {
   assert.doesNotMatch(text, /venta confirmada: [1-9]|mensaje enviado: [1-9]|NaN|Infinity|undefined %/i);
 });
 
+test("direct attempts never inflate guided validation or its denominator", () => {
+  const period = buildPeriod({ visitors: 10 }, { events: [
+    { x: "wa_open", y: 4 }, { x: "wa_case_valid", y: 2 }, { x: "wa_guided_outbound", y: 2 },
+    { x: "wa_direct_outbound", y: 3 }, { x: "wa_outbound", y: 5 }
+  ] }, { outboundPages: [{ value: "/tarot/", total: 1 }] });
+  assert.equal(period.ratios.outboundPerCaseValid, 1);
+  assert.equal(period.ratios.outboundPerVisitor, 0.5);
+  assert.deepEqual(period.outboundPages, [{ name: "/tarot/", count: 1 }]);
+  const report = buildTextReport(period, buildPeriod({ visitors: 10 }, { events: [{ x: "wa_outbound", y: 2 }, { x: "wa_case_valid", y: 2 }] }), { current: { startDate: "2026-11-02", endDate: "2026-11-08" } });
+  assert.match(report, /Salidas directas intentadas: 3/);
+  assert.match(report, /Salidas guiadas intentadas: 2/);
+  assert.match(report, /No comparable entre definiciones/);
+  assert.doesNotMatch(report, /250\.0% de casos válidos/);
+});
+
 test("small sample notice and deterministic observations", () => {
   const low = buildPeriod({ visitors: 100 }, { events: [{ x: "wa_outbound", y: 2 }] });
   const prev = buildPeriod({ visitors: 80 }, { events: [{ x: "wa_open", y: 2 }, { x: "wa_outbound", y: 4 }] });
