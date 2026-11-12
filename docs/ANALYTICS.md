@@ -72,6 +72,8 @@ Desde 2.0 el informe agrega `wa_cancel / wa_open`, `wa_validation_error / wa_ope
 
 El email incluye tráfico, embudo, comparación semanal, fuentes/referrers, páginas, dispositivos, UTM, servicios, intenciones, CTA, libros y observaciones deterministas. La atribución de campañas solo cuenta `wa_outbound` con UTM campaña disponible. No produce rankings vacíos. No contiene texto de caso, nombres, teléfonos, emails de clientes, mensajes Formspree, IP, user-agent individual, ID individual o datos privados de Firebase. Una salida intentada a WhatsApp no confirma conversación, venta, cliente ni compra.
 
+Desde 3.1, el informe añade «Descubrimiento orgánico y por IA». Clasifica únicamente hosts de referrer reconocibles y muestra landings e intentos en páginas SEO como métricas separadas de todas las fuentes; no atribuye esos intentos a un referrer individual. Ver [SEO_GEO_3_1_OPERACION.md](SEO_GEO_3_1_OPERACION.md).
+
 Los enlaces etiquetados de Instagram se generan con `scripts/campaign-link.mjs`. La navegación interna conserva únicamente UTM válidas de Instagram durante hasta 30 minutos en `sessionStorage` del navegador; nunca añade parámetros a enlaces externos, Formspree o WhatsApp. El registro privado de consultas recibidas y ventas se describe en [ATRIBUCION_COMERCIAL_3_0.md](ATRIBUCION_COMERCIAL_3_0.md). Sus importes no se envían a Umami ni al reporte semanal.
 
 ## Configurar GitHub Actions
