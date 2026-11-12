@@ -111,6 +111,27 @@ const formatPoints = (value) => !Number.isFinite(value) ? "Sin base comparable" 
 const safeText = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
 const topList = (items, limit = 5) => items.slice(0, limit);
 
+export function discoverySource(referrer) {
+  let host;
+  try { host = new URL(/^https?:\/\//i.test(referrer) ? referrer : `https://${referrer}`).hostname.toLowerCase(); } catch { return null; }
+  if (["gemini.google.com"].includes(host)) return "Gemini";
+  if (["chatgpt.com", "chat.openai.com"].includes(host)) return "ChatGPT";
+  if (host === "claude.ai" || host.endsWith(".claude.ai")) return "Claude";
+  if (["copilot.microsoft.com", "copilot.com"].includes(host)) return "Copilot";
+  if (["bing.com", "www.bing.com"].includes(host)) return "Bing";
+  if (["google.com", "www.google.com", "google.com.uy", "www.google.com.uy", "google.com.ar", "www.google.com.ar", "google.es", "www.google.es", "google.com.br", "www.google.com.br"].includes(host)) return "Google";
+  return null;
+}
+
+export function discoveryTotals(referrers) {
+  const totals = new Map();
+  for (const item of referrers) {
+    const source = discoverySource(item.name);
+    if (source) totals.set(source, (totals.get(source) || 0) + item.count);
+  }
+  return [...totals].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
 export function buildObservations(current, previous) {
   const result = [];
   if (current.segmented === previous.segmented && current.eventCounts.wa_open > previous.eventCounts.wa_open && (current.segmented ? current.eventCounts.wa_guided_outbound < previous.eventCounts.wa_guided_outbound : current.eventCounts.wa_outbound < previous.eventCounts.wa_outbound)) result.push("Aumentaron las aperturas del diálogo y bajaron las salidas guiadas a WhatsApp: el abandono dentro del flujo fue mayor.");
@@ -126,6 +147,9 @@ export function buildObservations(current, previous) {
 
 export function buildTextReport(current, previous, ranges) {
   const observations = buildObservations(current, previous);
+  const knownCurrent = discoveryTotals(current.referrers);
+  const knownPrevious = discoveryTotals(previous.referrers);
+  const seoPage = (name) => /^\/(?:trabajos-espirituales-montevideo|tarot|magia-(?:blanca|roja|negra|verde)|guias)(?:\/|$)/.test(name);
   const lines = [
     "Cristal Sagrado — Reporte semanal",
     `Período: ${ranges.current.startDate} al ${ranges.current.endDate} (${TIMEZONE})`,
@@ -173,6 +197,13 @@ export function buildTextReport(current, previous, ranges) {
     `Páginas: ${topList(current.pages).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `Landing pages: ${topList(current.landingPages).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
     `Dispositivos: ${topList(current.devices).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
+    "",
+    "DESCUBRIMIENTO ORGÁNICO Y POR IA",
+    `Referers identificados (métrica agregada de Umami): ${knownCurrent.map((item) => `${item.name} ${item.count} (antes ${knownPrevious.find((prior) => prior.name === item.name)?.count ?? 0})`).join(", ") || "Sin datos clasificables"}`,
+    `Google y Bing identificados: ${knownCurrent.filter((item) => ["Google", "Bing"].includes(item.name)).reduce((sum, item) => sum + item.count, 0)} (antes ${knownPrevious.filter((item) => ["Google", "Bing"].includes(item.name)).reduce((sum, item) => sum + item.count, 0)}); el referer no demuestra una consulta orgánica frente a otros enlaces de esos dominios.`,
+    `Landing pages SEO (todas las fuentes): ${topList(current.landingPages.filter((item) => seoPage(item.name))).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
+    `Intentos de WhatsApp desde páginas SEO (todas las fuentes): ${topList(current.outboundPages.filter((item) => seoPage(item.name))).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,
+    "No hay cruce fiable entre referer, landing y evento en estas métricas agregadas. Un referer ausente o intermediado impide atribuir la fuente; no se infieren mensajes recibidos ni ventas.",
     "",
     "SERVICIOS, INTENCIONES Y CTA",
     `Servicios elegidos en service_wa: ${topList(current.services).map((item) => `${item.name} (${item.count})`).join(", ") || "Sin datos"}`,

@@ -4,3 +4,10 @@ Disallow: /previews/
 Allow: /
 
 Sitemap: https://cristal-sagrado.com/sitemap.xml
+
+# Rastreo para entrenamiento: sin autorización del propietario.
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /

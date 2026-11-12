@@ -1,6 +1,21 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildHtmlReport, buildObservations, buildPeriod, buildReportData, buildTextReport, getDateRanges, normalizeApiBase, percentChange, percentagePoints, safeDivide } from "../scripts/weekly-analytics-report.mjs";
+import { buildHtmlReport, buildObservations, buildPeriod, buildReportData, buildTextReport, discoverySource, discoveryTotals, getDateRanges, normalizeApiBase, percentChange, percentagePoints, safeDivide } from "../scripts/weekly-analytics-report.mjs";
+
+test("discovery only classifies known referrer hosts and keeps attribution limits", () => {
+  assert.equal(discoverySource("https://chatgpt.com/search?q=private"), "ChatGPT");
+  assert.equal(discoverySource("gemini.google.com"), "Gemini");
+  assert.equal(discoverySource("google.com.uy"), "Google");
+  assert.equal(discoverySource("google.com.attacker.example"), null);
+  assert.equal(discoverySource("(direct)"), null);
+  assert.deepEqual(discoveryTotals([{ name: "https://www.bing.com/", count: 3 }, { name: "bing.com", count: 2 }, { name: "unknown.example", count: 10 }]), [{ name: "Bing", count: 5 }]);
+  const current = buildPeriod({ visitors: 9 }, { referrers: [{ x: "chatgpt.com", y: 2 }], landingPages: [{ x: "/trabajos-espirituales-montevideo/", y: 3 }] }, { outboundPages: [{ value: "/trabajos-espirituales-montevideo/", total: 1 }] });
+  const previous = buildPeriod({ visitors: 4 });
+  const report = buildTextReport(current, previous, { current: { startDate: "2026-11-09", endDate: "2026-11-15" } });
+  assert.match(report, /DESCUBRIMIENTO ORGÁNICO Y POR IA/);
+  assert.match(report, /ChatGPT 2 \(antes 0\)/);
+  assert.match(report, /No hay cruce fiable entre referer, landing y evento/);
+});
 
 test("safe division avoids zero and invalid values", () => {
   assert.equal(safeDivide(2, 0), null);

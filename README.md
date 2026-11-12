@@ -55,3 +55,7 @@ La evolución del contacto público y la biblioteca editorial se documentan en [
 # Cristal Sagrado 3.0
 
 La auditoría, los recorridos y los límites comerciales se documentan en [docs/CRISTAL_3_0.md](docs/CRISTAL_3_0.md).
+
+# Cristal Sagrado 3.1
+
+La auditoría SEO/GEO, los cambios de búsqueda local y la operación posterior al despliegue se documentan en [docs/SEO_GEO_3_1_AUDITORIA.md](docs/SEO_GEO_3_1_AUDITORIA.md) y [docs/SEO_GEO_3_1_OPERACION.md](docs/SEO_GEO_3_1_OPERACION.md).
