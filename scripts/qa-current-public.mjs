@@ -6,7 +6,7 @@ import { seoGuides } from "../src/data/seo-guides.js";
 
 const origin = process.env.QA_ORIGIN || "http://127.0.0.1:4321";
 const debuggerUrl = process.env.QA_CHROME || "http://127.0.0.1:9229";
-const paths = ["/", "/magia-blanca/", "/magia-roja/", "/magia-negra/", "/magia-verde/", "/tarot/", "/faq/", "/como-trabajamos/", "/guias/", ...seoGuides.map((guide) => `/guias/${guide.slug}/`), ...selectedServicePaths(snapshot)];
+const paths = ["/", "/magia-blanca/", "/magia-roja/", "/magia-negra/", "/magia-verde/", "/tarot/", "/faq/", "/como-trabajamos/", "/trabajos-espirituales-montevideo/", "/guias/", ...seoGuides.map((guide) => `/guias/${guide.slug}/`), ...selectedServicePaths(snapshot)];
 const oldPaths = ["faq.html", "como-trabajamos.html", "magia-blanca.html", "magia-roja.html", "magia-negra.html", "magia-verde.html", "tarot.html", "servicios.html"];
 
 for (const path of [...paths, "/admin/", ...oldPaths.map((item) => `/${item}`)]) {
@@ -46,8 +46,8 @@ await call("Runtime.enable");
 await call("Network.enable");
 await call("Network.setBlockedURLs", { urls: ["*://wa.me/*", "*://formspree.io/*"] });
 
-for (const width of [390, 1440]) {
-  await call("Emulation.setDeviceMetricsOverride", { width, height: width === 390 ? 844 : 900, deviceScaleFactor: 1, mobile: width === 390 });
+for (const width of [320, 390, 430, 768, 1440]) {
+  await call("Emulation.setDeviceMetricsOverride", { width, height: width < 768 ? 844 : 900, deviceScaleFactor: 1, mobile: width < 768 });
   for (const path of paths) {
     await call("Page.navigate", { url: `${origin}${path}` });
     await pause(path.startsWith("/magia-") && path.split("/").length === 3 ? 500 : 120);
@@ -86,4 +86,4 @@ assert.ok(admin.title.includes("Administración"));
 assert.equal(admin.login, true);
 assert.equal(admin.publicFlow, false);
 ws.close();
-console.log(JSON.stringify({ httpRoutes: paths.length + oldPaths.length + 1, browserRoutes: paths.length * 2, home, category, admin, status: "PASS" }, null, 2));
+console.log(JSON.stringify({ httpRoutes: paths.length + oldPaths.length + 1, browserRoutes: paths.length * 5, home, category, admin, status: "PASS" }, null, 2));

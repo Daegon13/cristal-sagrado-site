@@ -25,7 +25,7 @@ const call = (method, params = {}) => new Promise((resolve, reject) => {
   socket.send(JSON.stringify({ id, method, params }));
 });
 const widths = [320, 360, 390, 430, 768, 1024, 1366, 1440];
-const routes = ["/", "/tarot/", "/magia-blanca/", "/magia-roja/", "/magia-negra/", "/magia-verde/", "/faq/", "/como-trabajamos/"];
+const routes = ["/", "/tarot/", "/magia-blanca/", "/magia-roja/", "/magia-negra/", "/magia-verde/", "/faq/", "/como-trabajamos/", "/trabajos-espirituales-montevideo/"];
 const failures = [];
 await call("Page.enable");
 await call("Runtime.enable");

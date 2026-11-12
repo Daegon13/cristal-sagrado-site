@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import WhatsAppCTA from "../../components/WhatsAppCTA.astro";
+import { categories, SITE } from "../../lib/constants";
+import { canonical, pageMetadata } from "../../lib/seo";
+
+const path = "/trabajos-espirituales-montevideo/";
+const base = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "WebPage", "@id": canonical(path), name: pageMetadata.montevideo.title, description: pageMetadata.montevideo.description, url: canonical(path), isPartOf: { "@id": `${SITE.origin}/#website` }, inLanguage: "es-UY" },
+    { "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: canonical("/") },
+      { "@type": "ListItem", position: 2, name: "Consultas desde Montevideo", item: canonical(path) }
+    ] }
+  ]
+};
+---
+
+<BaseLayout {...pageMetadata.montevideo} path={path} schema={schema}>
+  <main class="wrap seo-page">
+    <nav aria-label="Ruta de navegación" class="seo-breadcrumbs"><ol><li><a href={base}>Inicio</a></li><li aria-current="page">Consultas desde Montevideo</li></ol></nav>
+    <header class="seo-page__intro">
+      <span class="eyebrow">Cristal Sagrado · Uruguay</span>
+      <h1>Trabajos espirituales y tarot en Montevideo</h1>
+      <p class="seo-lead">Si estás en Montevideo, podés consultar online por los trabajos espirituales y las lecturas de tarot publicados en Cristal Sagrado. También podés escribir desde otras localidades de Uruguay.</p>
+      <WhatsAppCTA label="Consultar por WhatsApp" className="serv-cta" ctaLocation="montevideo_intro" />
+    </header>
+
+    <section aria-labelledby="oferta"><h2 id="oferta">Qué podés encontrar</h2><p>El catálogo reúne trabajos de magia blanca, roja, verde y negra, además de lecturas de tarot. Cada categoría agrupa preguntas distintas: limpieza y protección, vínculos, bienestar espiritual o situaciones complejas. Las fichas publicadas explican el enfoque de cada trabajo y muestran su precio; los detalles vigentes se confirman antes de avanzar.</p></section>
+
+    <section aria-labelledby="modalidad"><h2 id="modalidad">Modalidad de atención</h2><p>La consulta puede comenzar online por WhatsApp. Para lecturas de tarot, el sitio también describe sesiones por videollamada. Al escribir, podés preguntar por la modalidad que corresponde a la opción que te interesa y coordinar los pasos siguientes. Esta página no anuncia un local de atención presencial.</p></section>
+
+    <section aria-labelledby="opciones"><h2 id="opciones">Trabajos y consultas disponibles</h2><ul class="seo-related">
+      {categories.map((item) => <li><a href={`${base}${item.href}`}>{item.label}</a> — {item.description}</li>)}
+    </ul><p>Si preferís empezar por una pregunta concreta, podés leer las <a href={`${base}guias/`}>guías sobre los trabajos publicados</a>.</p></section>
+
+    <section aria-labelledby="diferencias"><h2 id="diferencias">Cómo se diferencian las categorías</h2><p>La magia blanca reúne propuestas de limpieza, protección y armonización. La magia roja se centra en preguntas afectivas y vínculos. La magia verde incluye trabajos ligados a la naturaleza y la armonización. La magia negra agrupa situaciones complejas para las que conviene conversar primero sobre el alcance. El <a href={`${base}tarot/`}>tarot</a> es una consulta de interpretación y reflexión. Ninguna categoría implica un resultado garantizado.</p></section>
+
+    <section aria-labelledby="desde-uruguay"><h2 id="desde-uruguay">Cómo consultar desde Montevideo o Uruguay</h2><ol><li>Explorá una categoría, una ficha o una guía. Si todavía no sabés qué elegir, podés pedir orientación.</li><li>Usá el enlace de WhatsApp. Si ya elegiste un trabajo publicado, la ficha abre WhatsApp con su nombre; para orientación se abre un breve espacio para explicar tu situación.</li><li>Confirmá disponibilidad, modalidad, precio vigente y condiciones antes de decidir.</li></ol><p>Si WhatsApp no te resulta conveniente, el <a href={`${base}#formulario`}>formulario de contacto</a> está en la página principal.</p></section>
+
+    <section aria-labelledby="preguntas"><h2 id="preguntas">Preguntas frecuentes</h2>
+      <h3>¿Tengo que saber qué trabajo necesito?</h3><p>No. Podés explicar brevemente qué te preocupa y consultar por las opciones publicadas.</p>
+      <h3>¿La consulta desde Montevideo requiere ir a un local?</h3><p>No se anuncia atención en un local en esta página. Podés iniciar la consulta online y confirmar la modalidad antes de coordinar.</p>
+      <h3>¿Puedo consultar desde otra localidad de Uruguay?</h3><p>Sí. El sitio ofrece consultas online desde Uruguay; escribí para confirmar la modalidad adecuada para tu consulta.</p>
+    </section>
+
+    <section class="seo-final" aria-labelledby="consulta-final"><h2 id="consulta-final">Empezar una consulta</h2><p>Podés elegir una ficha del catálogo o contar qué situación querés conversar. Compartí solo la información que te resulte necesaria.</p><WhatsAppCTA label="Pedir orientación" className="serv-cta" ctaLocation="montevideo_final" /></section>
+  </main>
+</BaseLayout>

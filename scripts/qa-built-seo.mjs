@@ -57,11 +57,14 @@ for (const category of ["blanca", "roja", "negra", "verde"]) {
   console.log(`magia-${category}: ${services.length} fichas HTML`);
 }
 const sitemap = await readFile(new URL("../dist/sitemap.xml", import.meta.url), "utf8");
-const staticPaths = ["/", "/magia-blanca/", "/magia-roja/", "/magia-negra/", "/magia-verde/", "/tarot/", "/faq/", "/como-trabajamos/", "/libros/"];
+const staticPaths = ["/", "/magia-blanca/", "/magia-roja/", "/magia-negra/", "/magia-verde/", "/tarot/", "/faq/", "/como-trabajamos/", "/libros/", "/trabajos-espirituales-montevideo/"];
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
 const robots = await readFile(new URL("../dist/robots.txt", import.meta.url), "utf8");
 const cname = await readFile(new URL("../dist/CNAME", import.meta.url), "utf8");
 assert.match(robots, /^Sitemap: https:\/\/cristal-sagrado\.com\/sitemap\.xml\s*$/m);
+assert.match(robots, /User-agent: \*\s+Disallow: \/admin\/\s+Disallow: \/previews\//);
+assert.match(robots, /User-agent: GPTBot\s+Disallow: \//);
+assert.match(robots, /User-agent: ClaudeBot\s+Disallow: \//);
 assert.equal(cname.trim(), "cristal-sagrado.com");
 assert.equal(new Set(urls).size, urls.length, "Sitemap sin URLs duplicadas");
 assert.ok(urls.every((url) => !url.endsWith(".html")), "Sitemap sin rutas .html");
@@ -78,6 +81,31 @@ const guidePaths = seoGuides.map((guide) => `/guias/${guide.slug}/`);
 const bookPaths = editorialManifest.map((item) => `/libros/${item.slug}/`);
 const expectedUrls = [...staticPaths, "/guias/", ...guidePaths, ...bookPaths, ...entries.map((entry) => entry.path)].map((path) => `https://cristal-sagrado.com${path}`);
 assert.deepEqual(urls.slice().sort(), expectedUrls.slice().sort(), "Sitemap contiene exactamente las páginas públicas actuales");
+for (const path of staticPaths) {
+  const html = path === "/" ? homeHtml : await readFile(new URL(`../dist${path}index.html`, import.meta.url), "utf8");
+  assert.ok(html.includes(`rel="canonical" href="https://cristal-sagrado.com${path}"`), `Canonical: ${path}`);
+  assert.ok(html.includes('name="robots" content="index,follow"'), `Indexable: ${path}`);
+  assert.match(html, /<title>[^<]+<\/title>/, `Título: ${path}`);
+  assert.match(html, /<meta name="description" content="[^"]+"/, `Descripción: ${path}`);
+  assert.equal((html.match(/<h1(?:\s|>)/g) || []).length, 1, `Un H1: ${path}`);
+}
+for (const [path, expectedTypes] of [["/", ["Organization", "WebSite", "WebPage"]], ["/trabajos-espirituales-montevideo/", ["WebPage", "BreadcrumbList"]]]) {
+  const html = path === "/" ? homeHtml : await readFile(new URL(`../dist${path}index.html`, import.meta.url), "utf8");
+  const json = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(json, `JSON-LD: ${path}`);
+  const schema = JSON.parse(json);
+  assert.deepEqual(schema["@graph"].map((item) => item["@type"]), expectedTypes);
+  assert.ok(schema["@graph"].every((item) => !item.url || item.url.startsWith("https://cristal-sagrado.com/")));
+  const page = schema["@graph"].find((item) => item["@type"] === "WebPage");
+  assert.equal(page.url, `https://cristal-sagrado.com${path}`, `WebPage y canonical coinciden: ${path}`);
+  if (page.description) assert.ok(html.includes(`name="description" content="${page.description}"`), `Descripción visible y schema: ${path}`);
+  assert.ok(!/LocalBusiness|PostalAddress|AggregateRating|Review|openingHours|streetAddress/.test(json), `Sin datos inventados: ${path}`);
+}
+const localHtml = await readFile(new URL("../dist/trabajos-espirituales-montevideo/index.html", import.meta.url), "utf8");
+assert.ok(homeHtml.includes('href="/trabajos-espirituales-montevideo/"'), "Home enlaza landing local");
+assert.ok(localHtml.includes('href="/magia-roja/"') && localHtml.includes('href="/tarot/"') && localHtml.includes('href="/#formulario"'), "Landing enlaza categorías, tarot y formulario");
+assert.ok(localHtml.includes('data-whatsapp-trigger') && localHtml.includes('aria-label="Ruta de navegación"'), "Landing conserva CTA y breadcrumb");
+assert.ok(!/dirección|horario presencial|sucursal|domicilio/i.test(localHtml), "Landing no inventa ubicación física");
 for (const item of editorialManifest) {
   const path = `/libros/${item.slug}/`;
   const html = await readFile(new URL(`../dist${path}index.html`, import.meta.url), "utf8");
